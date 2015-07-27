@@ -1,0 +1,96 @@
+Class Forum.Cache Extends %Persistent
+{
+
+Property MsgOrQstn As %String;
+
+Property Theme As %String(MAXLEN = 150) [ Required ];
+
+Index ThemeIndex On Theme;
+
+Property Author As %String [ Required ];
+
+Index AuthorIndex On Author;
+
+/// Количество комментариев у темы
+Property NumOfCom As %Integer [ Required ];
+
+/// Количество просмотров темы
+Property Views As %Integer [ Required ];
+
+/// Дата последнего комментария
+Property Date As %String [ Required ];
+
+Index DateIndex On Date;
+
+ClassMethod LoadData(server As %String = "www.sql.ru", page As %String = "/forum/cache/") As %String
+{
+	//do ##class(Forum.Cache).LoadData()
+	set request=##class(%Net.HttpRequest).%New()
+	set request.Server=server
+	//NumOfPage - номер загружаеммой страницы
+	//AmtOfPages - количество страниц
+	//^RecNum -номер записи
+	set NumOfPage = 0
+	set AmtOfPages = 10
+	while NumOfPage < AmtOfPages {
+		set NumOfPage=$INCREMENT(NumOfPage)
+		do request.Get(page_NumOfPage,,0)
+		set response=request.HttpResponse.Data	
+		while 'response.AtEnd {
+			set s=response.ReadLine(,.st)
+			if $FIND(s,"<!--begin topicstable-->") {
+				while '$FIND(s,"<!--end topicstable-->"){
+					set s=response.ReadLine(,.st)
+					while '$FIND(s,"<tr>"){
+						set s=response.ReadLine(,.st)
+						if $FIND(s,"<!--end topicstable-->") {
+							set gut = "Загрузка страницы №"_NumOfPage_" прошла удачно"
+							QUIT  
+							}
+						}
+					if $Data(gut) quit
+					while '$FIND(s,"</tr>") {
+						set s=response.ReadLine(,.st)
+						if $FIND(s,"<td"){
+							set i=$INCREMENT(i)
+							set str=s
+							while '$FIND(s,"</td>"){
+								set s=response.ReadLine(,.st)
+								set str=str _ s
+								}
+							if i =1 set $list(valuelist,i) = $piece($piece(str,"/forum/images/",2),".",1)_" "_NumOfPage
+							if i '=1 set $list(valuelist,i) = ($piece($piece(str,">",2),"<",1))_($piece($piece(str,">",3),"<",1))
+							}
+						}
+					if $Data(valuelist) {
+						set themeobj=##class(Forum.Cache).%New()
+						set themeobj.MsgOrQstn = $list(valuelist,1)
+						set themeobj.Theme = $list(valuelist,2)
+						set themeobj.Author = $list(valuelist,3)
+						set themeobj.NumOfCom = $list(valuelist,4)
+						set themeobj.Views = $list(valuelist,5)
+						set themeobj.Date = $list(valuelist,6)
+						set status = themeobj.%Save()
+						write $system.Status.DisplayError(status)
+						kill valuelist
+						kill i
+						}
+					}	
+				}
+			if ($Data(gut))&(NumOfPage=1) {
+				while '$FIND(s,"Страницы") {
+					set s=response.ReadLine(,.st)
+					if $FIND(s,"Страницы") set AmtOfPages = +($piece(($piece(s,"..",2)),">",2))
+					}
+				}
+			if ($Data(gut)) {
+				w !, gut ,!
+				kill gut
+				quit
+				}
+			}
+		}
+	if $Data(gut) quit
+	set none = "На странице не найдена искомая информация"
+	quit none
+}
