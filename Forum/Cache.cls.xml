@@ -4,17 +4,6 @@
 <Super>%Persistent</Super>
 <TimeCreated>63756,53473.08059</TimeCreated>
 
-<Property name="MsgOrQstn">
-<Type>%String</Type>
-</Property>
-
-<UDLText name="T">
-<Content><![CDATA[
-// tetstestestestestetsetset
-
-]]></Content>
-</UDLText>
-
 <Property name="Theme">
 <Type>%String</Type>
 <Required>1</Required>
@@ -34,7 +23,7 @@
 <Properties>Author</Properties>
 </Index>
 
-<Property name="NumOfCom">
+<Property name="AmtOfCom">
 <Description>
 Количество комментариев у темы</Description>
 <Type>%Integer</Type>
@@ -50,7 +39,7 @@
 
 <Property name="Date">
 <Description>
-Дата последнего комментария</Description>
+Date of latest comment</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
@@ -59,80 +48,25 @@
 <Properties>Date</Properties>
 </Index>
 
-<Method name="LoadData">
+<Property name="TypeOfTheme">
+<Type>%String</Type>
+</Property>
+
+<Method name="NewThemeAdd">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>server:%String="www.sql.ru",page:%String="/forum/cache/"</FormalSpec>
-<ReturnType>%String</ReturnType>
+<FormalSpec>valuelist:%List</FormalSpec>
+<ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	//do ##class(Forum.Cache).LoadData()
-	set request=##class(%Net.HttpRequest).%New()
-	set request.Server=server
-	//NumOfPage - номер загружаеммой страницы
-	//AmtOfPages - количество страниц
-	//^RecNum -номер записи
-	set NumOfPage = 0
-	set AmtOfPages = 10
-	while NumOfPage < AmtOfPages {
-		set NumOfPage=$INCREMENT(NumOfPage)
-		do request.Get(page_NumOfPage,,0)
-		set response=request.HttpResponse.Data	
-		while 'response.AtEnd {
-			set s=response.ReadLine(,.st)
-			if $FIND(s,"<!--begin topicstable-->") {
-				while '$FIND(s,"<!--end topicstable-->"){
-					set s=response.ReadLine(,.st)
-					while '$FIND(s,"<tr>"){
-						set s=response.ReadLine(,.st)
-						if $FIND(s,"<!--end topicstable-->") {
-							set gut = "Загрузка страницы №"_NumOfPage_" прошла удачно"
-							QUIT  
-							}
-						}
-					if $Data(gut) quit
-					while '$FIND(s,"</tr>") {
-						set s=response.ReadLine(,.st)
-						if $FIND(s,"<td"){
-							set i=$INCREMENT(i)
-							set str=s
-							while '$FIND(s,"</td>"){
-								set s=response.ReadLine(,.st)
-								set str=str _ s
-								}
-							if i =1 set $list(valuelist,i) = $piece($piece(str,"/forum/images/",2),".",1)_" "_NumOfPage
-							if i '=1 set $list(valuelist,i) = ($piece($piece(str,">",2),"<",1))_($piece($piece(str,">",3),"<",1))
-							}
-						}
-					if $Data(valuelist) {
-						set themeobj=##class(Forum.Cache).%New()
-						set themeobj.MsgOrQstn = $list(valuelist,1)
-						set themeobj.Theme = $list(valuelist,2)
-						set themeobj.Author = $list(valuelist,3)
-						set themeobj.NumOfCom = $list(valuelist,4)
-						set themeobj.Views = $list(valuelist,5)
-						set themeobj.Date = $list(valuelist,6)
-						set status = themeobj.%Save()
-						write $system.Status.DisplayError(status)
-						kill valuelist
-						kill i
-						}
-					}	
-				}
-			if ($Data(gut))&(NumOfPage=1) {
-				while '$FIND(s,"Страницы") {
-					set s=response.ReadLine(,.st)
-					if $FIND(s,"Страницы") set AmtOfPages = +($piece(($piece(s,"..",2)),">",2))
-					}
-				}
-			if ($Data(gut)) {
-				w !, gut ,!
-				kill gut
-				quit
-				}
-			}
-		}
-	if $Data(gut) quit
-	set none = "На странице не найдена искомая информация"
-	quit none
+	set newThemeObj=..%New()
+	set newThemeObj.TypeOfTheme = $list(valuelist,1)
+	set newThemeObj.Theme = $list(valuelist,2)
+	set newThemeObj.Author = $list(valuelist,3)
+	set newThemeObj.AmtOfCom = $list(valuelist,4)
+	set newThemeObj.Views = $list(valuelist,5)
+	set newThemeObj.Date = $list(valuelist,6)
+	set status = newThemeObj.%Save()
+	write $system.Status.DisplayError(status)
+	q status
 ]]></Implementation>
 </Method>
 
@@ -164,6 +98,12 @@
 </Value>
 <Value name="7">
 <Value>Date</Value>
+</Value>
+<Value name="8">
+<Value>AmtOfCom</Value>
+</Value>
+<Value name="9">
+<Value>TypeOfTheme</Value>
 </Value>
 </Data>
 </Storage>

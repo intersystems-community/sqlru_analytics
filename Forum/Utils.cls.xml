@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Utils">
+<IncludeCode>statushelp</IncludeCode>
+<Super>%RegisteredObject</Super>
+<TimeCreated>63762,46982.907627</TimeCreated>
+
+<Method name="AllDataLoad">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>server:%String="www.sql.ru",page:%String="/forum/cache/"</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	//do ##class(Forum.Utils).AllDataLoad()
+	set request=##class(%Net.HttpRequest).%New()
+	set request.Server=server
+	set numOfPage = 0
+	set amtOfPages = 10
+	while numOfPage < amtOfPages {
+		set numOfPage=$INCREMENT(numOfPage)
+		do ..PageLoad(request,page,numOfPage,.response)
+		set fromPageStatus = ..FromPageDataGet(response,numOfPage)
+		if $$$ISOK(fromPageStatus) {
+			w !, "Load data from page №"_numOfPage_" successfully completed",!
+			}
+		else {
+			$$$THROW("Load data from page №"_numOfPage_" failed")
+			}
+		//Determine amount of pages
+		if (numOfPage=1) {
+			set respStr=response.ReadLine(,.st)
+			while '$FIND(respStr,"Страницы") {
+				set respStr=response.ReadLine(,.st)
+				if $FIND(respStr,"Страницы") set amtOfPages = +($piece(($piece(respStr,"..",2)),">",2))
+				}
+			}
+		}
+]]></Implementation>
+</Method>
+
+<Method name="PageLoad">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[request:%Net.HttpRequest,page:%String,numOfPage:%Integer,&response:%CacheString]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	do request.Get(page_numOfPage,,0)
+	set response=request.HttpResponse.Data
+	q
+]]></Implementation>
+</Method>
+
+<Method name="FromPageDataGet">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>response:%String,numOfPage:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set numOfRec=1
+	set respStr=response.ReadLine(,.st)			
+	while '$FIND(respStr,"<!--begin topicstable-->") {
+		set respStr=response.ReadLine(,.st)
+		}
+	while '$FIND(respStr,"<!--end topicstable-->") {
+		set respStr=response.ReadLine(,.st)
+		if $FIND(respStr,"<td") {
+			set i=$INCREMENT(i)
+			set str=respStr
+			while '$FIND(respStr,"</td>"){
+				set respStr=response.ReadLine(,.st)
+				set str=str _ respStr
+				}
+			if i =1 set $list(valuelist,i) = $piece($piece(str,"/forum/images/",2),".",1)_" "_numOfPage
+			if i '=1 set $list(valuelist,i) = ($piece($piece(str,">",2),"<",1))_($piece($piece(str,">",3),"<",1))
+			if i=6 {
+				s status=##class(Forum.Cache).NewThemeAdd(valuelist)
+				if $$$ISERR(status) $$$THROW("Adding theme -"_$list(valuelist,2)_"- failed")
+				kill valuelist
+				kill i
+				}
+			}
+		}
+	q status
+]]></Implementation>
+</Method>
+</Class>
+</Export>
