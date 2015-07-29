@@ -1,3 +1,0 @@
-Forum.Cache.cls
-Forum.Utils.cls
-statushelp.inc
