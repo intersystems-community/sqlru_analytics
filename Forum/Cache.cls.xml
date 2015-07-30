@@ -25,14 +25,14 @@
 
 <Property name="AmtOfCom">
 <Description>
-Количество комментариев у темы</Description>
+Number of comments</Description>
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="Views">
 <Description>
-Количество просмотров темы</Description>
+Topic Views</Description>
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
