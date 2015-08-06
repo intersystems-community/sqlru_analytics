@@ -1,5 +1,3 @@
-Forum.Cache.cls
 Forum.Post.cls
-Forum.PostParser.cls
 Forum.Utils.cls
 statushelp.inc
