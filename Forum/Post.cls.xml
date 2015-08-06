@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Post">
+<Description>
+Class of objects
+Object of this class are posts from forum with next properties
+ThemeType - type of post; like messege, cry, question e.t.c.
+Theme - the name of the post
+Author - account of topic starter
+Comments - number of comments left in post
+Views - views of post
+LastComDate - date of latest comment in post</Description>
+<Super>%Persistent</Super>
+<TimeCreated>63763,57010.038856</TimeCreated>
+
+<Property name="ThemeType">
+<Type>%String</Type>
+</Property>
+
+<Property name="Theme">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="150"/>
+</Property>
+
+<Index name="ThemeIndex">
+<Properties>Theme</Properties>
+</Index>
+
+<Property name="Author">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="AuthorIndex">
+<Properties>Author</Properties>
+</Index>
+
+<Property name="Comments">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Views">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="LastComDate">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="LastComDateIndex">
+<Properties>LastComDate</Properties>
+</Index>
+
+<Index name="Unique">
+<Description>
+Unique index on few properties</Description>
+<Properties>Theme,Author,Comments,Views,LastComDate</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Method name="TopicAdd">
+<Description>
+Add new topic with properties in list prop</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>prop:%List</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s newThemeObj=..%New()
+	s newThemeObj.ThemeType = $list(prop,1)
+	s newThemeObj.Theme = $list(prop,2)
+	s newThemeObj.Author = $list(prop,3)
+	s newThemeObj.Comments = $list(prop,4)
+	s newThemeObj.Views = $list(prop,5)
+	s newThemeObj.LastComDate = $list(prop,6)
+	s status = newThemeObj.%Save()
+	w $system.Status.DisplayError(status)
+	Q status
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.PostD</DataLocation>
+<DefaultData>PostDefaultData</DefaultData>
+<IdLocation>^Forum.PostD</IdLocation>
+<IndexLocation>^Forum.PostI</IndexLocation>
+<StreamLocation>^Forum.PostS</StreamLocation>
+<Data name="PostDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>ThemeType</Value>
+</Value>
+<Value name="3">
+<Value>Theme</Value>
+</Value>
+<Value name="4">
+<Value>Author</Value>
+</Value>
+<Value name="5">
+<Value>Comments</Value>
+</Value>
+<Value name="6">
+<Value>Views</Value>
+</Value>
+<Value name="7">
+<Value>LastComDate</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
