@@ -3,88 +3,66 @@
 <Class name="Forum.Post">
 <Description>
 Class of objects
-Object of this class are posts from forum with next properties
-ExtID - ID that uses on sql.ru, that is unique for every topics
-ThemeType - type of topic; like messege, cry, question e.t.c.
-Theme - the name of the topic
-Author - account of topic starter
-Comments - number of comments left in topic
-Views - views of topic
-LastComDate - date of latest comment in topic</Description>
+Object of this class are posts from topic with next properties
+Author - author of post
+PostDate - date when posted post
+Message - text of post
+PostExtID - ID of post that uses on sql.ru, that is unique for every post</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63763,57010.038856</TimeCreated>
 
-<Property name="ExtID">
+<Property name="Autor">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="PostDate">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Message">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="PostExtID">
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="ExtIDIndex">
-<Properties>ExtID</Properties>
+<Index name="PostExtIDIndex">
+<Properties>PostExtID</Properties>
 <Unique>1</Unique>
 </Index>
 
-<Property name="ThemeType">
-<Type>%String</Type>
-</Property>
-
-<Property name="Theme">
-<Type>%String</Type>
-<Required>1</Required>
-<Parameter name="MAXLEN" value="150"/>
-</Property>
-
-<Index name="ThemeIndex">
-<Properties>Theme</Properties>
-</Index>
-
-<Property name="Author">
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
-
-<Index name="AuthorIndex">
-<Properties>Author</Properties>
-</Index>
-
-<Property name="Comments">
-<Type>%Integer</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="Views">
-<Type>%Integer</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="LastComDate">
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
-
-<Index name="LastComDateIndex">
-<Properties>LastComDate</Properties>
-</Index>
-
-<Method name="TopicAdd">
-<Description>
-Add new topic with properties in list prop</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>prop:%List</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	s newThemeObj=..%New()
-	s newThemeObj.ThemeType = $list(prop,1)
-	s newThemeObj.Theme = $list(prop,2)
-	s newThemeObj.ExtID = $list(prop,3)
-	s newThemeObj.Author = $list(prop,4)
-	s newThemeObj.Comments = $list(prop,5)
-	s newThemeObj.Views = $list(prop,6)
-	s newThemeObj.LastComDate = $list(prop,7)
-	s status = newThemeObj.%Save()
-	w $system.Status.DisplayError(status)
-	Q status
-]]></Implementation>
-</Method>
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.PostD</DataLocation>
+<DefaultData>PostDefaultData</DefaultData>
+<IdLocation>^Forum.PostD</IdLocation>
+<IndexLocation>^Forum.PostI</IndexLocation>
+<StreamLocation>^Forum.PostS</StreamLocation>
+<Data name="PostDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Autor</Value>
+</Value>
+<Value name="3">
+<Value>PostDate</Value>
+</Value>
+<Value name="4">
+<Value>Message</Value>
+</Value>
+<Value name="5">
+<Value>ExtID</Value>
+</Value>
+<Value name="6">
+<Value>PostExtID</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

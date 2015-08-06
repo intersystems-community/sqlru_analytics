@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Topic">
+<Description>
+Class of objects
+Object of this class are topics from forum with next properties
+TopicExtID - ID of topic that uses on sql.ru, that is unique for every topics
+TopicType - type of topic; like messege, cry, question e.t.c.
+TopicName - the name of the topic
+Author - account of topic starter
+Posts - number of posts left in topic
+Views - views of topic
+LastPostDate - date of latest post in topic
+
+This class load pages as stream
+Parse stream 
+Carve topics and properties</Description>
+<IncludeCode>statushelp</IncludeCode>
+<Super>%Persistent</Super>
+<TimeCreated>63770,69487.272655</TimeCreated>
+
+<Parameter name="SERVER">
+<Default>www.sql.ru</Default>
+</Parameter>
+
+<Parameter name="FORUM">
+<Default>/forum</Default>
+</Parameter>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Relationship ForumName As Forum.Forum [ Cardinality = one, Inverse = ForumName, Required ];
+
+]]></Content>
+</UDLText>
+
+<Property name="TopicType">
+<Type>%String</Type>
+</Property>
+
+<Property name="TopicName">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="150"/>
+</Property>
+
+<Index name="TopicNameIndex">
+<Properties>TopicName</Properties>
+</Index>
+
+<Property name="TopicExtID">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="TopicExtIDIndex">
+<Properties>TopicExtID</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Property name="Author">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="AuthorIndex">
+<Properties>Author</Properties>
+</Index>
+
+<Property name="Posts">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Views">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="LastPostDate">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="LastPostDateIndex">
+<Properties>LastPostDate</Properties>
+</Index>
+
+<Method name="TopicAdd">
+<Description>
+Add new topic with properties in list prop</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>prop:%List</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s newThemeObj=..%New()
+	//s newThemeObj.ForumName = 
+	s newThemeObj.TopicType = $list(prop,1)
+	s newThemeObj.TopicName = $list(prop,2)
+	s newThemeObj.TopicExtID = $list(prop,3)
+	s newThemeObj.Author = $list(prop,4)
+	s newThemeObj.Posts = $list(prop,5)
+	s newThemeObj.Views = $list(prop,6)
+	s newThemeObj.LastPostDate = $list(prop,7)
+	s status = newThemeObj.%Save()
+	w $system.Status.DisplayError(status)
+	Q status
+]]></Implementation>
+</Method>
+
+<Method name="TopicLoad">
+<Description>
+Load pages count
+Load page from number i to pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>cathegoryURL:%String</FormalSpec>
+<Implementation><![CDATA[
+	
+	s pages = ..PagesCount(cathegoryURL)
+	for i=1:1:pages { 
+			
+		s data = ..PageGet( i, cathegoryURL)	
+		k table s table="" 
+		s table = ..TopicTable( data, .sc )
+		d ..TopicTableParse( table , i)
+		w !, "Page #"_i_" successfully loaded.",!
+	}
+	
+	Q
+]]></Implementation>
+</Method>
+
+<Method name="PagesCount">
+<Description><![CDATA[
+Extracting pages count from  
+<var>data</var> - stream with the content of the page]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>cathegoryURL</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	//Where are the URL of pages is the count of pages
+	#define URL  ..#SERVER_..#FORUM _cathegoryURL
+	
+	s data = ..PageGet(,cathegoryURL) ;data = request.HttpResponse.Data
+		
+	s pages = 0
+	for {
+		s str=data.ReadLine(,.st) 
+		s hasPages = $FIND( str, $$$URL )
+		if hasPages {
+			s pageInfo = $piece(str,"..",2)
+			s pages = +$piece(pageInfo,">",2)
+			Quit  ;quit for
+		}
+	}
+	Q pages
+]]></Implementation>
+</Method>
+
+<Method name="PageGet">
+<Description><![CDATA[
+Load page number <var>num</var> as stream]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[pageNum=1,cathegoryURL,forum=..#FORUM,&sc]]></FormalSpec>
+<ReturnType>%Stream</ReturnType>
+<Implementation><![CDATA[
+	s request = ##class(%Net.HttpRequest).%New()
+	s request.Server = ..#SERVER
+	s url = forum_cathegoryURL_pageNum  
+	s sc = request.Get( url ,,0) Q:'sc ""
+	Q request.HttpResponse.Data
+]]></Implementation>
+</Method>
+
+<Method name="TopicTable">
+<Description>
+Parse server response - carve table with topics </Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[data:%Stream,&sc]]></FormalSpec>
+<ReturnType>%Stream</ReturnType>
+<Implementation><![CDATA[
+	#define BEGIN "<!--begin topicstable-->"
+	#define END "<!--end topicstable-->"
+	
+	s sc = 1
+	s table = ##class(%Stream.TmpBinary).%New()
+	
+    s start = data.FindAt(1, $$$BEGIN) 
+    if start=-1 s sc = $$$ERROR(,"Not found start") Q ""
+    
+    s start = start + $l($$$BEGIN)
+    s stop = data.FindAt(start, $$$END) 
+    if stop=-1 s sc = $$$ERROR(,"Not found end") Q ""
+	
+	s length = stop - start 
+	s sc = data.MoveTo( start ) Q:'sc ""
+	s html = data.Read( .length, .sc ) Q:sc=0
+	s sc = table.Write( html ) Q:sc=0
+	
+	Q table
+]]></Implementation>
+</Method>
+
+<Method name="TopicTableParse">
+<Description>
+Parse table of topics - carve topic</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>table:%Stream,pageNum:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#define BEGIN "<tr>"
+	#define END "</tr>"
+		
+	s start = 1, stop = 1, lbegin = $l($$$BEGIN)
+	for {
+		
+		s topic = ##class(%Stream.TmpBinary).%New()
+		s start = table.FindAt(start, $$$BEGIN ) Q:start=-1	
+		s start = start + lbegin
+		s stop = table.FindAt(start, $$$END ) Q:start=-1
+		
+		s length = stop - start
+		s sc = table.MoveTo( start )
+		s topicString = table.Read( .length, .sc ) Q:sc=0
+		s sc = topic.Write( topicString ) Q:sc=0
+		d ..TopicParse( topic , pageNum)
+		s start = stop
+		k topic, topicString
+		
+	}
+]]></Implementation>
+</Method>
+
+<Method name="TopicParse">
+<Description>
+Parse topic - carve properties, add topic.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%Stream,pageNum:%Integer</FormalSpec>
+<Implementation><![CDATA[
+	#define BEGIN "<td"
+	#define END "</td>"
+	#define ThemeTypeExtract(%str) $piece($piece(%str,"/forum/images/",2),".",1) 
+	#define PropertyExtract(%str) ($piece($piece(%str,">",2),"<",1))_($piece($piece(%str,">",3),"<",1))
+	
+	s start = 1, stop = 1 ,propNum = 1
+	
+	while topic.FindAt(start, $$$BEGIN )'=-1{
+		
+		s start = topic.FindAt(start, $$$BEGIN ) Q:start=-1
+		s stop = topic.FindAt(start, $$$END ) Q:stop=-1
+		s stop = stop + $l( $$$END )
+		
+		s sc = topic.MoveTo( start )
+		s dirtyProp = topic.Read( stop - start )		
+		
+		if (pageNum'=1)&($FIND(dirtyProp,"Важно:")) {
+			
+			s propNum = 1
+			Q
+			
+			}
+
+		s:propNum=1 $list(prop,propNum) = $$$ThemeTypeExtract(dirtyProp)
+		if propNum=2 {
+			
+			s $list(prop,propNum) = $$$PropertyExtract(dirtyProp) ;Theme
+			s propNum = propNum + 1
+			s $list(prop,propNum) = ($piece($piece(dirtyProp,"http://www.sql.ru/forum/",2),"/",1)) ;ExtID
+			
+			}
+		s:propNum>3 $list(prop,propNum) = $$$PropertyExtract(dirtyProp)
+		
+		s start = stop
+		s propNum = propNum + 1
+		
+	}
+	
+	if propNum>1 {
+		s status=..TopicAdd(prop)
+		if $$$ISERR(status) $$$THROW("Adding theme -"_$list(prop,2)_"- failed")
+		}
+	
+	Q
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.TopicD</DataLocation>
+<DefaultData>TopicDefaultData</DefaultData>
+<IdLocation>^Forum.TopicD</IdLocation>
+<IndexLocation>^Forum.TopicI</IndexLocation>
+<StreamLocation>^Forum.TopicS</StreamLocation>
+<Data name="TopicDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>TopicType</Value>
+</Value>
+<Value name="3">
+<Value>TForumName</Value>
+</Value>
+<Value name="4">
+<Value>TopicName</Value>
+</Value>
+<Value name="5">
+<Value>TopicExtID</Value>
+</Value>
+<Value name="6">
+<Value>Author</Value>
+</Value>
+<Value name="7">
+<Value>Posts</Value>
+</Value>
+<Value name="8">
+<Value>Views</Value>
+</Value>
+<Value name="9">
+<Value>LastPostDate</Value>
+</Value>
+<Value name="10">
+<Value>ForumName</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
