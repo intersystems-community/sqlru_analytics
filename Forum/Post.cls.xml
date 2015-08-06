@@ -4,14 +4,25 @@
 <Description>
 Class of objects
 Object of this class are posts from forum with next properties
-ThemeType - type of post; like messege, cry, question e.t.c.
-Theme - the name of the post
+ExtID - ID that uses on sql.ru, that is unique for every topics
+ThemeType - type of topic; like messege, cry, question e.t.c.
+Theme - the name of the topic
 Author - account of topic starter
-Comments - number of comments left in post
-Views - views of post
-LastComDate - date of latest comment in post</Description>
+Comments - number of comments left in topic
+Views - views of topic
+LastComDate - date of latest comment in topic</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63763,57010.038856</TimeCreated>
+
+<Property name="ExtID">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="ExtIDIndex">
+<Properties>ExtID</Properties>
+<Unique>1</Unique>
+</Index>
 
 <Property name="ThemeType">
 <Type>%String</Type>
@@ -55,13 +66,6 @@ LastComDate - date of latest comment in post</Description>
 <Properties>LastComDate</Properties>
 </Index>
 
-<Index name="Unique">
-<Description>
-Unique index on few properties</Description>
-<Properties>Theme,Author,Comments,Views,LastComDate</Properties>
-<Unique>1</Unique>
-</Index>
-
 <Method name="TopicAdd">
 <Description>
 Add new topic with properties in list prop</Description>
@@ -72,48 +76,15 @@ Add new topic with properties in list prop</Description>
 	s newThemeObj=..%New()
 	s newThemeObj.ThemeType = $list(prop,1)
 	s newThemeObj.Theme = $list(prop,2)
-	s newThemeObj.Author = $list(prop,3)
-	s newThemeObj.Comments = $list(prop,4)
-	s newThemeObj.Views = $list(prop,5)
-	s newThemeObj.LastComDate = $list(prop,6)
+	s newThemeObj.ExtID = $list(prop,3)
+	s newThemeObj.Author = $list(prop,4)
+	s newThemeObj.Comments = $list(prop,5)
+	s newThemeObj.Views = $list(prop,6)
+	s newThemeObj.LastComDate = $list(prop,7)
 	s status = newThemeObj.%Save()
 	w $system.Status.DisplayError(status)
 	Q status
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^Forum.PostD</DataLocation>
-<DefaultData>PostDefaultData</DefaultData>
-<IdLocation>^Forum.PostD</IdLocation>
-<IndexLocation>^Forum.PostI</IndexLocation>
-<StreamLocation>^Forum.PostS</StreamLocation>
-<Data name="PostDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>ThemeType</Value>
-</Value>
-<Value name="3">
-<Value>Theme</Value>
-</Value>
-<Value name="4">
-<Value>Author</Value>
-</Value>
-<Value name="5">
-<Value>Comments</Value>
-</Value>
-<Value name="6">
-<Value>Views</Value>
-</Value>
-<Value name="7">
-<Value>LastComDate</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>

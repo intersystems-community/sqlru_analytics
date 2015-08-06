@@ -170,7 +170,14 @@ Parse topic - carev properties, add topic.</Description>
 			}
 
 		s:propNum=1 $list(prop,propNum) = $$$TTPiece(dirtyProp)
-		s:propNum'=1 $list(prop,propNum) = $$$Piece(dirtyProp)
+		if propNum=2 {
+			
+			s $list(prop,propNum) = $$$Piece(dirtyProp) ;Theme
+			s propNum = propNum + 1
+			s $list(prop,propNum) = ($piece($piece(dirtyProp,"http://www.sql.ru/forum/",2),"/",1)) ;ExtID
+			
+			}
+		s:propNum>3 $list(prop,propNum) = $$$Piece(dirtyProp)
 		
 		s start = stop
 		s propNum = propNum + 1
