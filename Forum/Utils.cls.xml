@@ -170,6 +170,7 @@ Parse topic - carev properties, add topic.</Description>
 			}
 
 		s:propNum=1 $list(prop,propNum) = $$$TTPiece(dirtyProp)
+<<<<<<< HEAD
 		if propNum=2 {
 			
 			s $list(prop,propNum) = $$$Piece(dirtyProp) ;Theme
@@ -178,6 +179,9 @@ Parse topic - carev properties, add topic.</Description>
 			
 			}
 		s:propNum>3 $list(prop,propNum) = $$$Piece(dirtyProp)
+=======
+		s:propNum'=1 $list(prop,propNum) = $$$Piece(dirtyProp)
+>>>>>>> 924a78f0a743e6208eba696b6482e7846b730f97
 		
 		s start = stop
 		s propNum = propNum + 1
