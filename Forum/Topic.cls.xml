@@ -4,7 +4,7 @@
 <Description>
 Class of objects
 Object of this class are topics from forum with next properties
-TopicExtID - ID of topic that uses on sql.ru, that is unique for every topics
+TopicExtId - Id of topic that uses on sql.ru, that is unique for every topics
 TopicType - type of topic; like messege, cry, question e.t.c.
 TopicName - the name of the topic
 Author - account of topic starter
@@ -24,12 +24,26 @@ Carve topics and properties</Description>
 </Parameter>
 
 <Parameter name="FORUM">
-<Default>/forum</Default>
+<Default>/forum/</Default>
 </Parameter>
 
 <UDLText name="T">
 <Content><![CDATA[
-// Relationship ForumName As Forum.Forum [ Cardinality = one, Inverse = ForumName, Required ];
+// Relationship Forum As Forum.Forum [ Cardinality = one, Inverse = Topics, Required ];
+
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Index ForumIndex On Forum;
+
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Relationship Posts As Forum.Post [ Cardinality = many, Inverse = Topic ];
 
 ]]></Content>
 </UDLText>
@@ -48,13 +62,13 @@ Carve topics and properties</Description>
 <Properties>TopicName</Properties>
 </Index>
 
-<Property name="TopicExtID">
+<Property name="TopicExtId">
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="TopicExtIDIndex">
-<Properties>TopicExtID</Properties>
+<Index name="TopicExtIdIndex">
+<Properties>TopicExtId</Properties>
 <Unique>1</Unique>
 </Index>
 
@@ -67,7 +81,7 @@ Carve topics and properties</Description>
 <Properties>Author</Properties>
 </Index>
 
-<Property name="Posts">
+<Property name="PostsNum">
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
@@ -86,32 +100,73 @@ Carve topics and properties</Description>
 <Properties>LastPostDate</Properties>
 </Index>
 
-<Method name="TopicAdd">
-<Description>
-Add new topic with properties in list prop</Description>
+<Method name="TopicUpdate">
+<Description><![CDATA[
+Load pages count
+Update pages from number i to <var>pages</var>]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>prop:%List</FormalSpec>
+<FormalSpec>cathegoryURL:%String="cache/"</FormalSpec>
+<Implementation><![CDATA[
+	
+	s pages = ..PagesCount(cathegoryURL)
+	for i=1:1:pages { 
+			
+		s data = ..PageGet( i, cathegoryURL)	
+		k table s table=""
+		s table = ..TopicTable( data, .sc )
+		
+		k parsedTopic, topicAmount, topicNum 
+		d ..TopicTableParse( table , i, .parsedTopic, .topicAmount)
+		
+		for topicNum = 1:1:topicAmount {
+		
+		s status=..TopicPropertyUpdate(parsedTopic(topicNum))
+		if $$$ISERR(status) $$$THROW("Update of topic -"_$list(parsedTopic(topicNum),2)_"- failed")
+		
+			}
+
+		w !, "Page #"_i_" successfully updated.",!
+	}
+	
+	Q
+]]></Implementation>
+</Method>
+
+<Method name="TopicPropertyUpdate">
+<Description>
+This method receiving parsed topic
+Opens object, if it exist, and update it
+If don't, then add new object</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>parsedTopic:%List</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	s newThemeObj=..%New()
-	//s newThemeObj.ForumName = 
-	s newThemeObj.TopicType = $list(prop,1)
-	s newThemeObj.TopicName = $list(prop,2)
-	s newThemeObj.TopicExtID = $list(prop,3)
-	s newThemeObj.Author = $list(prop,4)
-	s newThemeObj.Posts = $list(prop,5)
-	s newThemeObj.Views = $list(prop,6)
-	s newThemeObj.LastPostDate = $list(prop,7)
-	s status = newThemeObj.%Save()
-	w $system.Status.DisplayError(status)
+	
+	s extId = $list(parsedTopic,3)
+	s obj = ..TopicExtIdIndexOpen(extId,,.sc)
+	if $$$ISERR(sc) {
+		
+		s status=..%New(parsedTopic)
+		if $$$ISERR(status) $$$THROW("Adding topic -"_$list(parsedTopic,2)_"- failed")
+		
+		}
+	if $$$ISOK(sc) {
+		
+		s obj.PostsNum = $list(parsedTopic,5)
+		s obj.Views = $list(parsedTopic,6)
+		s obj.LastPostDate = $list(parsedTopic,7)
+		s status = obj.%Save()
+		w $system.Status.DisplayError(status)
+			
+		}
 	Q status
 ]]></Implementation>
 </Method>
 
 <Method name="TopicLoad">
-<Description>
+<Description><![CDATA[
 Load pages count
-Load page from number i to pages</Description>
+Load page from number i to <var>pages</var>]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>cathegoryURL:%String</FormalSpec>
 <Implementation><![CDATA[
@@ -120,9 +175,19 @@ Load page from number i to pages</Description>
 	for i=1:1:pages { 
 			
 		s data = ..PageGet( i, cathegoryURL)	
-		k table s table="" 
+		k table s table=""
 		s table = ..TopicTable( data, .sc )
-		d ..TopicTableParse( table , i)
+		
+		k parsedTopic, topicAmount, topicNum 
+		d ..TopicTableParse( table , i, .parsedTopic, .topicAmount) 
+		
+		for topicNum = 1:1:topicAmount {
+		
+		s status=..%New(parsedTopic(topicNum))
+		if $$$ISERR(status) $$$THROW("Adding topic -"_$list(parsedTopic(topicNum),2)_"- failed")
+		
+			}
+
 		w !, "Page #"_i_" successfully loaded.",!
 	}
 	
@@ -202,16 +267,18 @@ Parse server response - carve table with topics </Description>
 </Method>
 
 <Method name="TopicTableParse">
-<Description>
-Parse table of topics - carve topic</Description>
+<Description><![CDATA[
+Parse table of topics - carve topic
+Gives topics to <CLASSMETHOD>TopicParse</CLASSMETHOD> - receiving properties]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>table:%Stream,pageNum:%Integer</FormalSpec>
+<FormalSpec><![CDATA[table:%Stream,pageNum:%Integer,&parsedTopic,&topicNum]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	#define BEGIN "<tr>"
 	#define END "</tr>"
 		
 	s start = 1, stop = 1, lbegin = $l($$$BEGIN)
+	s topicNum = 1, parsedTopic(topicNum)=""
 	for {
 		
 		s topic = ##class(%Stream.TmpBinary).%New()
@@ -223,7 +290,10 @@ Parse table of topics - carve topic</Description>
 		s sc = table.MoveTo( start )
 		s topicString = table.Read( .length, .sc ) Q:sc=0
 		s sc = topic.Write( topicString ) Q:sc=0
-		d ..TopicParse( topic , pageNum)
+		
+		s:parsedTopic(topicNum)'="" topicNum = topicNum + 1
+		s parsedTopic(topicNum) = ..TopicParse( topic , pageNum)
+		
 		s start = stop
 		k topic, topicString
 		
@@ -233,9 +303,10 @@ Parse table of topics - carve topic</Description>
 
 <Method name="TopicParse">
 <Description>
-Parse topic - carve properties, add topic.</Description>
+Parse topic - carve properties</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>topic:%Stream,pageNum:%Integer</FormalSpec>
+<ReturnType>%List</ReturnType>
 <Implementation><![CDATA[
 	#define BEGIN "<td"
 	#define END "</td>"
@@ -265,7 +336,7 @@ Parse topic - carve properties, add topic.</Description>
 			
 			s $list(prop,propNum) = $$$PropertyExtract(dirtyProp) ;Theme
 			s propNum = propNum + 1
-			s $list(prop,propNum) = ($piece($piece(dirtyProp,"http://www.sql.ru/forum/",2),"/",1)) ;ExtID
+			s $list(prop,propNum) = ($piece($piece(dirtyProp,"http://www.sql.ru/forum/",2),"/",1)) ;TopicExtId
 			
 			}
 		s:propNum>3 $list(prop,propNum) = $$$PropertyExtract(dirtyProp)
@@ -275,54 +346,40 @@ Parse topic - carve properties, add topic.</Description>
 		
 	}
 	
-	if propNum>1 {
-		s status=..TopicAdd(prop)
-		if $$$ISERR(status) $$$THROW("Adding theme -"_$list(prop,2)_"- failed")
-		}
-	
-	Q
+	Q:propNum>1 prop
+	Q ""
 ]]></Implementation>
 </Method>
 
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^Forum.TopicD</DataLocation>
-<DefaultData>TopicDefaultData</DefaultData>
-<IdLocation>^Forum.TopicD</IdLocation>
-<IndexLocation>^Forum.TopicI</IndexLocation>
-<StreamLocation>^Forum.TopicS</StreamLocation>
-<Data name="TopicDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-<Value name="2">
-<Value>TopicType</Value>
-</Value>
-<Value name="3">
-<Value>TForumName</Value>
-</Value>
-<Value name="4">
-<Value>TopicName</Value>
-</Value>
-<Value name="5">
-<Value>TopicExtID</Value>
-</Value>
-<Value name="6">
-<Value>Author</Value>
-</Value>
-<Value name="7">
-<Value>Posts</Value>
-</Value>
-<Value name="8">
-<Value>Views</Value>
-</Value>
-<Value name="9">
-<Value>LastPostDate</Value>
-</Value>
-<Value name="10">
-<Value>ForumName</Value>
-</Value>
-</Data>
-</Storage>
+<Method name="%OnNew">
+<Description><![CDATA[
+This callback method is invoked by the <METHOD>%New</METHOD> method to 
+provide notification that a new instance of an object is being created.
+
+<P>If this method returns an error then the object will not be created.
+<p>It is passed the arguments provided in the %New call.
+When customizing this method, override the arguments with whatever variables and types you expect to receive from %New().
+For example, if you're going to call %New, passing 2 arguments, %OnNew's signature could be:
+<p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
+If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
+class then this oref will be the one returned to the caller of %New method.]]></Description>
+<FormalSpec>parsedTopic:%List</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	
+	s ..TopicType = $list(parsedTopic,1)
+	s ..TopicName = $list(parsedTopic,2)
+	s ..TopicExtId = $list(parsedTopic,3)
+	s ..Author = $list(parsedTopic,4)
+	s ..PostsNum = $list(parsedTopic,5)
+	s ..Views = $list(parsedTopic,6)
+	s ..LastPostDate = $list(parsedTopic,7)
+	s status = ..%Save()
+	w $system.Status.DisplayError(status)
+	Q status
+]]></Implementation>
+</Method>
 </Class>
 </Export>

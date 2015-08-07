@@ -7,9 +7,23 @@ Object of this class are posts from topic with next properties
 Author - author of post
 PostDate - date when posted post
 Message - text of post
-PostExtID - ID of post that uses on sql.ru, that is unique for every post</Description>
+PostExtId - Id of post that uses on sql.ru, that is unique for every post</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63763,57010.038856</TimeCreated>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Relationship Topic As Forum.Topic [ Cardinality = one, Inverse = Posts, Required ];
+
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+// Index TopicIndex On Topic;
+
+]]></Content>
+</UDLText>
 
 <Property name="Autor">
 <Type>%String</Type>
@@ -26,13 +40,13 @@ PostExtID - ID of post that uses on sql.ru, that is unique for every post</Descr
 <Required>1</Required>
 </Property>
 
-<Property name="PostExtID">
+<Property name="PostExtId">
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="PostExtIDIndex">
-<Properties>PostExtID</Properties>
+<Index name="PostExtIdIndex">
+<Properties>PostExtId</Properties>
 <Unique>1</Unique>
 </Index>
 
@@ -57,10 +71,13 @@ PostExtID - ID of post that uses on sql.ru, that is unique for every post</Descr
 <Value>Message</Value>
 </Value>
 <Value name="5">
-<Value>ExtID</Value>
+<Value>ExtId</Value>
 </Value>
 <Value name="6">
-<Value>PostExtID</Value>
+<Value>PostExtId</Value>
+</Value>
+<Value name="7">
+<Value>Topic</Value>
 </Value>
 </Data>
 </Storage>
