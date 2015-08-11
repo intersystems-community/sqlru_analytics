@@ -27,19 +27,17 @@ Carve topics and properties</Description>
 <Default>/forum/</Default>
 </Parameter>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Relationship Forum As Forum.Forum [ Cardinality = one, Inverse = Topics, Required ];
+<Property name="Forum">
+<Type>Forum.Forum</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Topics</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+</Property>
 
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Index ForumIndex On Forum;
-
-]]></Content>
-</UDLText>
+<Index name="ForumIndex">
+<Properties>Forum</Properties>
+</Index>
 
 <UDLText name="T">
 <Content><![CDATA[
@@ -168,7 +166,7 @@ If don't, then add new object</Description>
 Load pages count
 Load page from number i to <var>pages</var>]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>cathegoryURL:%String</FormalSpec>
+<FormalSpec>cathegoryURL:%String,forumId:%Numeric</FormalSpec>
 <Implementation><![CDATA[
 	
 	s pages = ..PagesCount(cathegoryURL)
@@ -183,7 +181,7 @@ Load page from number i to <var>pages</var>]]></Description>
 		
 		for topicNum = 1:1:topicAmount {
 		
-		s status=..%New(parsedTopic(topicNum))
+		s status=..%New(parsedTopic(topicNum), forumId)
 		if $$$ISERR(status) $$$THROW("Adding topic -"_$list(parsedTopic(topicNum),2)_"- failed")
 		
 			}
@@ -363,11 +361,14 @@ For example, if you're going to call %New, passing 2 arguments, %OnNew's signatu
 <p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
 If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
 class then this oref will be the one returned to the caller of %New method.]]></Description>
-<FormalSpec>parsedTopic:%List</FormalSpec>
+<FormalSpec>parsedTopic:%List,forumId:%Numeric</FormalSpec>
 <Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <ServerOnly>1</ServerOnly>
 <Implementation><![CDATA[
+	
+	s forum = ##class(Forum.Forum).%OpenId(forumId)
+	s ..Forum = forum
 	
 	s ..TopicType = $list(parsedTopic,1)
 	s ..TopicName = $list(parsedTopic,2)
@@ -378,8 +379,49 @@ class then this oref will be the one returned to the caller of %New method.]]></
 	s ..LastPostDate = $list(parsedTopic,7)
 	s status = ..%Save()
 	w $system.Status.DisplayError(status)
+	k forum
 	Q status
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.TopicD</DataLocation>
+<DefaultData>TopicDefaultData</DefaultData>
+<IdLocation>^Forum.TopicD</IdLocation>
+<IndexLocation>^Forum.TopicI</IndexLocation>
+<StreamLocation>^Forum.TopicS</StreamLocation>
+<Data name="TopicDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Forum</Value>
+</Value>
+<Value name="3">
+<Value>TopicType</Value>
+</Value>
+<Value name="4">
+<Value>TopicName</Value>
+</Value>
+<Value name="5">
+<Value>TopicExtId</Value>
+</Value>
+<Value name="6">
+<Value>Author</Value>
+</Value>
+<Value name="7">
+<Value>PostsNum</Value>
+</Value>
+<Value name="8">
+<Value>Views</Value>
+</Value>
+<Value name="9">
+<Value>LastPostDate</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

@@ -18,12 +18,12 @@ Topics - Amount of topics of cathegory</Description>
 <Default>/forum/</Default>
 </Parameter>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Relationship Topics As Forum.Topic [ Cardinality = many, Inverse = Forum ];
-
-]]></Content>
-</UDLText>
+<Property name="Topics">
+<Type>Forum.Topic</Type>
+<Cardinality>many</Cardinality>
+<Inverse>Forum</Inverse>
+<Relationship>1</Relationship>
+</Property>
 
 <Property name="ForumName">
 <Type>%String</Type>
@@ -64,10 +64,35 @@ Repeat </Description>
 	s tmpData.Address = cathegoryURL
 	s tmpData.TopicsNum = 3277
 	d tmpData.%Save()
+	s forumId = tmpData.%Id()
+	k tmpData
 	
-	d ##class(Forum.Topic).TopicLoad(cathegoryURL)
+	d ##class(Forum.Topic).TopicLoad(cathegoryURL, forumId)
 	Q
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.ForumD</DataLocation>
+<DefaultData>ForumDefaultData</DefaultData>
+<IdLocation>^Forum.ForumD</IdLocation>
+<IndexLocation>^Forum.ForumI</IndexLocation>
+<StreamLocation>^Forum.ForumS</StreamLocation>
+<Data name="ForumDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>ForumName</Value>
+</Value>
+<Value name="3">
+<Value>Address</Value>
+</Value>
+<Value name="4">
+<Value>TopicsNum</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>
