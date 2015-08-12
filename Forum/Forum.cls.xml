@@ -5,7 +5,7 @@
 Class of objects
 Object of this class are cathegories from forum with next properties
 ForumName - name of cathegory
-Address - piece of URL; like /cache/, /oracle/, /mysql/
+Address - piece of URL; like cache/, oracle/, mysql/
 Topics - Amount of topics of cathegory</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63770,69486.949772</TimeCreated>

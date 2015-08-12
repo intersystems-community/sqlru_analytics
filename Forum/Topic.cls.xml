@@ -211,8 +211,8 @@ Extracting pages count from
 		s str=data.ReadLine(,.st) 
 		s hasPages = $FIND( str, $$$URL )
 		if hasPages {
-			s pageInfo = $piece(str,"..",2)
-			s pages = +$piece(pageInfo,">",2)
+			s pageInfo = $l(str,$$$URL)
+			s pages = +$piece(str,$$$URL,pageInfo)
 			Quit  ;quit for
 		}
 	}
@@ -392,8 +392,6 @@ class then this oref will be the one returned to the caller of %New method.]]></
 <IndexLocation>^Forum.TopicI</IndexLocation>
 <StreamLocation>^Forum.TopicS</StreamLocation>
 <Data name="TopicDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
