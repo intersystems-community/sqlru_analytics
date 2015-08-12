@@ -2,72 +2,59 @@
 <Export generator="Cache" version="25">
 <Class name="Forum.Forum">
 <Description>
-Class of objects
-Object of this class are cathegories from forum with next properties
-ForumName - name of cathegory
-Address - piece of URL; like /cache/, /oracle/, /mysql/
-Topics - Amount of topics of cathegory</Description>
+Forums at www.sql.ru/forum/. 
+For example: www.sql.ru/forum/cache</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63770,69486.949772</TimeCreated>
 
-<Parameter name="SERVER">
-<Default>www.sql.ru</Default>
-</Parameter>
-
-<Parameter name="FORUM">
-<Default>/forum/</Default>
-</Parameter>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Relationship Topics As Forum.Topic [ Cardinality = many, Inverse = Forum ];
-
-]]></Content>
-</UDLText>
-
-<Property name="ForumName">
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
-
-<Index name="ForumNameIndex">
-<Properties>ForumName</Properties>
-<Unique>1</Unique>
-</Index>
-
-<Property name="Address">
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
-
-<Index name="AddressIndex">
-<Properties>Address</Properties>
-<Unique>1</Unique>
-</Index>
-
-<Property name="TopicsNum">
-<Type>%Integer</Type>
-<Required>1</Required>
-</Property>
-
-<Method name="Load">
+<Property name="Name">
 <Description>
-Load cathegory, then load topics of cathegory 
-Repeat </Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>cathegoryURL:%String="cache/"</FormalSpec>
-<Implementation><![CDATA[
+Forum name. For example: cache, oracle, mysql, etc.  </Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
 
-	;#For time we will have in properties of this class only this data
-	s tmpData = ..%New()
-	s tmpData.ForumName = "Cache"
-	s tmpData.Address = cathegoryURL
-	s tmpData.TopicsNum = 3277
-	d tmpData.%Save()
-	
-	d ##class(Forum.Topic).TopicLoad(cathegoryURL)
-	Q
+<Index name="Name">
+<IdKey>1</IdKey>
+<PrimaryKey>1</PrimaryKey>
+<Properties>Name</Properties>
+</Index>
+
+<Property name="Topics">
+<Description>
+forum topics collection</Description>
+<Type>Forum.Topic</Type>
+<Cardinality>many</Cardinality>
+<Inverse>Forum</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Method name="%OnNew">
+<FormalSpec>name</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	s ..Name = $g(name)
+	Quit $$$OK
 ]]></Implementation>
 </Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.ForumD</DataLocation>
+<DefaultData>ForumDefaultData</DefaultData>
+<IdLocation>^Forum.ForumD</IdLocation>
+<IndexLocation>^Forum.ForumI</IndexLocation>
+<StreamLocation>^Forum.ForumS</StreamLocation>
+<Data name="ForumDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Name</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

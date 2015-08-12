@@ -1,0 +1,1300 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
+<head>
+  <title>Cach&#233; / Форум / Sql.ru</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+  <link title="Sql.ru Forum search" type="application/opensearchdescription+xml"  rel="search" href="http://www.sql.ru/forum/provider.xml"/>
+  <link rel="stylesheet" type="text/css" href="/css/actualforum2.min.css?v=1" media="screen" />
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="/css/ie.css" media="screen" />
+    <![endif]-->
+  <meta name="Description" content="Список сообщений из форума Cach&#233;" /><link rel="Alternate" type="application/rss+xml" title="SQL.ru: Cach&#233;" href="http://www.sql.ru/forum/actualrss.aspx?id=56" /><link rel="canonical" href="http://www.sql.ru/forum/cache"/>
+  <script type="text/javascript">jQuery = false;</script>
+  <!--afhead-->
+<!--  <script type="text/javascript" src="/js/utils.js"></script> -->
+
+  <meta property="og:image" content="http://www.sql.ru/images/logofb.jpg"/>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-265508-1', 'sql.ru');
+  ga('send', 'pageview');
+</script>
+</head>
+
+<body>
+  <div id="page-container">
+    <div id="header">
+      <div class="header-wrap">
+        <div id="title">
+          <a href="/" title="На главную страницу">SQL.ru</a>
+        </div>
+        <!--begin case_isguest-->
+<!--        <div id="login">
+          <form action="{url.login}" method="post">
+            <span class="close" onclick="hideLoginWindow(); return false;">x</span>
+
+            <div class="username">
+              <label for="login-input">Логин:</label> <input type="text" name="login" id=
+              "login-input" />
+            </div>
+
+            <div class="password">
+              <label for="pass-input">Пароль:</label> <input type="password" name="password" id=
+              "pass-input" />
+            </div>
+			
+			<div style="text-align:left;">
+				<label style="width:auto" for="cbremember">Запомнить меня</label>
+				<input type="checkbox" name="cbremember" id="cbremember" checked="checked" />
+			</div>
+
+            <div class="submit">
+              <input type="submit" value="Войти" />
+            </div>
+
+            <div class="links">
+              <a href="{url.register}">Регистрация</a> <a href="{url.remindpass}">Забыли пароль?</a>
+            </div>
+          </form>
+        </div>
+		<span id="login-link" onclick="showLoginWindow(); return false">Вход на сайт</span> -->
+		<!--end case_isguest-->
+		<!--begin case_ismember-->
+<!--		<span id="ismember">
+			<div onclick="document.location='{url.logout}'" id="logout-link"></div>
+			<a href="{url.profile}">{member.nick}</a>
+		</span> -->
+		<!--end case_ismember-->
+<!--        <form action="afsearch.aspx" method="get" id="top-search" name="top-search">
+          <div>
+            <input type="text" name="s" id="search-query" value="поиск" class="inactive"
+            onfocus="tffocus(this)" onblur="tfblur(this)" /> <input type="submit" value="найти" />
+          </div> 
+        </form> 
+-->
+     <ul id="top-menu">
+          <li><a href="/">Главная</a></li>
+
+          <li><a href="/articles">Статьи</a></li>
+
+          <li class="selected"><a href="/forum">Форум</a></li>
+
+          <li><a href="/blogs">Блоги</a></li>
+
+          <li><a href="/books">Книги</a></li>
+
+          <li><a href="/subscribe">Рассылка</a></li>
+
+          <li><a href="/forum/job">Работа</a></li>
+
+          <li><a href="/search">Поиск</a></li>
+
+          <li><a href="/faq">FAQ</a></li>
+        </ul><div id="top-advert"></div>
+      </div>
+    </div>
+
+    <div id="content-wrapper-forum">  <form id="af_form" action="actualtopics.aspx" method="get" name="af_form">
+    <input type="hidden" name="bid" value="56" /> <input type="hidden" name="p" value=
+    "1" /> <input type="hidden"
+    name="s" value="1" /> <input type="hidden" name="search" value="" />
+  </form><script language="javascript" type="text/javascript">
+<!--
+      function changeSortOrder()  {
+
+            var oform = document.getElementById("af_form");
+            oform.s.value = document.getElementById("sortsel").value;
+            oform.submit();
+      }
+// -->
+</script>
+
+  <table class="forummenu">
+    <tr>
+      <td>Добро пожаловать в форум, <b>Guest</b>  &gt;&gt;   
+       <!--begin case_isguest-->
+       <a href="http://www.sql.ru/forum/login.aspx?action=login">Войти</a> | <a href="http://www.sql.ru/forum/register.aspx">Регистрация</a> | 
+      <!--end case_isguest--><a href="http://www.sql.ru/forum/actualsearch.aspx?bid=56">Поиск</a> | <a href=
+      "http://www.sql.ru/forum/rules.aspx">Правила</a> | <a class="rss" href="http://www.sql.ru/forum/actualrss.aspx?id=56">RSS</a> | </td>
+
+      <td style="text-align:right;" align="right"><a href="http://www.sql.ru/forum/actualpost.aspx?bid=56"><img class="button_new" src="/images/post.gif" alt=
+      "Новый топик" /></a></td>
+    </tr>
+
+    <tr style="font:bold 13px; background-color:#fff;">
+      <td><a class="forumLink" href="http://www.sql.ru/forum">Все форумы</a> / <a class=
+      "forumLink" href="http://www.sql.ru/forum/cache">Cach&#233;</a>      <span style=
+      "font-size:90%"></span></td>
+
+      <td align="right">        <form action="/forum/afsearch.aspx" method="get">
+          <label for="search_in">Поиск:</label>&nbsp;<input id="search_in" name="s" size="30" type=
+          "text" value="" />&nbsp;<input type="submit" name="submit" value="Найти" />
+          <input type="hidden" name="bid" value="56" />
+        </form>
+</td>
+    </tr>
+  </table><!---->
+
+  <table class="sort_options">
+    <tr>
+      <td></td>
+
+      <td align="right">
+      </td>
+    </tr>
+  </table>
+  
+     <!--begin topicstable-->
+
+    <table class="forumTable">
+      <tr>
+        <th class="icon_cell"></th>
+
+        <th>Тема</th>
+
+        <th>Автор</th>
+
+        <th style="width:5%">Ответов</th>
+
+        <th style="width:5%">Просм.</th>
+
+        <th style="width:15%">Дата</th>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic">Важно:   <a href="http://www.sql.ru/forum/1003258/vzaimodeystvie-s-intersystems">Взаимодействие с InterSystems</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1003258">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">11</td>
+
+        <td style="text-align:center">5673</td>
+
+        <td style="text-align:center" class="altCol">30 июн 15, 13:46</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/984626/kak-peredat-klientu-zadeploennyy-klass">Как передать клиенту задеплоенный класс</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=984626">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=91387">
+         Alexey Maslov </a> </td>
+
+        <td style="text-align:center">13</td>
+
+        <td style="text-align:center">820</td>
+
+        <td style="text-align:center" class="altCol">сегодня, 13:01</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1169860/kak-po-gorizontali-raspolozhit-2-grafika">Как по горизонтали расположить 2 графика</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1169860">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=218678">
+         О-О-О </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">238</td>
+
+        <td style="text-align:center" class="altCol">вчера, 14:03</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1169571/sayt-intersystems-obnovilsya">сайт intersystems обновился</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1169571">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">12</td>
+
+        <td style="text-align:center">392</td>
+
+        <td style="text-align:center" class="altCol">7 авг 15, 15:11</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/978377/stati-na-habre">Статьи на Хабре</a>
+        <!--begin case_ismultipage-->
+         <span style="margin-left: 10px">(<a class="pages" href="http://www.sql.ru/forum/978377-1/stati-na-habre">1</a>,<a class="pages" href="http://www.sql.ru/forum/978377-2/stati-na-habre">2</a>,<a class="pages" href="http://www.sql.ru/forum/978377-3/stati-na-habre">3</a>,<a class="pages" href="http://www.sql.ru/forum/978377-4/stati-na-habre">4</a>,<a class="pages" href="http://www.sql.ru/forum/978377-a/stati-na-habre">все</a>)</span> <!--end case_ismultipage-->
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=978377">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">83</td>
+
+        <td style="text-align:center">13582</td>
+
+        <td style="text-align:center" class="altCol">7 авг 15, 14:44</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1169622/zamena-nadpisi">Замена надписи</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1169622">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=224583">
+         songerman </a> </td>
+
+        <td style="text-align:center">2</td>
+
+        <td style="text-align:center">250</td>
+
+        <td style="text-align:center" class="altCol">7 авг 15, 01:53</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1168550/tcp-server-kakie-ogranicheniya">TCP-server - какие ограничения?</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1168550">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=139671">
+         DirksDR </a> </td>
+
+        <td style="text-align:center">10</td>
+
+        <td style="text-align:center">563</td>
+
+        <td style="text-align:center" class="altCol">4 авг 15, 16:19</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1168629/katostroficheskoe-otlichie-po-skorosti-generacii-grafikov">Катострофическое отличие по скорости генерации графиков</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1168629">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=218678">
+         О-О-О </a> </td>
+
+        <td style="text-align:center">19</td>
+
+        <td style="text-align:center">723</td>
+
+        <td style="text-align:center" class="altCol">3 авг 15, 19:38</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1168595/a-vy-uzhe-pomenyali-increment-na-sequence">А вы уже поменяли &#36;Increment на &#36;Sequence?</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1168595">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">8</td>
+
+        <td style="text-align:center">596</td>
+
+        <td style="text-align:center" class="altCol">3 авг 15, 12:29</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1165787/deepsee-web-s-interaktivnymi-taylami">DeepSee Web с интерактивными тайлами</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1165787">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">6</td>
+
+        <td style="text-align:center">987</td>
+
+        <td style="text-align:center" class="altCol">3 авг 15, 12:01</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1168472/gt-m-pomogite-instalirovat-alt-nc">[gt.m] помогите инсталировать alt-nc</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1168472">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=105794">
+         Виталийv4567 </a> </td>
+
+        <td style="text-align:center">13</td>
+
+        <td style="text-align:center">491</td>
+
+        <td style="text-align:center" class="altCol">31 июл 15, 15:22</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1162120/deepsee-dlya-sistemnogo-monitoringa-cache">DeepSee для системного мониторинга Cache</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1162120">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">1498</td>
+
+        <td style="text-align:center" class="altCol">30 июл 15, 12:45</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/question.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1167959/gt-m-kakoy-redaktor-ispolzovat-dlya-redaktirovaniya-programm">[gt.m] Какой редактор использовать для редактирования программ?</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1167959">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=81272">
+         krvsa </a> </td>
+
+        <td style="text-align:center">5</td>
+
+        <td style="text-align:center">576</td>
+
+        <td style="text-align:center" class="altCol">29 июл 15, 08:16</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1167798/gt-m-rabota-s-faylovoy-sistemoy">[gt.m] Работа с файловой системой</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1167798">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=81272">
+         krvsa </a> </td>
+
+        <td style="text-align:center">22</td>
+
+        <td style="text-align:center">657</td>
+
+        <td style="text-align:center" class="altCol">28 июл 15, 08:10</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1164871/novaya-kniga-po-cache-na-ukrainskom-pervaya-chast-iz-tryoh">Новая книга по Cache на украинском (первая часть из трёх)</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1164871">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">15</td>
+
+        <td style="text-align:center">1372</td>
+
+        <td style="text-align:center" class="altCol">24 июл 15, 15:55</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1167110/statya-pro-bion-na-giktayms">Статья про БИОН на гиктаймс</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1167110">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">2</td>
+
+        <td style="text-align:center">716</td>
+
+        <td style="text-align:center" class="altCol">23 июл 15, 11:45</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1166543/zen-reports-kak-nastroit-format-chisel-po-osi-y">[ZEN Reports] Как настроить формат чисел по оси Y</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1166543">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=218678">
+         О-О-О </a> </td>
+
+        <td style="text-align:center">9</td>
+
+        <td style="text-align:center">792</td>
+
+        <td style="text-align:center" class="altCol">18 июл 15, 20:01</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1166534/granty-i-mentory">Гранты и менторы</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1166534">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">0</td>
+
+        <td style="text-align:center">739</td>
+
+        <td style="text-align:center" class="altCol">18 июл 15, 12:47</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1166330/globalsdb-konsultaciya-po-udaleniu-dannyh-iz-globalsdb">[GlobalsDb] Консультация по удалению данных из GlobalsDb</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1166330">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=214096">
+         TryCache </a> </td>
+
+        <td style="text-align:center">24</td>
+
+        <td style="text-align:center">935</td>
+
+        <td style="text-align:center" class="altCol">17 июл 15, 18:23</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1155229/kak-dobavit-v-zagolovok-veb-servisa">Как добавить в заголовок веб-сервиса</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1155229">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=94773">
+         imdb </a> </td>
+
+        <td style="text-align:center">10</td>
+
+        <td style="text-align:center">1182</td>
+
+        <td style="text-align:center" class="altCol">17 июл 15, 17:45</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1160099/qr-kody-v-zenreport-e">QR-коды в ZENReport'е</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1160099">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=223224">
+         Sacry </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">1472</td>
+
+        <td style="text-align:center" class="altCol">17 июл 15, 17:42</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1143810/cach-233-node-js-opensuse">Cach&amp;#233; &amp; Node.js &amp; OpenSuse</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1143810">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=220300">
+         jxcoder </a> </td>
+
+        <td style="text-align:center">8</td>
+
+        <td style="text-align:center">986</td>
+
+        <td style="text-align:center" class="altCol">17 июл 15, 17:38</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1166098/globalsdb-net-application-with-data-as-cache">[GlobalsDb] NET application with data as Cache'</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1166098">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=131389">
+         vichka </a> </td>
+
+        <td style="text-align:center">2</td>
+
+        <td style="text-align:center">790</td>
+
+        <td style="text-align:center" class="altCol">15 июл 15, 18:25</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1165454/gt-m-obrabotka-preryvaniy-v-mumps">[gt.m] Обработка прерываний в mumps</a>
+        <!--begin case_ismultipage-->
+         <span style="margin-left: 10px">(<a class="pages" href="http://www.sql.ru/forum/1165454-1/gt-m-obrabotka-preryvaniy-v-mumps">1</a>,<a class="pages" href="http://www.sql.ru/forum/1165454-2/gt-m-obrabotka-preryvaniy-v-mumps">2</a>,<a class="pages" href="http://www.sql.ru/forum/1165454-a/gt-m-obrabotka-preryvaniy-v-mumps">все</a>)</span> <!--end case_ismultipage-->
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1165454">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=105794">
+         Виталийv4567 </a> </td>
+
+        <td style="text-align:center">37</td>
+
+        <td style="text-align:center">1519</td>
+
+        <td style="text-align:center" class="altCol">15 июл 15, 11:22</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1165354/pochemu-ishodnyy-kod-drayverov-zakryt">Почему исходный код драйверов закрыт?</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1165354">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=220300">
+         jxcoder </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">983</td>
+
+        <td style="text-align:center" class="altCol">10 июл 15, 18:27</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1164754/oshibka-cache-conbroken-v-cacheeval-pri-ispolzovanii-callin-iz-programmy-na-qt">Ошибка CACHE_CONBROKEN в CacheEval при использовании callin из программы на QT.</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1164754">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=21681">
+         Hisbreht Victor </a> </td>
+
+        <td style="text-align:center">6</td>
+
+        <td style="text-align:center">1106</td>
+
+        <td style="text-align:center" class="altCol">8 июл 15, 14:38</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1041062/zashhita-metodov-post-delete">Защита методов POST, DELETE</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1041062">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=202175">
+         EVM </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">1693</td>
+
+        <td style="text-align:center" class="altCol">8 июл 15, 09:52</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163275/zagruzka-fayla-na-server-v-csp">Загрузка файла на сервер в CSP</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163275">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=185406">
+         Sabyrov.Talgat </a> </td>
+
+        <td style="text-align:center">10</td>
+
+        <td style="text-align:center">1487</td>
+
+        <td style="text-align:center" class="altCol">8 июл 15, 09:38</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1090794/kodirovka-v-rest">Кодировка в REST</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1090794">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=172829">
+         phomka </a> </td>
+
+        <td style="text-align:center">13</td>
+
+        <td style="text-align:center">1663</td>
+
+        <td style="text-align:center" class="altCol">8 июл 15, 09:09</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1164353/indeksy-s-population-type-conditional">Индексы с Population type = conditional</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1164353">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=46755">
+         Mike Ivanov </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">1152</td>
+
+        <td style="text-align:center" class="altCol">7 июл 15, 11:09</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1164267/cache-for-linux-odbc-connection-to-ms-sql">Cache for Linux. ODBC connection to MS SQL</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1164267">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=146037">
+         П.С.М. </a> </td>
+
+        <td style="text-align:center">4</td>
+
+        <td style="text-align:center">1178</td>
+
+        <td style="text-align:center" class="altCol">6 июл 15, 18:55</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1164209/tema-o-priznakah-cache-v-xml-vygruzkah-neozhidanno-pereehala">Тема о признаках Cache в XML- выгрузках неожиданно &quot;переехала&quot;</a>
+        
+         <!--begin case_istopicclosed-->
+         <span class="closedTopic"> [закрыт]</span> <!--end case_istopicclosed-->
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1164209">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=122849">
+         Barklay </a> </td>
+
+        <td style="text-align:center">5</td>
+
+        <td style="text-align:center">1147</td>
+
+        <td style="text-align:center" class="altCol">2 июл 15, 17:01</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1041657/vakansii-po-tehnologiyam-intersystems">Вакансии по технологиям InterSystems</a>
+        <!--begin case_ismultipage-->
+         <span style="margin-left: 10px">(<a class="pages" href="http://www.sql.ru/forum/1041657-1/vakansii-po-tehnologiyam-intersystems">1</a>,<a class="pages" href="http://www.sql.ru/forum/1041657-2/vakansii-po-tehnologiyam-intersystems">2</a>,<a class="pages" href="http://www.sql.ru/forum/1041657-3/vakansii-po-tehnologiyam-intersystems">3</a>,<a class="pages" href="http://www.sql.ru/forum/1041657-4/vakansii-po-tehnologiyam-intersystems">4</a>,<a class="pages" href="http://www.sql.ru/forum/1041657-5/vakansii-po-tehnologiyam-intersystems">5</a>,<a class="pages" href="http://www.sql.ru/forum/1041657-a/vakansii-po-tehnologiyam-intersystems">все</a>)</span> <!--end case_ismultipage-->
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1041657">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">106</td>
+
+        <td style="text-align:center">9420</td>
+
+        <td style="text-align:center" class="altCol">1 июл 15, 16:21</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1162654/ensemble-oshibka-generacii-soap-klienta">[Ensemble] Ошибка генерации SOAP клиента.</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1162654">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=197254">
+         AlexShiryaev </a> </td>
+
+        <td style="text-align:center">4</td>
+
+        <td style="text-align:center">1471</td>
+
+        <td style="text-align:center" class="altCol">1 июл 15, 12:21</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163190/gt-m-chto-takoe-templates-names-regions-segments-map">[gt.m] что такое TEMPLATES NAMES REGIONS SEGMENTS MAP</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163190">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=105794">
+         Виталийv4567 </a> </td>
+
+        <td style="text-align:center">14</td>
+
+        <td style="text-align:center">1555</td>
+
+        <td style="text-align:center" class="altCol">30 июн 15, 19:02</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163687/metodichka-po-laboratornym-zanyatiyam-po-cache">Методичка по лабораторным занятиям по Cache</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163687">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">1</td>
+
+        <td style="text-align:center">1244</td>
+
+        <td style="text-align:center" class="altCol">29 июн 15, 22:49</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163331/configuring-zen-reports-for-excel-spreadsheet-output">Configuring Zen Reports for Excel Spreadsheet Output</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163331">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=35588">
+         vassil </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">1294</td>
+
+        <td style="text-align:center" class="altCol">28 июн 15, 02:14</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1161102/utility-vosstanovleniya-bd">Утилиты восстановления БД</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1161102">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=48911">
+         AlexKB </a> </td>
+
+        <td style="text-align:center">14</td>
+
+        <td style="text-align:center">1704</td>
+
+        <td style="text-align:center" class="altCol">26 июн 15, 16:53</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163001/gt-m-podskazhite-chto-takoe-rutina">[gt.m] подскажите, что такое рутина</a>
+        <!--begin case_ismultipage-->
+         <span style="margin-left: 10px">(<a class="pages" href="http://www.sql.ru/forum/1163001-1/gt-m-podskazhite-chto-takoe-rutina">1</a>,<a class="pages" href="http://www.sql.ru/forum/1163001-2/gt-m-podskazhite-chto-takoe-rutina">2</a>,<a class="pages" href="http://www.sql.ru/forum/1163001-a/gt-m-podskazhite-chto-takoe-rutina">все</a>)</span> <!--end case_ismultipage-->
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163001">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=105794">
+         Виталийv4567 </a> </td>
+
+        <td style="text-align:center">25</td>
+
+        <td style="text-align:center">1865</td>
+
+        <td style="text-align:center" class="altCol">26 июн 15, 16:30</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163105/eksport-programm-v-formate-rsa-v-cache-novyh">Экспорт программ в формате rsa в Cache новых</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163105">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=48911">
+         AlexKB </a> </td>
+
+        <td style="text-align:center">2</td>
+
+        <td style="text-align:center">1248</td>
+
+        <td style="text-align:center" class="altCol">25 июн 15, 15:23</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1162338/visualstudio-plagin-dlya-cache">VisualStudio плагин для Cache</a>
+        <!--begin case_ismultipage-->
+         <span style="margin-left: 10px">(<a class="pages" href="http://www.sql.ru/forum/1162338-1/visualstudio-plagin-dlya-cache">1</a>,<a class="pages" href="http://www.sql.ru/forum/1162338-2/visualstudio-plagin-dlya-cache">2</a>,<a class="pages" href="http://www.sql.ru/forum/1162338-a/visualstudio-plagin-dlya-cache">все</a>)</span> <!--end case_ismultipage-->
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1162338">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=95903">
+         DAiMor </a> </td>
+
+        <td style="text-align:center">35</td>
+
+        <td style="text-align:center">2104</td>
+
+        <td style="text-align:center" class="altCol">25 июн 15, 11:43</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1163035/sql-zapros-v-onprehttp">sql запрос в OnPreHttp</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1163035">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=185406">
+         Sabyrov.Talgat </a> </td>
+
+        <td style="text-align:center">3</td>
+
+        <td style="text-align:center">1253</td>
+
+        <td style="text-align:center" class="altCol">25 июн 15, 08:22</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1011881/vebinary-intersystems">Вебинары InterSystems!</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1011881">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">2</td>
+
+        <td style="text-align:center">1770</td>
+
+        <td style="text-align:center" class="altCol">24 июн 15, 22:35</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1162136/iscsoap-in-namespace-a-has-been-active-for-n-day-s">ISCSOAP in Namespace A has been active for N day(s).</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1162136">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=209751">
+         TEHbI4 </a> </td>
+
+        <td style="text-align:center">5</td>
+
+        <td style="text-align:center">1546</td>
+
+        <td style="text-align:center" class="altCol">24 июн 15, 13:02</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1162590/tekushhiy-url">Текущий URL</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1162590">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=185406">
+         Sabyrov.Talgat </a> </td>
+
+        <td style="text-align:center">2</td>
+
+        <td style="text-align:center">1352</td>
+
+        <td style="text-align:center" class="altCol">22 июн 15, 12:56</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1161447/uml-cache">UML Cache</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1161447">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=145669">
+         barl_alibek </a> </td>
+
+        <td style="text-align:center">4</td>
+
+        <td style="text-align:center">1529</td>
+
+        <td style="text-align:center" class="altCol">16 июн 15, 14:48</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1161181/oshibka-communication-error">Ошибка Communication Error</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1161181">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=49630">
+         Александр GAGADDDOC </a> </td>
+
+        <td style="text-align:center">1</td>
+
+        <td style="text-align:center">1402</td>
+
+        <td style="text-align:center" class="altCol">12 июн 15, 11:46</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1160712/mnogomernoe-derevo-mtree-dlya-msh">Многомерное дерево Mtree для MSH</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1160712">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=147269">
+         misha_shar </a> </td>
+
+        <td style="text-align:center">0</td>
+
+        <td style="text-align:center">1435</td>
+
+        <td style="text-align:center" class="altCol">9 июн 15, 15:58</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1160698/gt-m-dostupna-gt-m-v6-2-002">[gt.m] Доступна GT.M V6.2-002</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1160698">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=28424">
+         Valeriu </a> </td>
+
+        <td style="text-align:center">0</td>
+
+        <td style="text-align:center">1419</td>
+
+        <td style="text-align:center" class="altCol">9 июн 15, 15:00</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1160142/poisk-polzovateley-v-doverennyh-domenah-ldap">Поиск пользователей в доверенных доменах LDAP</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1160142">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=72791">
+         SergeyMi </a> </td>
+
+        <td style="text-align:center">12</td>
+
+        <td style="text-align:center">1547</td>
+
+        <td style="text-align:center" class="altCol">8 июн 15, 15:09</td>
+      </tr>
+
+      <tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+
+        <td class="postslisttopic"> <a href="http://www.sql.ru/forum/1159007/besplatnye-onlayn-kursy-po-cache-na-russkom">Бесплатные онлайн-курсы по Cache на русском</a>
+        
+         
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1159007">[new]</a>
+                
+         </td>
+
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+
+        <td style="text-align:center">8</td>
+
+        <td style="text-align:center">1825</td>
+
+        <td style="text-align:center" class="altCol">8 июн 15, 14:02</td>
+      </tr>
+      
+    </table>
+  <!--end topicstable-->
+
+  <table class="sort_options" style="font-weight: bold">
+    <tr>
+      <td style="text-align:left">Страницы:  <b>1</b>  <a href="http://www.sql.ru/forum/cache/2">2</a> <a href="http://www.sql.ru/forum/cache/3">3</a> <a href="http://www.sql.ru/forum/cache/4">4</a> <a href="http://www.sql.ru/forum/cache/5">5</a> <a href="http://www.sql.ru/forum/cache/6">6</a> <a href="http://www.sql.ru/forum/cache/7">7</a> <a href="http://www.sql.ru/forum/cache/8">8</a> <a href="http://www.sql.ru/forum/cache/9">9</a> <a href="http://www.sql.ru/forum/cache/10">10</a> .. <a href="http://www.sql.ru/forum/cache/66">66</a></td>
+
+      <td style="text-align:right">Показываются темы: 1 - 50 из
+      3277</td>
+    </tr>
+
+  </table>
+
+  <table style="border:none; width:100%">
+    <tr>
+      <td><select id="forumSelector" name="bid" class="flatbutton" onchange="forumSelectorChanged()" > <option class="optiongroup" value="-7">Виртуальные форумы</option><option value="sqlru-3-days"><!--sel40_-->&nbsp;&nbsp;Темы из всех форумов за 3 дня</option><option value="myforums"><!--sel-6_-->&nbsp;&nbsp;Мои избранные форумы</option><option class="optiongroup" value="-1">Использование СУБД</option><option value="microsoft-sql-server"><!--sel1_-->&nbsp;&nbsp;Microsoft SQL Server</option><option value="interbase"><!--sel2_-->&nbsp;&nbsp;Firebird, InterBase</option><option value="oracle"><!--sel3_-->&nbsp;&nbsp;Oracle</option><option value="access"><!--sel4_-->&nbsp;&nbsp;Microsoft Access</option><option value="db2"><!--sel5_-->&nbsp;&nbsp;IBM DB2, WebSphere, IMS, U2, etc</option><option value="mysql"><!--sel6_-->&nbsp;&nbsp;MySQL</option><option value="postgresql"><!--sel7_-->&nbsp;&nbsp;PostgreSQL</option><option value="olap-dwh"><!--sel26_-->&nbsp;&nbsp;OLAP и DWH</option><option value="sybase"><!--sel30_-->&nbsp;&nbsp;Sybase ASA, ASE, IQ</option><option value="informix"><!--sel29_-->&nbsp;&nbsp;Informix</option><option value="db-other"><!--sel23_-->&nbsp;&nbsp;Другие СУБД</option><option value="foxpro"><!--sel37_-->&nbsp;&nbsp;FoxPro, Visual FoxPro</option><option value="cache" selected="selected">&nbsp;&nbsp;Cach&#233;</option><option value="sqlite"><!--sel69_-->&nbsp;&nbsp;SQLite</option><option value="nosql-bigdata"><!--sel73_-->&nbsp;&nbsp;NoSQL, Big Data</option><option class="optiongroup" value="-2">Дискуcсии</option><option value="db-comparison"><!--sel10_-->&nbsp;&nbsp;Сравнение СУБД</option><option value="db-design"><!--sel36_-->&nbsp;&nbsp;Проектирование БД</option><option value="job"><!--sel9_-->&nbsp;&nbsp;Работа</option><option value="erp-crm"><!--sel53_-->&nbsp;&nbsp;ERP и учетные системы</option><option value="systems-architecture"><!--sel58_-->&nbsp;&nbsp;Разработка информационных систем</option><option value="testing-qa"><!--sel52_-->&nbsp;&nbsp;Тестирование и QA</option><option value="reporting"><!--sel57_-->&nbsp;&nbsp;Отчетные системы</option><option value="pt"><!--sel16_-->&nbsp;&nbsp;Просто треп</option><option value="za-rubezhom"><!--sel33_-->&nbsp;&nbsp;Наши за рубежом</option><option value="certification"><!--sel8_-->&nbsp;&nbsp;Сертификация и обучение</option><option value="hardware"><!--sel62_-->&nbsp;&nbsp;Hardware</option><option value="dev-management"><!--sel64_-->&nbsp;&nbsp;Управление процессом разработки ИС</option><option value="legal"><!--sel72_-->&nbsp;&nbsp;Юридические вопросы в ИТ</option><option class="optiongroup" value="-3">Microsoft.NET</option><option value="dotnet"><!--sel34_-->&nbsp;&nbsp;WinForms, .Net Framework</option><option value="asp-net"><!--sel19_-->&nbsp;&nbsp;ASP.NET</option><option value="ado-linq-ef-orm"><!--sel12_-->&nbsp;&nbsp;ADO.NET, LINQ, Entity Framework, NHibernate, DAL, ORM</option><option value="wpf-silverlight"><!--sel35_-->&nbsp;&nbsp;WPF, Silverlight</option><option value="wcf-ws-remoting"><!--sel71_-->&nbsp;&nbsp;WCF, Web Services, Remoting</option><option class="optiongroup" value="-4">Программирование</option><option value="delphi"><!--sel20_-->&nbsp;&nbsp;Delphi</option><option value="cpp"><!--sel21_-->&nbsp;&nbsp;C++</option><option value="visual-basic"><!--sel22_-->&nbsp;&nbsp;Visual Basic</option><option value="programming"><!--sel24_-->&nbsp;&nbsp;Программирование</option><option value="java"><!--sel38_-->&nbsp;&nbsp;Java</option><option value="mobile-dev"><!--sel78_-->&nbsp;&nbsp;Разработка под мобильные платформы</option><option value="powerbuilder"><!--sel39_-->&nbsp;&nbsp;PowerBuilder</option><option value="ms-office"><!--sel46_-->&nbsp;&nbsp;Microsoft Office</option><option value="sharepoint"><!--sel74_-->&nbsp;&nbsp;SharePoint</option><option value="xml"><!--sel59_-->&nbsp;&nbsp;XML, XSL, XPath, XQuery</option><option class="optiongroup" value="-9">Web Технологии</option><option value="php-perl"><!--sel18_-->&nbsp;&nbsp;PHP, Perl, Python</option><option value="html-javascript-css"><!--sel61_-->&nbsp;&nbsp;HTML, JavaScript, VBScript, CSS</option><option class="optiongroup" value="-6">Администрирование ОС</option><option value="windows"><!--sel27_-->&nbsp;&nbsp;Windows</option><option value="linux"><!--sel28_-->&nbsp;&nbsp;Unix-системы</option><option value="other-os"><!--sel41_-->&nbsp;&nbsp;Другие: Mac OS, PalmOS, BeOS, PocketPC</option><option class="optiongroup" value="-5">SQL.RU</option><option value="sqlru"><!--sel11_-->&nbsp;&nbsp;Обсуждение нашего сайта</option><option value="question-answer"><!--sel17_-->&nbsp;&nbsp;Вопрос-Ответ</option><option value="test"><!--sel15_-->&nbsp;&nbsp;Test</option></select><script language="javascript">function forumSelectorChanged()  { if (document.getElementById("forumSelector").value.indexOf("-")==0) return;window.location.href = 'http://www.sql.ru/forum/'+document.getElementById("forumSelector").value; } </script></td>
+
+      <td id="mark_read"><a href="http://www.sql.ru/forum/actualutils.aspx?action=markread&amp;bid=56">Пометить форум прочитанным</a><br />
+      <!--afadvbottom--></td>
+    </tr>
+    <tr style="font:bold 13px; background-color:#fff;">
+      <td colspan="2"><a class="forumLink" href="http://www.sql.ru/forum">Все форумы</a> / <a class=
+      "forumLink" href="http://www.sql.ru/forum/cache">Cach&#233;</a>      <span style=
+      "font-size:90%"></span></td>
+
+      <td></td>
+    </tr>
+  </table>
+
+			<div id="footer">
+				<div class="copyright">2000-2015 © Alex Sibilev, SQL.ru<br/>
+					<a style="font: 10px Verdana;color:#88C" href="/feedback.aspx">Свяжитесь с нами</a></div>
+				<div class="copyright" style="font: 10px verdana">Generated in 22ms. [9ms]</div>
+				<div class="counters">
+<!-- begin of Rambler's Top100 code 
+<img src="http://counter.rambler.ru/top100.cnt?236431" alt="" width="1" height="1" border="0" />
+<a href="http://top100.rambler.ru/home?id=236431"><img src="http://top100-images.rambler.ru/top100/banner-88x31-rambler-gray2.gif" alt="Rambler's Top100" width="88" height="31" border="0" /></a>
+- end of Top100 logo -->
+                
+<!--					<a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+					<a href="http://jigsaw.w3.org/css-validator/"><img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" height="31" width="88" /></a>
+                    -->
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+		  	//initScripts();
+		 	if (window.AF_Begin) { AF_Begin(); }
+		</script>
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter9237463 = new Ya.Metrika({id:9237463, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/9237463" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+	</div> <!--page containter-->
+	</body>
+</html>

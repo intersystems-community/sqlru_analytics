@@ -1,54 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Forum.Post">
-<Description>
-Class of objects
-Object of this class are posts from topic with next properties
-Author - author of post
-PostDate - date when posted post
-Message - text of post
-PostExtId - Id of post that uses on sql.ru, that is unique for every post</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63763,57010.038856</TimeCreated>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Relationship Topic As Forum.Topic [ Cardinality = one, Inverse = Posts, Required ];
-
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Index TopicIndex On Topic;
-
-]]></Content>
-</UDLText>
-
-<Property name="Autor">
-<Type>%String</Type>
+<Property name="Topic">
+<Description>
+post related to </Description>
+<Type>Forum.Topic</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Posts</Inverse>
+<Relationship>1</Relationship>
 <Required>1</Required>
+<OnDelete>cascade</OnDelete>
 </Property>
 
-<Property name="PostDate">
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
+<Index name="TopicIndex">
+<Properties>Topic</Properties>
+</Index>
 
-<Property name="Message">
-<Type>%String</Type>
-<Required>1</Required>
-</Property>
-
-<Property name="PostExtId">
+<Property name="ExtId">
+<Description>
+Id of post that uses on sql.ru, that is unique for every post</Description>
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="PostExtIdIndex">
-<Properties>PostExtId</Properties>
+<Index name="ExtId">
+<Properties>ExtId</Properties>
 <Unique>1</Unique>
 </Index>
+
+<Property name="Author">
+<Description>
+Author - author of post</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Posted">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Text">
+<Description>
+text of post</Description>
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="32000"/>
+</Property>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
@@ -62,22 +63,25 @@ PostExtId - Id of post that uses on sql.ru, that is unique for every post</Descr
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>Autor</Value>
+<Value>Topic</Value>
 </Value>
 <Value name="3">
-<Value>PostDate</Value>
-</Value>
-<Value name="4">
-<Value>Message</Value>
-</Value>
-<Value name="5">
 <Value>ExtId</Value>
 </Value>
+<Value name="4">
+<Value>Autor</Value>
+</Value>
+<Value name="5">
+<Value>Posted</Value>
+</Value>
 <Value name="6">
-<Value>PostExtId</Value>
+<Value>Text</Value>
 </Value>
 <Value name="7">
-<Value>Topic</Value>
+<Value>Author</Value>
+</Value>
+<Value name="8">
+<Value>PostedAt</Value>
 </Value>
 </Data>
 </Storage>

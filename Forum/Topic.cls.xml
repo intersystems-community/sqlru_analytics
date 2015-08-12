@@ -2,384 +2,140 @@
 <Export generator="Cache" version="25">
 <Class name="Forum.Topic">
 <Description>
-Class of objects
-Object of this class are topics from forum with next properties
-TopicExtId - Id of topic that uses on sql.ru, that is unique for every topics
-TopicType - type of topic; like messege, cry, question e.t.c.
-TopicName - the name of the topic
-Author - account of topic starter
-Posts - number of posts left in topic
-Views - views of topic
-LastPostDate - date of latest post in topic
-
-This class load pages as stream
-Parse stream 
-Carve topics and properties</Description>
-<IncludeCode>statushelp</IncludeCode>
+One question or theme on the forum</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63770,69487.272655</TimeCreated>
 
-<Parameter name="SERVER">
-<Default>www.sql.ru</Default>
+<Parameter name="DOMAIN">
+<Default>Forum.Topic</Default>
 </Parameter>
 
-<Parameter name="FORUM">
-<Default>/forum/</Default>
-</Parameter>
+<Property name="Forum">
+<Type>Forum.Forum</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Topics</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+<OnDelete>cascade</OnDelete>
+</Property>
 
-<UDLText name="T">
-<Content><![CDATA[
-// Relationship Forum As Forum.Forum [ Cardinality = one, Inverse = Topics, Required ];
+<Index name="Forum">
+<Properties>Forum</Properties>
+</Index>
 
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Index ForumIndex On Forum;
-
-]]></Content>
-</UDLText>
-
-<UDLText name="T">
-<Content><![CDATA[
-// Relationship Posts As Forum.Post [ Cardinality = many, Inverse = Topic ];
-
-]]></Content>
-</UDLText>
-
-<Property name="TopicType">
+<Property name="Type">
+<Description>
+type of topic; like messege, cry, question e.t.c.</Description>
 <Type>%String</Type>
 </Property>
 
-<Property name="TopicName">
+<Property name="Name">
+<Description>
+the name of the topic</Description>
 <Type>%String</Type>
 <Required>1</Required>
 <Parameter name="MAXLEN" value="150"/>
 </Property>
 
-<Index name="TopicNameIndex">
-<Properties>TopicName</Properties>
+<Index name="Name">
+<Properties>Name</Properties>
 </Index>
 
-<Property name="TopicExtId">
+<Property name="ExtId">
+<Description>
+Id of topic that uses on sql.ru</Description>
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="TopicExtIdIndex">
-<Properties>TopicExtId</Properties>
+<Index name="ExtId">
+<Description>
+that is unique for every topics</Description>
+<Properties>ExtId</Properties>
 <Unique>1</Unique>
 </Index>
 
 <Property name="Author">
+<Description>
+account of topic starter</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="AuthorIndex">
+<Index name="Author">
 <Properties>Author</Properties>
 </Index>
 
-<Property name="PostsNum">
+<Property name="AuthorExtId">
+<Type>%String</Type>
+</Property>
+
+<Property name="Posts">
+<Type>Forum.Post</Type>
+<Cardinality>many</Cardinality>
+<Inverse>Topic</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Property name="Answers">
 <Type>%Integer</Type>
-<Required>1</Required>
 </Property>
 
 <Property name="Views">
+<Description>
+views of topic</Description>
 <Type>%Integer</Type>
 <Required>1</Required>
 </Property>
 
-<Property name="LastPostDate">
-<Type>%String</Type>
+<Property name="Updated">
+<Type>%TimeStamp</Type>
 <Required>1</Required>
 </Property>
 
-<Index name="LastPostDateIndex">
-<Properties>LastPostDate</Properties>
+<Index name="Updated">
+<Properties>Updated</Properties>
 </Index>
 
-<Method name="TopicUpdate">
-<Description><![CDATA[
-Load pages count
-Update pages from number i to <var>pages</var>]]></Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>cathegoryURL:%String="cache/"</FormalSpec>
-<Implementation><![CDATA[
-	
-	s pages = ..PagesCount(cathegoryURL)
-	for i=1:1:pages { 
-			
-		s data = ..PageGet( i, cathegoryURL)	
-		k table s table=""
-		s table = ..TopicTable( data, .sc )
-		
-		k parsedTopic, topicAmount, topicNum 
-		d ..TopicTableParse( table , i, .parsedTopic, .topicAmount)
-		
-		for topicNum = 1:1:topicAmount {
-		
-		s status=..TopicPropertyUpdate(parsedTopic(topicNum))
-		if $$$ISERR(status) $$$THROW("Update of topic -"_$list(parsedTopic(topicNum),2)_"- failed")
-		
-			}
-
-		w !, "Page #"_i_" successfully updated.",!
-	}
-	
-	Q
-]]></Implementation>
-</Method>
-
-<Method name="TopicPropertyUpdate">
-<Description>
-This method receiving parsed topic
-Opens object, if it exist, and update it
-If don't, then add new object</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>parsedTopic:%List</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	
-	s extId = $list(parsedTopic,3)
-	s obj = ..TopicExtIdIndexOpen(extId,,.sc)
-	if $$$ISERR(sc) {
-		
-		s status=..%New(parsedTopic)
-		if $$$ISERR(status) $$$THROW("Adding topic -"_$list(parsedTopic,2)_"- failed")
-		
-		}
-	if $$$ISOK(sc) {
-		
-		s obj.PostsNum = $list(parsedTopic,5)
-		s obj.Views = $list(parsedTopic,6)
-		s obj.LastPostDate = $list(parsedTopic,7)
-		s status = obj.%Save()
-		w $system.Status.DisplayError(status)
-			
-		}
-	Q status
-]]></Implementation>
-</Method>
-
-<Method name="TopicLoad">
-<Description><![CDATA[
-Load pages count
-Load page from number i to <var>pages</var>]]></Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>cathegoryURL:%String</FormalSpec>
-<Implementation><![CDATA[
-	
-	s pages = ..PagesCount(cathegoryURL)
-	for i=1:1:pages { 
-			
-		s data = ..PageGet( i, cathegoryURL)	
-		k table s table=""
-		s table = ..TopicTable( data, .sc )
-		
-		k parsedTopic, topicAmount, topicNum 
-		d ..TopicTableParse( table , i, .parsedTopic, .topicAmount) 
-		
-		for topicNum = 1:1:topicAmount {
-		
-		s status=..%New(parsedTopic(topicNum))
-		if $$$ISERR(status) $$$THROW("Adding topic -"_$list(parsedTopic(topicNum),2)_"- failed")
-		
-			}
-
-		w !, "Page #"_i_" successfully loaded.",!
-	}
-	
-	Q
-]]></Implementation>
-</Method>
-
-<Method name="PagesCount">
-<Description><![CDATA[
-Extracting pages count from  
-<var>data</var> - stream with the content of the page]]></Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>cathegoryURL</FormalSpec>
-<ReturnType>%Integer</ReturnType>
-<Implementation><![CDATA[
-	//Where are the URL of pages is the count of pages
-	#define URL  ..#SERVER_..#FORUM _cathegoryURL
-	
-	s data = ..PageGet(,cathegoryURL) ;data = request.HttpResponse.Data
-		
-	s pages = 0
-	for {
-		s str=data.ReadLine(,.st) 
-		s hasPages = $FIND( str, $$$URL )
-		if hasPages {
-			s pageInfo = $piece(str,"..",2)
-			s pages = +$piece(pageInfo,">",2)
-			Quit  ;quit for
-		}
-	}
-	Q pages
-]]></Implementation>
-</Method>
-
-<Method name="PageGet">
-<Description><![CDATA[
-Load page number <var>num</var> as stream]]></Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[pageNum=1,cathegoryURL,forum=..#FORUM,&sc]]></FormalSpec>
-<ReturnType>%Stream</ReturnType>
-<Implementation><![CDATA[
-	s request = ##class(%Net.HttpRequest).%New()
-	s request.Server = ..#SERVER
-	s url = forum_cathegoryURL_pageNum  
-	s sc = request.Get( url ,,0) Q:'sc ""
-	Q request.HttpResponse.Data
-]]></Implementation>
-</Method>
-
-<Method name="TopicTable">
-<Description>
-Parse server response - carve table with topics </Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[data:%Stream,&sc]]></FormalSpec>
-<ReturnType>%Stream</ReturnType>
-<Implementation><![CDATA[
-	#define BEGIN "<!--begin topicstable-->"
-	#define END "<!--end topicstable-->"
-	
-	s sc = 1
-	s table = ##class(%Stream.TmpBinary).%New()
-	
-    s start = data.FindAt(1, $$$BEGIN) 
-    if start=-1 s sc = $$$ERROR(,"Not found start") Q ""
-    
-    s start = start + $l($$$BEGIN)
-    s stop = data.FindAt(start, $$$END) 
-    if stop=-1 s sc = $$$ERROR(,"Not found end") Q ""
-	
-	s length = stop - start 
-	s sc = data.MoveTo( start ) Q:'sc ""
-	s html = data.Read( .length, .sc ) Q:sc=0
-	s sc = table.Write( html ) Q:sc=0
-	
-	Q table
-]]></Implementation>
-</Method>
-
-<Method name="TopicTableParse">
-<Description><![CDATA[
-Parse table of topics - carve topic
-Gives topics to <CLASSMETHOD>TopicParse</CLASSMETHOD> - receiving properties]]></Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[table:%Stream,pageNum:%Integer,&parsedTopic,&topicNum]]></FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	#define BEGIN "<tr>"
-	#define END "</tr>"
-		
-	s start = 1, stop = 1, lbegin = $l($$$BEGIN)
-	s topicNum = 1, parsedTopic(topicNum)=""
-	for {
-		
-		s topic = ##class(%Stream.TmpBinary).%New()
-		s start = table.FindAt(start, $$$BEGIN ) Q:start=-1	
-		s start = start + lbegin
-		s stop = table.FindAt(start, $$$END ) Q:start=-1
-		
-		s length = stop - start
-		s sc = table.MoveTo( start )
-		s topicString = table.Read( .length, .sc ) Q:sc=0
-		s sc = topic.Write( topicString ) Q:sc=0
-		
-		s:parsedTopic(topicNum)'="" topicNum = topicNum + 1
-		s parsedTopic(topicNum) = ..TopicParse( topic , pageNum)
-		
-		s start = stop
-		k topic, topicString
-		
-	}
-]]></Implementation>
-</Method>
-
-<Method name="TopicParse">
-<Description>
-Parse topic - carve properties</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Stream,pageNum:%Integer</FormalSpec>
-<ReturnType>%List</ReturnType>
-<Implementation><![CDATA[
-	#define BEGIN "<td"
-	#define END "</td>"
-	#define ThemeTypeExtract(%str) $piece($piece(%str,"/forum/images/",2),".",1) 
-	#define PropertyExtract(%str) ($piece($piece(%str,">",2),"<",1))_($piece($piece(%str,">",3),"<",1))
-	
-	s start = 1, stop = 1 ,propNum = 1
-	
-	while topic.FindAt(start, $$$BEGIN )'=-1{
-		
-		s start = topic.FindAt(start, $$$BEGIN ) Q:start=-1
-		s stop = topic.FindAt(start, $$$END ) Q:stop=-1
-		s stop = stop + $l( $$$END )
-		
-		s sc = topic.MoveTo( start )
-		s dirtyProp = topic.Read( stop - start )		
-		
-		if (pageNum'=1)&($FIND(dirtyProp,"Важно:")) {
-			
-			s propNum = 1
-			Q
-			
-			}
-
-		s:propNum=1 $list(prop,propNum) = $$$ThemeTypeExtract(dirtyProp)
-		if propNum=2 {
-			
-			s $list(prop,propNum) = $$$PropertyExtract(dirtyProp) ;Theme
-			s propNum = propNum + 1
-			s $list(prop,propNum) = ($piece($piece(dirtyProp,"http://www.sql.ru/forum/",2),"/",1)) ;TopicExtId
-			
-			}
-		s:propNum>3 $list(prop,propNum) = $$$PropertyExtract(dirtyProp)
-		
-		s start = stop
-		s propNum = propNum + 1
-		
-	}
-	
-	Q:propNum>1 prop
-	Q ""
-]]></Implementation>
-</Method>
-
-<Method name="%OnNew">
-<Description><![CDATA[
-This callback method is invoked by the <METHOD>%New</METHOD> method to 
-provide notification that a new instance of an object is being created.
-
-<P>If this method returns an error then the object will not be created.
-<p>It is passed the arguments provided in the %New call.
-When customizing this method, override the arguments with whatever variables and types you expect to receive from %New().
-For example, if you're going to call %New, passing 2 arguments, %OnNew's signature could be:
-<p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
-If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
-class then this oref will be the one returned to the caller of %New method.]]></Description>
-<FormalSpec>parsedTopic:%List</FormalSpec>
-<Private>1</Private>
-<ReturnType>%Status</ReturnType>
-<ServerOnly>1</ServerOnly>
-<Implementation><![CDATA[
-	
-	s ..TopicType = $list(parsedTopic,1)
-	s ..TopicName = $list(parsedTopic,2)
-	s ..TopicExtId = $list(parsedTopic,3)
-	s ..Author = $list(parsedTopic,4)
-	s ..PostsNum = $list(parsedTopic,5)
-	s ..Views = $list(parsedTopic,6)
-	s ..LastPostDate = $list(parsedTopic,7)
-	s status = ..%Save()
-	w $system.Status.DisplayError(status)
-	Q status
-]]></Implementation>
-</Method>
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.TopicD</DataLocation>
+<DefaultData>TopicDefaultData</DefaultData>
+<IdLocation>^Forum.TopicD</IdLocation>
+<IndexLocation>^Forum.TopicI</IndexLocation>
+<StreamLocation>^Forum.TopicS</StreamLocation>
+<Data name="TopicDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Forum</Value>
+</Value>
+<Value name="3">
+<Value>Type</Value>
+</Value>
+<Value name="4">
+<Value>Name</Value>
+</Value>
+<Value name="5">
+<Value>ExtId</Value>
+</Value>
+<Value name="6">
+<Value>Author</Value>
+</Value>
+<Value name="7">
+<Value>Answers</Value>
+</Value>
+<Value name="8">
+<Value>Views</Value>
+</Value>
+<Value name="9">
+<Value>Updated</Value>
+</Value>
+<Value name="10">
+<Value>AuthorExtId</Value>
+</Value>
+</Data>
+</Storage>
 </Class>
 </Export>

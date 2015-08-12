@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.TopicsLoader">
+<Description>
+Initial topic loader </Description>
+<Super>Forum.TopicsPage</Super>
+<TimeCreated>63776,59960.045951</TimeCreated>
+
+<Method name="OnTopic">
+<Description><![CDATA[
+Event handler 
+<var>topic</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	w ! zw data
+	s topic = ##class(Topic).%New() 
+	s sc = topic.ForumSetObjectId( ..Forum ) Q:'sc sc
+	
+	#define g(%prop) $g(data(%prop))
+	s topic.ExtId = $$$g("ExtId")
+	
+	s topic.Name = $$$g("Name")
+	s topic.Type = $$$g("Type")
+	s topic.Author = $$$g("Author")
+	s topic.AuthorExtId = $g(data("Author","ExtId"))
+	
+	s topic.Answers = $$$g("Answers")
+	s topic.Views = $$$g("Views")
+	s topic.Updated = $$$g("Updated")
+	s sc = topic.%Save() 
+	
+	#; any topics page may have repeated first topic 
+	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
+		Q 1
+	}
+	
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="Load">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	if ##class(Forum).%ExistsId("cache") {
+		s sc = ##class(Forum).%DeleteId( forum ) Q:'sc sc
+	}
+	s forumObj = ##class(Forum).%New( forum )
+	s sc = forumObj.%Save() Q:'sc sc
+	Q ..Scan( forum )
+]]></Implementation>
+</Method>
+</Class>
+</Export>
