@@ -1,3 +1,4 @@
+Forum.Author.cls
 Forum.Forum.cls
 Forum.Post.cls
 Forum.Topic.cls

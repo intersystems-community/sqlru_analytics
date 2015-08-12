@@ -7,7 +7,9 @@ Object of this class are topics from forum with next properties
 TopicExtId - Id of topic that uses on sql.ru, that is unique for every topics
 TopicType - type of topic; like messege, cry, question e.t.c.
 TopicName - the name of the topic
-Author - account of topic starter
+Author - serial object of class Forum.Author with next properties 
+- Name - account of topic starter
+- ExtId - Id of author that uses on sql.ru/forum/, that is unique for every topics
 Posts - number of posts left in topic
 Views - views of topic
 LastPostDate - date of latest post in topic
@@ -71,13 +73,8 @@ Carve topics and properties</Description>
 </Index>
 
 <Property name="Author">
-<Type>%String</Type>
-<Required>1</Required>
+<Type>Forum.Author</Type>
 </Property>
-
-<Index name="AuthorIndex">
-<Properties>Author</Properties>
-</Index>
 
 <Property name="PostsNum">
 <Type>%Integer</Type>
@@ -150,9 +147,9 @@ If don't, then add new object</Description>
 		}
 	if $$$ISOK(sc) {
 		
-		s obj.PostsNum = $list(parsedTopic,5)
-		s obj.Views = $list(parsedTopic,6)
-		s obj.LastPostDate = $list(parsedTopic,7)
+		s obj.PostsNum = $list(parsedTopic,6)
+		s obj.Views = $list(parsedTopic,7)
+		s obj.LastPostDate = $list(parsedTopic,8)
 		s status = obj.%Save()
 		w $system.Status.DisplayError(status)
 			
@@ -334,10 +331,17 @@ Parse topic - carve properties</Description>
 			
 			s $list(prop,propNum) = $$$PropertyExtract(dirtyProp) ;Theme
 			s propNum = propNum + 1
-			s $list(prop,propNum) = ($piece($piece(dirtyProp,"http://www.sql.ru/forum/",2),"/",1)) ;TopicExtId
+			s $list(prop,propNum) = +($piece(dirtyProp,..#SERVER_..#FORUM,2)) ;TopicExtId
 			
 			}
-		s:propNum>3 $list(prop,propNum) = $$$PropertyExtract(dirtyProp)
+		if propNum=4 {
+			
+			s $list(prop,propNum) = $$$PropertyExtract(dirtyProp) ;Author.Name
+			s propNum = propNum + 1
+			s $list(prop,propNum) = +($piece(dirtyProp,..#SERVER_..#FORUM_"memberinfo.aspx?mid=",2)) ;Author.ExtId
+			
+			}
+		s:propNum>5 $list(prop,propNum) = $$$PropertyExtract(dirtyProp)
 		
 		s start = stop
 		s propNum = propNum + 1
@@ -350,17 +354,6 @@ Parse topic - carve properties</Description>
 </Method>
 
 <Method name="%OnNew">
-<Description><![CDATA[
-This callback method is invoked by the <METHOD>%New</METHOD> method to 
-provide notification that a new instance of an object is being created.
-
-<P>If this method returns an error then the object will not be created.
-<p>It is passed the arguments provided in the %New call.
-When customizing this method, override the arguments with whatever variables and types you expect to receive from %New().
-For example, if you're going to call %New, passing 2 arguments, %OnNew's signature could be:
-<p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
-If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
-class then this oref will be the one returned to the caller of %New method.]]></Description>
 <FormalSpec>parsedTopic:%List,forumId:%Numeric</FormalSpec>
 <Private>1</Private>
 <ReturnType>%Status</ReturnType>
@@ -373,16 +366,33 @@ class then this oref will be the one returned to the caller of %New method.]]></
 	s ..TopicType = $list(parsedTopic,1)
 	s ..TopicName = $list(parsedTopic,2)
 	s ..TopicExtId = $list(parsedTopic,3)
-	s ..Author = $list(parsedTopic,4)
-	s ..PostsNum = $list(parsedTopic,5)
-	s ..Views = $list(parsedTopic,6)
-	s ..LastPostDate = $list(parsedTopic,7)
+	s ..Author.Name = $list(parsedTopic,4)
+	s ..Author.ExtId = $list(parsedTopic,5)
+	s ..PostsNum = $list(parsedTopic,6)
+	s ..Views = $list(parsedTopic,7)
+	s ..LastPostDate = $list(parsedTopic,8)
 	s status = ..%Save()
 	w $system.Status.DisplayError(status)
 	k forum
 	Q status
 ]]></Implementation>
 </Method>
+
+<UDLText name="T">
+<Content><![CDATA[
+/// This callback method is invoked by the <METHOD>%New</METHOD> method to 
+/// provide notification that a new instance of an object is being created.
+/// 
+/// <P>If this method returns an error then the object will not be created.
+/// <p>It is passed the arguments provided in the %New call.
+/// When customizing this method, override the arguments with whatever variables and types you expect to receive from %New().
+/// For example, if you're going to call %New, passing 2 arguments, %OnNew's signature could be:
+/// <p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
+/// If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
+/// class then this oref will be the one returned to the caller of %New method.
+
+]]></Content>
+</UDLText>
 
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
