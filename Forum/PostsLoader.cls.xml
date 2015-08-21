@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.PostsLoader">
+<Super>Forum.PostsPage</Super>
+<TimeCreated>63782,48915.323809</TimeCreated>
+
+<Method name="OnPost">
+<Description><![CDATA[
+Event handler 
+<var>post</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	s post = ##class(Post).%New() 
+	
+	s exist = ##class(Topic).ExtIdExists( ..Topic, .topicId ) Q:'exist exist
+	s sc = post.TopicSetObjectId( topicId ) Q:'sc sc
+	
+	#define g(%prop) $g(data(%prop))
+	s post.ExtId = $$$g("ExtId")
+	
+	s post.Type = $$$g("Type")
+	s post.Author = $$$g("Author")
+	s post.AuthorExtId = $g(data("Author","ExtId"))
+	
+	s post.Text = $$$g("Text")
+	s post.Posted = $$$g("Posted")
+	s sc = post.%Save() 
+	
+	//w sc
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="Load">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Q ..Scan( topic )
+]]></Implementation>
+</Method>
+</Class>
+</Export>

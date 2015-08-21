@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.TopicsPage">
+<Description>
+Page sql.ru/forum/ with topics table
+Example of page structure see in  test/page.html</Description>
+<Super>%RegisteredObject</Super>
+<TimeCreated>63776,58912.816024</TimeCreated>
+
+<Parameter name="SERVER">
+<Description>
+Forum topics imported from</Description>
+<Default>sql.ru</Default>
+</Parameter>
+
+<Parameter name="URL">
+<Description>
+part of url; Example of url: www.sql.ru/forum/{forum}/{page}</Description>
+<Default>/forum/</Default>
+</Parameter>
+
+<Parameter name="TopicTableBegin">
+<Default><![CDATA[<!--begin topicstable-->]]></Default>
+</Parameter>
+
+<Parameter name="TopicTableEnd">
+<Default><![CDATA[<!--end topicstable-->]]></Default>
+</Parameter>
+
+<Parameter name="TopicBegin">
+<Description>
+topic </Description>
+<Default><![CDATA[<tr]]></Default>
+</Parameter>
+
+<Property name="Forum">
+<Description>
+forum name</Description>
+<InitialExpression>"cache"</InitialExpression>
+</Property>
+
+<Property name="Num">
+<Description>
+This page number</Description>
+<InitialExpression>1</InitialExpression>
+</Property>
+
+<Method name="%OnNew">
+<FormalSpec>forum,num</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	s ..Forum = $g(forum)
+	s ..Num = $g(num)
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Url">
+<Description>
+Build url path for current page</Description>
+<CodeMode>expression</CodeMode>
+<Implementation><![CDATA[..#URL_..Forum_"/"_..Num
+]]></Implementation>
+</Method>
+
+<Property name="request">
+<Type>%Net.HttpRequest</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="Html">
+<Description>
+Html content of current page</Description>
+<Type>%Stream</Type>
+<ReadOnly>1</ReadOnly>
+</Property>
+
+<Method name="HtmlGet">
+<Description>
+getter</Description>
+<ReturnType>%Stream</ReturnType>
+<Implementation><![CDATA[
+	
+	Q:'$IsObject(..request) ""
+	Q:'$IsObject(..request.HttpResponse) ""
+	Q ..request.HttpResponse.Data
+]]></Implementation>
+</Method>
+
+<Property name="pos">
+<Description>
+current position in content</Description>
+<Type>%Integer</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="row">
+<Description>
+current row of topics table</Description>
+<Type>%Integer</Type>
+<Private>1</Private>
+</Property>
+
+<Method name="Get">
+<Description><![CDATA[
+Load page content from sql.ru/forum/<var>forum</var>/<var>num</var>]]></Description>
+<FormalSpec>forum="",num=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	if $g(forum)'="" s ..Forum = forum
+	if $g(num)'="" s ..Num = num
+	
+	s ..request = ##class(%Net.HttpRequest).%New()
+	s ..request.Server = ..#SERVER
+	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
+		
+	Quit 1
+]]></Implementation>
+</Method>
+
+<Method name="GetPage">
+<Description>
+Return topic page parser</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[forum="cache",num=1,&sc]]></FormalSpec>
+<ReturnType>TopicsPage</ReturnType>
+<Implementation><![CDATA[
+	s page = ..%New(forum, num)
+	s sc = page.Get()
+	Q page
+]]></Implementation>
+</Method>
+
+<Method name="GetPages">
+<Description><![CDATA[
+Parse pages count from topics page
+Search line: "Страницы:  <b>1</b>  <a href="http://www.sql.ru/forum/cache/2">2</a> <a href="http://www.sql.ru/forum/cache/3">3</a>"
+And extract data from last available page link]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>html:%Stream</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[
+	s end = html.FindAt( 1, ..#TopicTableEnd ) 
+	s begin = html.FindAt( end , "Страницы: "  )
+	s sc = html.MoveTo( begin )
+	s str = html.ReadLine() ; "Страницы:  <b>1</b>  <a href="http://www.sql.ru/forum/cache/2">2</a> <a href="http://www.sql.ru/forum/cache/3">3</a>"
+	s list = $LFS( str,"</a>") ;$lb("<a href='http://www.sql.ru/forum/cache/2'>2","<a href='http://www.sql.ru/forum/cache/3'>3") 
+	s last = $LG( list, $ll( list ) - 1 ) ;<a href="http://www.sql.ru/forum/cache/3">3
+	s count = $p( last, ">", 2) ;3
+	Q +count
+]]></Implementation>
+</Method>
+
+<Method name="Pages">
+<Description>
+Pages count from this page</Description>
+<CodeMode>expression</CodeMode>
+<Implementation><![CDATA[..GetPages( ..Html )
+]]></Implementation>
+</Method>
+
+<Method name="Parse">
+<Description>
+Move from topic table begin to the end of table</Description>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	s html = ..Html 
+	d html.Rewind()
+	s ..pos=0, ..row = 0 
+	
+	s pos = html.FindAt( 1, ..#TopicTableBegin ) 
+    if pos = -1 {
+	    s sc = $$$ERROR(,"Not found begin of topic table") Q 0
+    }
+    s pos = pos + $l(..#TopicTableBegin)
+    
+    s end = html.FindAt( pos, ..#TopicTableEnd ) 
+    if end = -1 {
+	    s sc = $$$ERROR(,"Not found end of topics table") Q 0
+    }
+	
+	s sc = html.MoveTo( pos ) Q:'sc ""
+	
+	while pos < end {
+		
+		s pos = html.FindAt( pos, ..#TopicBegin ) Q:pos=-1
+		s sc = ..topicBegin( pos ) Q:'sc
+		s pos = pos + $l(..#TopicBegin) ;offset
+		
+	}
+	if sc && ( ..pos < end) {
+		s sc = ..topicBegin( end ) ;for last topic	
+	}
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="topicBegin">
+<Description>
+found begin of topic in html content</Description>
+<FormalSpec>pos:%Integer</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Boolean</ReturnType>
+<Implementation><![CDATA[
+	if ..pos = 0 { ;first topic begin
+		s ..pos = pos
+		Q 1	
+	}
+	
+	s sc = ..Html.MoveTo( ..pos ), length = pos - ..pos 
+	s topicHtml = ..Html.Read( .length ) ;<tr><td>....
+	s ..pos = pos, ..row = ..row + 1
+	if ( ..row = 1 ) Q 1  ;first row is table header
+	
+	#; w !, $zcvt(topicHtml,"O","CP1251") ;1251 for Studio Output window
+	
+	/* Example of topic content
+	<tr>
+        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
+        <td class="postslisttopic">Важно:   <a href="http://www.sql.ru/forum/1003258/vzaimodeystvie-s-intersystems">Взаимодействие с InterSystems</a>
+           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1003258">[new]</a>
+         </td>
+        <td class="altCol">
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+         Шваров Евгений </a> </td>
+        <td style="text-align:center">11</td>
+        <td style="text-align:center">5699</td>
+        <td style="text-align:center" class="altCol">30 июн 15, 13:46</td>
+     </tr>*/
+      
+	s topic( "Type" ) = ..ParseType( topicHtml )
+	s topic( "Name" ) = ..ParseName( topicHtml )
+	s topic( "ExtId" ) = ..ParseExtId( topicHtml )
+	
+	s sc = ..ParseAuthor( topicHtml, .author ) ;complex object 
+	m topic( "Author") = author
+	s topic( "Answers" ) = ..ParseAnswers( topicHtml )
+	s topic( "Views" ) = ..ParseViews( topicHtml )
+	s topic( "Updated" ) = ..ParseUpdated( topicHtml )
+	
+	Q ..OnTopic( .topic )
+]]></Implementation>
+</Method>
+
+<Method name="ParseType">
+<Description><![CDATA[
+Extract type from topic html <var>topic<var>
+<td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<Implementation><![CDATA[
+	
+	s type = $p( topic, "<td class=""icon_cell""><img src=""/forum/images/", 2 )	
+	s type = $p( type, "." ) ; ".gif", ".png"
+	Q type
+]]></Implementation>
+</Method>
+
+<Method name="ParseName">
+<Description><![CDATA[
+Extract name 
+<td class="postslisttopic">Важно:   <a href="http://www.sql.ru/forum/1003258/vzaimodeystvie-s-intersystems">Взаимодействие с InterSystems</a>
+  <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1003258">[new]</a>
+</td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<Implementation><![CDATA[
+	
+	s name = $p( topic, "<td class=""postslisttopic"">", 2 )	
+	s name = $p( name, "</td>")	
+	s name = $p( name, "</a>")	
+	s name = $p( name, ">",2)	
+	Q name
+]]></Implementation>
+</Method>
+
+<Method name="ParseExtId">
+<Description><![CDATA[
+Extract topic id from html
+<td class="postslisttopic">Важно:   <a href="http://www.sql.ru/forum/1003258/vzaimodeystvie-s-intersystems">Взаимодействие с InterSystems</a>
+       <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1003258">[new]</a>
+</td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<Implementation><![CDATA[
+	s extId = $p( topic, "<td class=""postslisttopic"">", 2 )
+	s extId = $p( extId, ">")	
+	s extId = $p( extId, "<a href=""", 2)
+	s extId = $p( extId, "/", $l(extId,"/") - 1 )
+	
+	Q extId
+]]></Implementation>
+</Method>
+
+<Method name="ParseAuthor">
+<Description><![CDATA[
+Extract author of topic from html
+<td class="altCol">
+<a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+Шваров Евгений </a> </td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String,*author</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	k author
+	s author = $lfs(topic,"<td")
+	s author = $lg( author, 4 ) ;third column + 1 for $LFS
+	s author = $p( author, "</td>")
+	
+	if $f( author, "<a ") { ;registered author
+		
+		s name = $p(author,"<a ",2)
+		s name = $p(name,"</a>")
+		s name = $p(name,">",2)
+		s name = $zstrip( name, "<>WC" )
+		
+		s extId =$p(author,"?mid=",2), extId = $p(extId,""">")
+		
+		s author = name, author("ExtId") = extId
+		
+	}
+	
+	else { ;unregistered author
+		
+		s author = $p(author,">",2)
+		s author = $zstrip(author,"<>WC")
+		
+	}
+
+	Q 1
+]]></Implementation>
+</Method>
+
+<Method name="ParseAnswers">
+<Description><![CDATA[
+Extract posts count from html <var>topic</var>
+<td style="text-align:center">11</td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<Implementation><![CDATA[
+	s posts = $lfs(topic,"<td")
+	s posts = $lg( posts, 5) ; 4 + 1
+	s posts = $p(posts,"</td>")
+	s posts = $p(posts, ">",2 )
+	Q +posts
+]]></Implementation>
+</Method>
+
+<Method name="ParseViews">
+<Description><![CDATA[
+Extract posts count from html <var>topic</var>
+<td style="text-align:center">5699</td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<Implementation><![CDATA[
+	s views = $lfs(topic,"<td")
+	s views = $lg( views, 6) ; 5 + 1
+	s views = $p(views,"</td>")
+	s views = $p(views, ">",2 )
+	Q +views
+]]></Implementation>
+</Method>
+
+<Method name="ParseUpdated">
+<Description><![CDATA[
+Extract posts count from html <var>topic</var>
+<td style="text-align:center" class="altCol">30 июн 15, 13:46</td>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<Implementation><![CDATA[
+	s updated = $lfs(topic,"<td")
+	s updated = $lg( updated, 7) ; 6 + 1
+	s updated = $p( updated, "</td>")
+	s updated = $p( updated, ">",2 ) ; 30 июн 15, 13:46
+	
+	s date = $p(updated,","), date = $zstrip(date, "<>W" ) ;30 июн 15
+	s time = $p(updated,",",2), time = $zstrip(time, "<>W" ) ;13:46
+	
+	s months = $zcvt(" Янв Фев Мар Апр Май Июн Июл Авг Сен Окт Ноя Дек", "L" )
+	
+	///58074 - convert as two digits from 2000-01-01
+	#define 2000 58074 
+	
+	if $f(date, "сегодня") s date = $zd( +$h, 2, months, 3, $$$2000)
+	if $f(date, "вчера") s date = $zd( $h-1, 2, months, 3, $$$2000)
+	
+	s dateh = $zdh( date, 2, months, 3, $$$2000 ) 
+	s timeh = $zth( time )
+	s ts = $zdt( dateh_","_timeh, 3 ) ;odbc timestamp
+	Q ts
+]]></Implementation>
+</Method>
+
+<Method name="OnTopic">
+<Description><![CDATA[
+Event handler 
+<var>topic</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&topic]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#;w ! 
+	#;zw topic
+	Q 1
+]]></Implementation>
+</Method>
+
+<Method name="Scan">
+<Description>
+scan across all forum topic pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+
+	s i = 0, count = 1
+	for {
+		
+		s i = i + 1  if i > count Quit
+		s page = ..GetPage( forum, i, .sc ) Q:'sc
+		s:i=1 count = page.Pages() ; get pages count once
+		s sc = page.Parse() Q:'sc
+		w !, "Page #"_i_" successfuly loaded", !
+		
+	}
+	Q sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>

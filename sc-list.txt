@@ -1,4 +1,7 @@
-Forum.Author.cls
 Forum.Forum.cls
 Forum.Post.cls
+Forum.PostsLoader.cls
+Forum.PostsPage.cls
 Forum.Topic.cls
+Forum.TopicsLoader.cls
+Forum.TopicsPage.cls
