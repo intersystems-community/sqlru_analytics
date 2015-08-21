@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.PostsUpdater">
+<Description>
+Initial post updater</Description>
+<Super>Forum.PostsPage</Super>
+<TimeCreated>63785,86397.663962</TimeCreated>
+
+<Method name="Update">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%Integer,amount:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Q ..Scan( topic , amount)
+]]></Implementation>
+</Method>
+
+<Method name="Scan">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%Integer,amount:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+
+	s i = 0, count = 1
+	s page = ..GetPage( topic, .sc ) Q:'sc
+	s sc = page.Parse(amount) Q:'sc sc
+
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="Parse">
+<Description>
+Move from topic table begin to the end of table</Description>
+<FormalSpec>amount:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	s html = ..Html 
+	d html.Rewind()
+	s ..pos=0, ..row = 1 
+	
+	s pos = html.FindAt( 1, ..#PostTableBegin ) 
+    if pos = -1 {
+	    s sc = $$$ERROR(,"Not found begin of post's table") Q 0
+    }
+    s pos = pos + $l(..#PostTableBegin)
+    
+    s end = html.FindAt( pos, ..#PostTableEnd ) 
+    if end = -1 {
+	    s sc = $$$ERROR(,"Not found end of post's table") Q 0
+    }
+	
+	s sc = html.MoveTo( pos ) Q:'sc ""
+	
+	for num = 0:1:amount {
+		
+		s pos = html.FindAt( pos, ..#PostBegin ) Q:pos=-1
+		s sc = ..postBegin( pos ) Q:'sc
+		s pos = pos + $l(..#PostBegin) ;offset
+		
+	}
+]]></Implementation>
+</Method>
+</Class>
+</Export>

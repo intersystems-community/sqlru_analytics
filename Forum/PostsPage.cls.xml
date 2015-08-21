@@ -319,14 +319,14 @@ Extract text of post
 	s text = $zstrip(text,"<>WC")
 	
 	//s text = ..CleanText(text)
-	/*s:$f(text,"<a href") text = ..LinksCutOut(text)
+	s:$f(text,"<a href") text = ..LinksCutOut(text)
 	while $f(text,"<table class='quote'>") {
 		s text = ..QuoteCutOut(text)
 		}
 	s:$f(text,"<pre ") text = ..PreCutOut(text)
 	s:$f(text,"<!--begin case_isattach-->") text = ..AttachesCutOut(text)
 	s:$f(text,"http://www.sql.ru/forum/images/") text = ..ImgCutOut(text)
-	s:$f(text,"<table ") text = ..SpecQuoteCutOut(text)*/
+	s:$f(text,"<table ") text = ..SpecQuoteCutOut(text)
 		
 	Q text
 ]]></Implementation>

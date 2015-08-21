@@ -2,6 +2,8 @@ Forum.Forum.cls
 Forum.Post.cls
 Forum.PostsLoader.cls
 Forum.PostsPage.cls
+Forum.PostsUpdater.cls
 Forum.Topic.cls
 Forum.TopicsLoader.cls
 Forum.TopicsPage.cls
+Forum.TopicsUpdater.cls

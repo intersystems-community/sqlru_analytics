@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="Forum.PostsLoader">
+<Description>
+Initial post loader</Description>
 <Super>Forum.PostsPage</Super>
 <TimeCreated>63782,48915.323809</TimeCreated>
 
