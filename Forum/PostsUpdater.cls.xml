@@ -8,21 +8,37 @@ Initial post updater</Description>
 
 <Method name="Update">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,amount:%Integer</FormalSpec>
+<FormalSpec>topic:%Integer,amountOfPages:%String,amountOfPosts:%Integer</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ..Scan( topic , amount)
+<Implementation><![CDATA[	Q ..Scan( topic, amountOfPages, amountOfPosts)
 ]]></Implementation>
 </Method>
 
 <Method name="Scan">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,amount:%Integer</FormalSpec>
+<FormalSpec>topic:%Integer,amountOfPages:%String,amountOfPosts:%Integer</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 
-	s i = 0, count = 1
-	s page = ..GetPage( topic, .sc ) Q:'sc
-	s sc = page.Parse(amount) Q:'sc sc
+
+	if +amountOfPages = 0 { ;amountOfPages = "a"
+		s page = ..GetPage( topic,amountOfPages, .sc ) Q:'sc
+		s sc = page.Parse(amountOfPosts) Q:'sc sc
+		}
+	else{ ;amountOfPages - numeric
+		s i = 0, numOfPages = amountOfPosts\25, numOfPosts = amountOfPosts#25
+		for { ;On one page maximum 25 posts 
+			s i = i + 1  if i > numOfPages Quit ;if there only one page with amount of posts < 25, then quit
+			s page = ..GetPage( topic, i, .sc ) Q:'sc
+			s sc = page.Parse(25) Q:'sc
+			}
+		if numOfPosts'=0 {
+			s numOfPages = numOfPages + 1
+			s page = ..GetPage( topic,numOfPages, .sc ) Q:'sc
+			s sc = page.Parse(numOfPosts) Q:'sc sc
+			
+			}
+		}
 
 	Q sc
 ]]></Implementation>
@@ -31,7 +47,7 @@ Initial post updater</Description>
 <Method name="Parse">
 <Description>
 Move from topic table begin to the end of table</Description>
-<FormalSpec>amount:%Integer</FormalSpec>
+<FormalSpec>amountOfPosts:%Integer</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
@@ -52,7 +68,7 @@ Move from topic table begin to the end of table</Description>
 	
 	s sc = html.MoveTo( pos ) Q:'sc ""
 	
-	for num = 0:1:amount {
+	for num = 0:1:amountOfPosts {
 		
 		s pos = html.FindAt( pos, ..#PostBegin ) Q:pos=-1
 		s sc = ..postBegin( pos ) Q:'sc

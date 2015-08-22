@@ -242,7 +242,24 @@ found begin of topic in html content</Description>
 	s topic( "Views" ) = ..ParseViews( topicHtml )
 	s topic( "Updated" ) = ..ParseUpdated( topicHtml )
 	
+	s topic( "AmntOfPages" ) = "a"
+	if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "AmntOfPages" ) = ..ParseAmntOfPages( topicHtml , topic("ExtId"))
+	
 	Q ..OnTopic( .topic )
+]]></Implementation>
+</Method>
+
+<Method name="ParseAmntOfPages">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String,ExtId:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	s URL = ..#SERVER_..#URL_ExtId_"-"
+	s amount = $p(topic,"<!--end case_ismultipage-->")
+	s amount = $p(amount,URL,*)
+	s amount = $p(amount,"/")
+	Q amount
 ]]></Implementation>
 </Method>
 
@@ -400,7 +417,7 @@ Extract posts count from html <var>topic</var>
 Event handler 
 <var>topic</var> - key-value array 
 If handler return 0, parsing will be interrupted]]></Description>
-<FormalSpec><![CDATA[&topic]]></FormalSpec>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
@@ -427,7 +444,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 		Q 1
 	}
 	
-	s sc = ##class(PostsLoader).Load($$$g("ExtId"))
+	s sc = ##class(PostsLoader).Load($$$g("ExtId"),$$$g("AmntOfPages"))
 	
 	w sc
 	Q sc

@@ -38,9 +38,9 @@ If handler return 0, parsing will be interrupted]]></Description>
 
 <Method name="Load">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer</FormalSpec>
+<FormalSpec>topic:%Integer,amount</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ..Scan( topic )
+<Implementation><![CDATA[	Q ..Scan( topic ,amount)
 ]]></Implementation>
 </Method>
 </Class>

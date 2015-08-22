@@ -36,13 +36,22 @@ Topic's ExtId</Description>
 <Type>%Integer</Type>
 </Property>
 
+<Property name="Amount">
+<Description>
+Topics's amount of pages of posts
+If it is "a", it mean that we can load all posts on one page
+If it is number it mean than we must only load all pages by page-to-page</Description>
+<Type>%String</Type>
+</Property>
+
 <Method name="%OnNew">
-<FormalSpec>topic</FormalSpec>
+<FormalSpec>topic,amount</FormalSpec>
 <Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <ServerOnly>1</ServerOnly>
 <Implementation><![CDATA[
 	s ..Topic = $g(topic)
+	s ..Amount = $g(amount)
 	Quit $$$OK
 ]]></Implementation>
 </Method>
@@ -52,7 +61,7 @@ Topic's ExtId</Description>
 Build url path for current topic
 To load all pages of posts we adding "-a", that mean "all"</Description>
 <CodeMode>expression</CodeMode>
-<Implementation><![CDATA[..#URL_..Topic_"-a"
+<Implementation><![CDATA[..#URL_..Topic_"-"_..Amount
 ]]></Implementation>
 </Method>
 
@@ -97,11 +106,12 @@ current row of posts table</Description>
 <Method name="Get">
 <Description><![CDATA[
 Load page content from sql.ru/forum/<var>post</var>-a]]></Description>
-<FormalSpec>topic=""</FormalSpec>
+<FormalSpec>topic="",amount=""</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
 	if $g(topic)'="" s ..Topic = topic
+	if $g(amount)'="" s ..Amount = amount
 	
 	s ..request = ##class(%Net.HttpRequest).%New()
 	s ..request.Server = ..#SERVER
@@ -115,10 +125,10 @@ Load page content from sql.ru/forum/<var>post</var>-a]]></Description>
 <Description>
 Return posts page parser</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[topic:%Integer,&sc]]></FormalSpec>
+<FormalSpec><![CDATA[topic:%Integer,amountOfPages,&sc]]></FormalSpec>
 <ReturnType>PostsPage</ReturnType>
 <Implementation><![CDATA[
-	s page = ..%New(topic)
+	s page = ..%New(topic,amountOfPages)
 	s sc = page.Get()
 	Q page
 ]]></Implementation>
@@ -292,7 +302,6 @@ Extract author of post from html
 	else { ;unregistered author
 
 		s author = $p(author,"<")
-		s author = $p(author,">",2)
 		s author = $zstrip(author,"<>WC")
 		
 	}
@@ -324,10 +333,13 @@ Extract text of post
 		s text = ..QuoteCutOut(text)
 		}
 	s:$f(text,"<pre ") text = ..PreCutOut(text)
+	s:$f(text,"<PRE ") text = ..PreCutOut(text,"u")
 	s:$f(text,"<!--begin case_isattach-->") text = ..AttachesCutOut(text)
 	s:$f(text,"http://www.sql.ru/forum/images/") text = ..ImgCutOut(text)
 	s:$f(text,"<table ") text = ..SpecQuoteCutOut(text)
-		
+	
+	if $l(text)>32000 s text = "!!!Text of post was cutted, because it's length more than 32000. Here is first 1000!!! "_$e(text,1,1000)
+	
 	Q text
 ]]></Implementation>
 </Method>
@@ -432,18 +444,23 @@ Extract text of post
 
 <Method name="PreCutOut">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
+<FormalSpec>text:%String,mode="l"</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
+	s lowerText = text
+	if mode '= "l" s lowerText = $zconvert(text,"l")
 	
-	while $f(text,"<pre "){
+	while $f(lowerText,"<pre "){
 		
-		s startPre = $f(text,"<pre "), startPre = startPre - $l("<pre ")
-		s endPre = $f(text,"</pre>",startPre)
+		s startPre = $f(lowerText,"<pre "), startPre = startPre - $l("<pre ")
+		s endPre = $f(lowerText,"</pre>",startPre)
 	
 		s beforePre = $e(text,1,startPre-1), afterPre = $e(text,endPre,*)
 		s text = beforePre_" !!!SOME PRE!!! "_afterPre
-		
+
+		s lowerText = text
+		if mode '= "l" s lowerText = $zconvert(text,"l")
+
 		}
 	
 	Q text
@@ -563,13 +580,22 @@ If handler return 0, parsing will be interrupted]]></Description>
 <Description>
 scan across all forum topic pages</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer</FormalSpec>
+<FormalSpec>topic:%Integer,amountOfPages:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 
-	s i = 0, count = 1
-	s page = ..GetPage( topic, .sc ) Q:'sc
-	s sc = page.Parse() Q:'sc sc
+	if +amountOfPages = 0 { ;amountOfPages = "a"
+		s page = ..GetPage( topic,amountOfPages, .sc ) Q:'sc
+		s sc = page.Parse() Q:'sc sc
+		}
+	else{ ;amountOfPages - numeric
+		s i = 0
+		for {
+			s i = i + 1  if i > amountOfPages Quit
+			s page = ..GetPage( topic, i, .sc ) Q:'sc
+			s sc = page.Parse() Q:'sc
+			}
+		}
 
 	Q sc
 ]]></Implementation>

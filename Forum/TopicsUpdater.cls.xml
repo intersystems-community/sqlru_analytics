@@ -10,7 +10,13 @@ Initial topic updater</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ..Scan( forum )
+<Implementation><![CDATA[
+	if '##class(Forum).NameExists( forum ) {
+		s forumObj = ##class(Forum).%New( forum )
+		s sc = forumObj.%Save() Q:'sc sc
+	}
+	
+	Q ..Scan( forum )
 ]]></Implementation>
 </Method>
 
@@ -51,6 +57,8 @@ Initial topic updater</Description>
 	
 	s topic( "ExtId" ) = ..ParseExtId( topicHtml )
 	
+	s topic( "AmntOfPages" ) = "a"
+	
 	if ##class(Topic).ExtIdExists(topic("ExtId")) {
 			
 		Q ..OnExistingTopic( .topic )
@@ -58,6 +66,8 @@ Initial topic updater</Description>
 		}
 	else {
 		
+		if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "AmntOfPages" ) = ..ParseAmntOfPages( topicHtml , topic("ExtId"))
+	
 		s topic( "Type" ) = ..ParseType( topicHtml )
 		s topic( "Name" ) = ..ParseName( topicHtml )
 		
@@ -79,9 +89,9 @@ Initial topic updater</Description>
 	
 	s topic = ##class(Topic).ExtIdOpen($$$g("ExtId")) Q:topic="" "Topic with ExtId#"_$$$g("ExtId")_"don't exist"
 	
-	s difference = $$$g("Answers") - topic.Answers
+	s amountOfPosts = $$$g("Answers") - topic.Answers
 	
-	if difference '= 0 {
+	if amountOfPosts '= 0 {
 
 		s topic.Answers = $$$g("Answers")
 		s topic.Updated = $$$g("Updated")
@@ -92,7 +102,7 @@ Initial topic updater</Description>
 	
 	s sc = topic.%Save() 
 	
-	s:difference'=0 sc = ##class(PostsUpdater).Update($$$g("ExtId"),difference)
+	s:amountOfPosts'=0 sc = ##class(PostsUpdater).Update($$$g("ExtId"),$$$g("AmntOfPages"),amountOfPosts)
 	
 	w sc
 	Q sc
