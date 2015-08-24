@@ -57,7 +57,7 @@ Initial topic updater</Description>
 	
 	s topic( "ExtId" ) = ..ParseExtId( topicHtml )
 	
-	s topic( "AmntOfPages" ) = "a"
+	s topic( "PagesAmount" ) = "a"
 	
 	if ##class(Topic).ExtIdExists(topic("ExtId")) {
 			
@@ -66,7 +66,7 @@ Initial topic updater</Description>
 		}
 	else {
 		
-		if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "AmntOfPages" ) = ..ParseAmntOfPages( topicHtml , topic("ExtId"))
+		if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "PagesAmount" ) = ..ParsePagesAmount( topicHtml , topic("ExtId"))
 	
 		s topic( "Type" ) = ..ParseType( topicHtml )
 		s topic( "Name" ) = ..ParseName( topicHtml )
@@ -89,9 +89,12 @@ Initial topic updater</Description>
 	
 	s topic = ##class(Topic).ExtIdOpen($$$g("ExtId")) Q:topic="" "Topic with ExtId#"_$$$g("ExtId")_"don't exist"
 	
-	s amountOfPosts = $$$g("Answers") - topic.Answers
+	s newPostsAmount = $$$g("Answers") - topic.Answers, 
+		oldPostsAmount = topic.Answers + 1, ;#(+1) is the post of topic starter
+		postsAmount = $$$g("Answers") + 1, ;#(+1) is the post of topic starter
+		pagesAmount = $$$g("PagesAmount")
 	
-	if amountOfPosts '= 0 {
+	if newPostsAmount '= 0 {
 
 		s topic.Answers = $$$g("Answers")
 		s topic.Updated = $$$g("Updated")
@@ -102,7 +105,9 @@ Initial topic updater</Description>
 	
 	s sc = topic.%Save() 
 	
-	s:amountOfPosts'=0 sc = ##class(PostsUpdater).Update($$$g("ExtId"),$$$g("AmntOfPages"),amountOfPosts)
+	s amountInfo = pagesAmount_"delimeter"_oldPostsAmount_"delimeter"_postsAmount
+	
+	s:newPostsAmount'=0 sc = ##class(PostsUpdater).Update($$$g("ExtId"),amountInfo)
 	
 	w sc
 	Q sc

@@ -242,14 +242,14 @@ found begin of topic in html content</Description>
 	s topic( "Views" ) = ..ParseViews( topicHtml )
 	s topic( "Updated" ) = ..ParseUpdated( topicHtml )
 	
-	s topic( "AmntOfPages" ) = "a"
-	if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "AmntOfPages" ) = ..ParseAmntOfPages( topicHtml , topic("ExtId"))
+	s topic( "PagesAmount" ) = "a"
+	if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "PagesAmount" ) = ..ParsePagesAmount( topicHtml , topic("ExtId"))
 	
 	Q ..OnTopic( .topic )
 ]]></Implementation>
 </Method>
 
-<Method name="ParseAmntOfPages">
+<Method name="ParsePagesAmount">
 <ClassMethod>1</ClassMethod>
 <FormalSpec>topic:%String,ExtId:%Integer</FormalSpec>
 <ReturnType>%String</ReturnType>
@@ -444,7 +444,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 		Q 1
 	}
 	
-	s sc = ##class(PostsLoader).Load($$$g("ExtId"),$$$g("AmntOfPages"))
+	s sc = ##class(PostsLoader).Load($$$g("ExtId"),$$$g("PagesAmount"))
 	
 	w sc
 	Q sc
