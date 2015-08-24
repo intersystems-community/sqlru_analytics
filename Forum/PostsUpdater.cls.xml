@@ -96,6 +96,8 @@ Move from topic table begin to the end of table</Description>
 	if sc && ( ..pos < end) {
 		s sc = ..postBegin( end ) ;for last topic	
 	}
+	
+	Q sc
 ]]></Implementation>
 </Method>
 </Class>
