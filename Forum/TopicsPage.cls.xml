@@ -3,7 +3,14 @@
 <Class name="Forum.TopicsPage">
 <Description>
 Page sql.ru/forum/ with topics table
+<<<<<<< HEAD
 Example of page structure see in  test/page.html</Description>
+=======
+Example of page structure see in  test/page.html
+Usage: create your own subclass and override methods OnTopic And Scan
+For example, you may create subclasses - loader and updater
+with different logic in OnTopic handler</Description>
+>>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 <Abstract>1</Abstract>
 <Super>%RegisteredObject</Super>
 <TimeCreated>63776,58912.816024</TimeCreated>
@@ -244,7 +251,11 @@ found begin of topic in html content</Description>
 	s topic( "Views" ) = ..ParseViews( topicHtml )
 	s topic( "Updated" ) = ..ParseUpdated( topicHtml )
 	
+<<<<<<< HEAD
 	s topic( "PagesAmount" ) = "a"
+=======
+	s topic( "PagesAmount" ) = "a" //???
+>>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 	if $f(topicHtml,"<!--begin case_ismultipage-->") {
 		s topic( "PagesAmount" ) = ..ParsePagesAmount( topicHtml , topic("ExtId"))
 	}
@@ -422,7 +433,38 @@ If handler return 0, parsing will be interrupted]]></Description>
 <Abstract>1</Abstract>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
+<<<<<<< HEAD
 <Implementation><![CDATA[	Q 1
+=======
+<Implementation><![CDATA[
+	
+	/* Insert your code here. For example:
+	Q:'##class(Forum).NameExists( ..Forum, .forumId ) 0
+	s topic = ##class(Topic).%New() 
+	s sc = topic.ForumSetObjectId( forumId ) Q:'sc sc
+	
+	#define g(%prop) $g(data(%prop))
+	s topic.ExtId = $$$g("ExtId")
+	
+	s topic.Name = $$$g("Name")
+	s topic.Type = $$$g("Type")
+	s topic.Author = $$$g("Author")
+	s topic.AuthorExtId = $g(data("Author","ExtId"))
+	
+	s topic.Answers = $$$g("Answers")
+	s topic.Views = $$$g("Views")
+	s topic.Updated = $$$g("Updated")
+	s sc = topic.%Save() 
+	
+	#; any topics page may have repeated first topic 
+	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
+		Q 1
+	}
+	
+	s sc = ##class(PostsLoader).Load($$$g("ExtId"),$$$g("PagesAmount"))
+	Q sc
+	*/
+>>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 ]]></Implementation>
 </Method>
 
@@ -433,7 +475,25 @@ Example scan across all forum topic pages</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
+<<<<<<< HEAD
 <Implementation><![CDATA[	Q 1
+=======
+<Implementation><![CDATA[
+	/*
+	s i = 0, count = 1
+	for {
+		
+		s i = i + 1  if i > count Quit
+		s page = ..GetPage( forum, i, .sc ) Q:'sc
+		s:i=1 count = page.Pages() ; get pages count once
+		s sc = page.Parse() Q:'sc
+		w !, "Page #"_i_" successfuly loaded", !
+		
+	}
+	Q sc	
+	*/
+	Q 1
+>>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 ]]></Implementation>
 </Method>
 </Class>

@@ -108,7 +108,11 @@ sql is faster than oop?</Description>
 		Insert Into Forum.Topic (Forum, Type, Name, ExtId, Author, AuthorExtId, Answers, Views, Updated)
 		Values (
 			:data("Forum"), :data("Type"), :data("Name")
+<<<<<<< HEAD
 			, :data("ExtId"), :data("Author"), :data("Author","ExtId")
+=======
+			, :data("ExtId"), :data("Author"), :data("AuthorExtId")
+>>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 			, :data("Answers"), :data("Views"), :data("Updated")
 		)
 	)
@@ -132,8 +136,6 @@ sql is faster than oop?</Description>
 <IndexLocation>^Forum.TopicI</IndexLocation>
 <StreamLocation>^Forum.TopicS</StreamLocation>
 <Data name="TopicDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
