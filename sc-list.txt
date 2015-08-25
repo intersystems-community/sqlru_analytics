@@ -1,3 +1,4 @@
+BI.TopicAnalytics.cls
 Forum.Forum.cls
 Forum.Post.cls
 Forum.PostsLoader.cls
