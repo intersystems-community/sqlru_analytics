@@ -10,98 +10,56 @@ Initial topic updater</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	if '##class(Forum).NameExists( forum ) {
-		s forumObj = ##class(Forum).%New( forum )
-		s sc = forumObj.%Save() Q:'sc sc
-	}
-	
-	Q ..Scan( forum )
+<Implementation><![CDATA[	Q ..Scan( forum )
 ]]></Implementation>
 </Method>
 
-<Method name="topicBegin">
-<FormalSpec>pos:%Integer</FormalSpec>
-<Private>1</Private>
-<ReturnType>%Boolean</ReturnType>
-<Implementation><![CDATA[
-	if ..pos = 0 { ;first topic begin
-		s ..pos = pos
-		Q 1	
-	}
-	
-	s sc = ..Html.MoveTo( ..pos ), length = pos - ..pos 
-	s topicHtml = ..Html.Read( .length ) ;<tr><td>....
-	s ..pos = pos, ..row = ..row + 1
-	if ( ..row = 1 ) Q 1  ;first row is table header
-	
-	#; w !, $zcvt(topicHtml,"O","CP1251") ;1251 for Studio Output window
-	
-	/* Example of topic content
-	<tr>
-        <td class="icon_cell"><img src="/forum/images/message.gif" alt="" /></td>
-        <td class="postslisttopic">Важно:   <a href="http://www.sql.ru/forum/1003258/vzaimodeystvie-s-intersystems">Взаимодействие с InterSystems</a>
-           <a class="newTopic" href="http://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=1003258">[new]</a>
-         </td>
-        <td class="altCol">
-         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
-         Шваров Евгений </a> </td>
-        <td style="text-align:center">11</td>
-        <td style="text-align:center">5699</td>
-        <td style="text-align:center" class="altCol">30 июн 15, 13:46</td>
-     </tr>*/
-      
-	s topic( "Answers" ) = ..ParseAnswers( topicHtml )
-	s topic( "Views" ) = ..ParseViews( topicHtml )
-	s topic( "Updated" ) = ..ParseUpdated( topicHtml )
-	
-	s topic( "ExtId" ) = ..ParseExtId( topicHtml )
-	
-	s topic( "PagesAmount" ) = "a"
-	
-	if ##class(Topic).ExtIdExists(topic("ExtId")) {
-			
-		Q ..OnExistingTopic( .topic )
-	
-		}
-	else {
-		
-		if $f(topicHtml,"<!--begin case_ismultipage-->") s topic( "PagesAmount" ) = ..ParsePagesAmount( topicHtml , topic("ExtId"))
-	
-		s topic( "Type" ) = ..ParseType( topicHtml )
-		s topic( "Name" ) = ..ParseName( topicHtml )
-		
-		s sc = ..ParseAuthor( topicHtml, .author ) ;complex object 
-		m topic( "Author") = author
-			
-		Q ..OnTopic( .topic )
-		
-		}
-]]></Implementation>
-</Method>
-
-<Method name="OnExistingTopic">
+<Method name="OnTopic">
+<Description><![CDATA[
+Event handler 
+<var>data</var> - key-value array with topic properties 
+If handler return 0, parsing will be interrupted]]></Description>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	
+
 	#define g(%prop) $g(data(%prop))
 	
-	s topic = ##class(Topic).ExtIdOpen($$$g("ExtId")) Q:topic="" "Topic with ExtId#"_$$$g("ExtId")_"don't exist"
+	s extId = $$$g("ExtId")
+	s exist = ##class(Topic).ExtIdExists( extId, .topicId )
 	
-	s newPostsAmount = $$$g("Answers") - topic.Answers, 
-		oldPostsAmount = topic.Answers + 1, ;#(+1) is the post of topic starter
+	#; This Object don't exist
+	#; Add new object
+	if 'exist {
+		s sc = ##class(Topic).Insert( data ) Q:'sc sc
+		Q ##class(PostsLoader).Load(data)
+	}
+	
+	#; This object exist
+	s topic = ##class(Topic).%OpenId(topicId)
+	#;Update Views
+	s topic.Views = $$$g("Views")
+	
+	#; If property "Updated" don't changed, than there is nothing to change
+	s updated = ##class(Topic).UpdatedGetStored( topic )
+	if updated = $$$g("Updated") Q 1 
+	
+	#; If updated '= $g(data("Updated")), than
+	#; We need to import new posts	
+		
+	s oldPostsAmount = topic.Answers + 1, ;#(+1) is the post of topic starter
 		postsAmount = $$$g("Answers") + 1, ;#(+1) is the post of topic starter
+		newPostsAmount = postsAmount - oldPostsAmount,
 		pagesAmount = $$$g("PagesAmount")
 	
-	if newPostsAmount '= 0 {
+	#; If amount of new posts > 0 
+	if newPostsAmount > 0 {
 
 		s topic.Answers = $$$g("Answers")
 		s topic.Updated = $$$g("Updated")
 		
 		}
 		
-	s topic.Views = $$$g("Views")
 	
 	s sc = topic.%Save() 
 	
@@ -110,6 +68,27 @@ Initial topic updater</Description>
 	s:newPostsAmount'=0 sc = ##class(PostsUpdater).Update($$$g("ExtId"),amountInfo)
 	
 	w sc
+	Q 1
+]]></Implementation>
+</Method>
+
+<Method name="Scan">
+<Description>
+Example scan across all forum topic pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s i = 0, count = 1, sc = 1
+	for {
+		
+		s i = i + 1  if i > count Quit
+		s page = ..GetPage( forum, i, .sc ) Q:'sc
+		s:i=1 count = page.Pages() ; get pages count once
+		s sc = page.Parse() Q:'sc
+		w !, "Page #"_i_" successfuly updated", !
+		
+	}
 	Q sc
 ]]></Implementation>
 </Method>

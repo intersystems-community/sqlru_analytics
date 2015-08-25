@@ -15,6 +15,8 @@ Initial post updater</Description>
 </Method>
 
 <Method name="Scan">
+<Description>
+scan across all forum posts pages</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>topic:%Integer,amountInfo:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -58,45 +60,18 @@ Initial post updater</Description>
 ]]></Implementation>
 </Method>
 
-<Method name="Parse">
-<Description>
-Move from topic table begin to the end of table</Description>
-<FormalSpec>oldPostsAmount:%Integer</FormalSpec>
+<Method name="OnPost">
+<Description><![CDATA[
+Event handler 
+<var>data</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	
-	s html = ..Html 
-	d html.Rewind()
-	s ..pos=0
-	
-	s pos = html.FindAt( 1, ..#PostTableBegin ) 
-    if pos = -1 {
-	    s sc = $$$ERROR(,"Not found begin of post's table") Q 0
-    }
-    s pos = pos + $l(..#PostTableBegin)
-    
-    s end = html.FindAt( pos, ..#PostTableEnd ) 
-    if end = -1 {
-	    s sc = $$$ERROR(,"Not found end of post's table") Q 0
-    }
-	
-	s sc = html.MoveTo( pos ) Q:'sc ""
-	
-	s num = 0
-	for {
-		s num = num + 1
-		s pos = html.FindAt( pos, ..#PostBegin ) Q:pos=-1
-		if num'>oldPostsAmount{
-			s pos = pos + $l(..#PostBegin) ;offset
-			Continue
-			}
-		s sc = ..postBegin( pos ) Q:'sc
-		s pos = pos + $l(..#PostBegin) ;offset
-		}
-	if sc && ( ..pos < end) {
-		s sc = ..postBegin( end ) ;for last topic	
-	}
-	
+	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
+	s data("Topic") = topicId
+
+	s sc = ##class(Post).Insert( .data ) 
 	Q sc
 ]]></Implementation>
 </Method>

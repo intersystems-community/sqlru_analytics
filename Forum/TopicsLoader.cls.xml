@@ -7,6 +7,8 @@ Initial topic loader </Description>
 <TimeCreated>63776,59960.045951</TimeCreated>
 
 <Method name="Load">
+<Description>
+Run, Main, Load</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -14,9 +16,58 @@ Initial topic loader </Description>
 	if ##class(Forum).NameExists( forum ) {
 		s sc = ##class(Forum).NameDelete( forum ) Q:'sc sc
 	}
-	s forumObj = ##class(Forum).%New( forum )
-	s sc = forumObj.%Save() Q:'sc sc
+	k data s data("Name") = forum 
+	s sc = ##class(Forum).Insert( .data ) Q:'sc sc
 	Q ..Scan( forum )
+]]></Implementation>
+</Method>
+
+<Method name="OnTopic">
+<Description><![CDATA[
+Event handler 
+<var>data</var> - key-value array with topic properties 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	Q:'##class(Forum).NameExists( ..Forum, .forumId ) 0
+	s data("Forum") = forumId
+
+	s topic = $g(data("ExtId")), amount = $g(data("PagesAmount"))
+
+	s sc = ##class(Topic).Insert( .data ) 
+	#; any TopicsPage may have repeated first topic 
+	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
+		Q 1
+	}
+	Q:'sc sc
+	
+	s topicId = $g(data) w topicId_" "
+
+	Q ##class(PostsLoader).Load(topic,amount)
+]]></Implementation>
+</Method>
+
+<Method name="Scan">
+<Description>
+Example scan across all forum topic pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	s i = 0, count = 1, sc = 1
+	for {
+		
+		s i = i + 1  if i > count Quit
+		s page = ..GetPage( forum, i, .sc ) Q:'sc
+		s:i=1 count = page.Pages() ; get pages count once
+		s sc = page.Parse() Q:'sc
+		w !, "Page #"_i_" successfuly loaded", !
+		
+	}
+	Q sc
 ]]></Implementation>
 </Method>
 </Class>

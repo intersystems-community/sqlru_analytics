@@ -13,5 +13,46 @@ Initial post loader</Description>
 <Implementation><![CDATA[	Q ..Scan( topic ,amount)
 ]]></Implementation>
 </Method>
+
+<Method name="Scan">
+<Description>
+scan across all forum posts pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%Integer,pagesAmount:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+
+	if +pagesAmount = 0 { ;pagesAmount = "a"
+		s page = ..GetPage( topic,pagesAmount, .sc ) Q:'sc
+		s sc = page.Parse() Q:'sc sc
+		}
+	else{ ;pagesAmount - numeric
+		s i = 0
+		for {
+			s i = i + 1  if i > pagesAmount Quit
+			s page = ..GetPage( topic, i, .sc ) Q:'sc
+			s sc = page.Parse() Q:'sc
+			}
+		}
+
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="OnPost">
+<Description><![CDATA[
+Event handler 
+<var>data</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
+	s data("Topic") = topicId
+
+	s sc = ##class(Post).Insert( .data ) 
+	Q sc
+]]></Implementation>
+</Method>
 </Class>
 </Export>

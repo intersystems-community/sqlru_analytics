@@ -98,7 +98,7 @@ current position in content</Description>
 
 <Method name="Get">
 <Description><![CDATA[
-Load page content from sql.ru/forum/<var>post</var>-a]]></Description>
+Load page content from sql.ru/forum/<var>topic</var>-<var>amount</var>]]></Description>
 <FormalSpec>topic="",amount=""</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
@@ -128,9 +128,11 @@ Return posts page parser</Description>
 </Method>
 
 <Method name="Parse">
-<Description>
-Move from topic table begin to the end of table</Description>
-<FormalSpec>fromPost:%Integer</FormalSpec>
+<Description><![CDATA[
+Move from topic table begin to the end of table
+May miss amount of posts = <var>fromPost</var>]]></Description>
+<FormalSpec>fromPost:%Integer=0</FormalSpec>
+<Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
@@ -151,12 +153,16 @@ Move from topic table begin to the end of table</Description>
 	
 	s sc = html.MoveTo( pos ) Q:'sc ""
 	
+	s num = 0
 	for {
-		
+		s num = num + 1
 		s pos = html.FindAt( pos, ..#PostBegin ) Q:pos=-1
+		if num'>fromPost{
+			s pos = pos + $l(..#PostBegin) ;offset
+			Continue
+			}
 		s sc = ..postBegin( pos ) Q:'sc
 		s pos = pos + $l(..#PostBegin) ;offset
-		
 		}
 	if sc && ( ..pos < end) {
 		s sc = ..postBegin( end ) ;for last topic	
@@ -562,53 +568,21 @@ Extract date and time of post
 Event handler 
 <var>post</var> - key-value array 
 If handler return 0, parsing will be interrupted]]></Description>
+<Abstract>1</Abstract>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	
-	s post = ##class(Post).%New() 
-	
-	s exist = ##class(Topic).ExtIdExists( ..Topic, .topicId ) Q:'exist exist
-	s sc = post.TopicSetObjectId( topicId ) Q:'sc sc
-	
-	#define g(%prop) $g(data(%prop))
-	s post.ExtId = $$$g("ExtId")
-	
-	s post.Type = $$$g("Type")
-	s post.Author = $$$g("Author")
-	s post.AuthorExtId = $g(data("Author","ExtId"))
-	
-	s post.Text = $$$g("Text")
-	s post.Posted = $$$g("Posted")
-	s sc = post.%Save() 
-	
-	//w sc
-	Q sc
+<Implementation><![CDATA[	Q 1
 ]]></Implementation>
 </Method>
 
 <Method name="Scan">
 <Description>
 scan across all forum topic pages</Description>
+<Abstract>1</Abstract>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>topic:%Integer,pagesAmount:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-
-	if +pagesAmount = 0 { ;pagesAmount = "a"
-		s page = ..GetPage( topic,pagesAmount, .sc ) Q:'sc
-		s sc = page.Parse() Q:'sc sc
-		}
-	else{ ;pagesAmount - numeric
-		s i = 0
-		for {
-			s i = i + 1  if i > pagesAmount Quit
-			s page = ..GetPage( topic, i, .sc ) Q:'sc
-			s sc = page.Parse() Q:'sc
-			}
-		}
-
-	Q sc
+<Implementation><![CDATA[	Q 1
 ]]></Implementation>
 </Method>
 </Class>

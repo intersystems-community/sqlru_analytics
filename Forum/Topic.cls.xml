@@ -97,6 +97,33 @@ views of topic</Description>
 <Properties>Updated</Properties>
 </Index>
 
+<Method name="Insert">
+<Description>
+sql is faster than oop?</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data=""]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql(
+		Insert Into Forum.Topic (Forum, Type, Name, ExtId, Author, AuthorExtId, Answers, Views, Updated)
+		Values (
+			:data("Forum"), :data("Type"), :data("Name")
+			, :data("ExtId"), :data("Author"), :data("Author","ExtId")
+			, :data("Answers"), :data("Views"), :data("Updated")
+		)
+	)
+	if SQLCODE=0 {
+		s data = %ROWID Q 1	
+	}
+	
+	#; sqlru has repeated topic on every Page - special type of topic
+	#; in this case, we must generate special error 
+	if (SQLCODE = -119) Q $$$ERROR(5808)	
+	
+	Q $$$ERROR(,$system.SQL.SQLCODE(SQLCODE))
+]]></Implementation>
+</Method>
+
 <Storage name="Default">
 <Type>%Library.CacheStorage</Type>
 <DataLocation>^Forum.TopicD</DataLocation>
