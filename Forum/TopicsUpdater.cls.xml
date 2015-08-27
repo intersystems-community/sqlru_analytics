@@ -22,7 +22,6 @@ If handler return 0, parsing will be interrupted]]></Description>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-<<<<<<< HEAD
 
 	#define g(%prop) $g(data(%prop))
 	
@@ -58,40 +57,9 @@ If handler return 0, parsing will be interrupted]]></Description>
 
 		s topic.Answers = $$$g("Answers")
 		s topic.Updated = $$$g("Updated")
-=======
-	s extId = $g(data("ExtId"))
-	
-	s exist = ##class(Topic).ExtIdExists( extId, .topic )
-	if 'exist Q ##class(Topic).Insert( data ) Q sc 	
-	
-	
-	s updated = ##class(Topic).UpdatedGetStored( topic )
-	if updated = $g(data("Updated")) Q 1 
-	
-	#; Insert your update logic here	
-	
-	Q 1
-]]></Implementation>
-</Method>
-
-<Method name="Scan">
-<Description>
-Example scan across all forum topic pages</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>forum="cache"</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	s i = 0, count = 1, sc = 1
-	for {
->>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 		
-		s i = i + 1  if i > count Quit
-		s page = ..GetPage( forum, i, .sc ) Q:'sc
-		s:i=1 count = page.Pages() ; get pages count once
-		s sc = page.Parse() Q:'sc
-		w !, "Page #"_i_" successfuly updated", !
+		}
 		
-<<<<<<< HEAD
 	
 	s sc = topic.%Save() 
 	
@@ -120,8 +88,6 @@ Example scan across all forum topic pages</Description>
 		s sc = page.Parse() Q:'sc
 		w !, "Page #"_i_" successfuly updated", !
 		
-=======
->>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 	}
 	Q sc
 ]]></Implementation>

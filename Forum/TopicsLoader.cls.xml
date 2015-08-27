@@ -33,13 +33,9 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	Q:'##class(Forum).NameExists( ..Forum, .forumId ) 0
 	s data("Forum") = forumId
-<<<<<<< HEAD
 
 	s topic = $g(data("ExtId")), amount = $g(data("PagesAmount"))
 
-=======
-	#;fast sql?
->>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 	s sc = ##class(Topic).Insert( .data ) 
 	#; any TopicsPage may have repeated first topic 
 	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
@@ -47,37 +43,9 @@ If handler return 0, parsing will be interrupted]]></Description>
 	}
 	Q:'sc sc
 	
-<<<<<<< HEAD
 	s topicId = $g(data) w topicId_" "
 
 	Q ##class(PostsLoader).Load(topic,amount)
-=======
-	s topicId = $g(data) w !,topicId
-	/* slow OOP?
-	s topic = ##class(Topic).%New() 
-	s sc = topic.ForumSetObjectId( forumId ) Q:'sc sc
-	
-	#define g(%prop) $g(data(%prop))
-	s topic.ExtId = $$$g("ExtId")
-	
-	s topic.Name = $$$g("Name")
-	s topic.Type = $$$g("Type")
-	s topic.Author = $$$g("Author")
-	s topic.AuthorExtId = $g(data("Author","ExtId"))
-	
-	s topic.Answers = $$$g("Answers")
-	s topic.Views = $$$g("Views")
-	s topic.Updated = $$$g("Updated")
-	s sc = topic.%Save() 
-	
-	#; any topics page may have repeated first topic 
-	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
-		Q 1
-	}
-	s sc = ##class(PostsLoader).Load($$$g("ExtId"),$$$g("PagesAmount"))
-	*/
-	Q sc
->>>>>>> 79844e8a43e5c294eff9d4efb5e0bf424384e916
 ]]></Implementation>
 </Method>
 
