@@ -98,8 +98,6 @@ views of topic</Description>
 </Index>
 
 <Method name="Insert">
-<Description>
-sql is faster than oop?</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&data=""]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -132,8 +130,6 @@ sql is faster than oop?</Description>
 <IndexLocation>^Forum.TopicI</IndexLocation>
 <StreamLocation>^Forum.TopicS</StreamLocation>
 <Data name="TopicDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>

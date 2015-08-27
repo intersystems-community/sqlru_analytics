@@ -25,14 +25,21 @@ If handler return 0, parsing will be interrupted]]></Description>
 
 	#define g(%prop) $g(data(%prop))
 	
+	Q:'##class(Forum).NameExists( ..Forum, .forumId ) 0
+	
 	s extId = $$$g("ExtId")
 	s exist = ##class(Topic).ExtIdExists( extId, .topicId )
 	
 	#; This Object don't exist
 	#; Add new object
 	if 'exist {
-		s sc = ##class(Topic).Insert( data ) Q:'sc sc
-		Q ##class(PostsLoader).Load(data)
+		s data("Forum") = forumId
+		
+		s topic = $g(data("ExtId")), amount = $g(data("PagesAmount"))
+		
+		s sc = ##class(Topic).Insert( .data ) Q:'sc sc
+		
+		Q ##class(PostsLoader).Load(topic,amount)
 	}
 	
 	#; This object exist
