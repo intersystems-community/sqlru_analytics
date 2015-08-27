@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Document name="BI-TechnologyTopicAnalytics.dashboard.dfi">
+<dashboard xmlns="http://www.intersystems.com/deepsee/library" name="TechnologyTopicAnalytics" folderName="BI" title="Аналитика по технологии" description="" keywords="" owner="" shared="true" public="true" locked="false" resource="" timeCreated="2015-08-27T13:36:29.079Z" createdBy="UnknownUser" category="" bookCover="" scheme="" worklistCount="0" snapTo="true" snapGrid="true" gridRows="10" gridCols="10" canResize="true" canModify="true" showTitleBar="true" companyName="" companyLogo="" companyStyle="">
+  <widget name="Count" type="pivot" subtype="barChart" subtypeClass="barChart" title="" dataSource="BI/TechnologyTopicAnalyticsCount.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="8" rowSpanL="4" showToolbar="true" theme="" dataColorList="">
+  </widget>
+  <widget name="Views" type="pivot" subtype="barChart" subtypeClass="barChart" title="" dataSource="BI/TechnologyTopicAnalyticsViews.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="4" homeColL="0" colSpanL="7" rowSpanL="3" showToolbar="true" theme="" dataColorList="">
+  </widget>
+  <widget name="Answers" type="pivot" subtype="barChart" subtypeClass="barChart" title="" dataSource="BI/TechnologyTopicAnalyticsAnswers.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="7" homeColL="0" colSpanL="7" rowSpanL="3" showToolbar="true" theme="" dataColorList="">
+  </widget>
+  <widget name="CountTable" type="pivot" subtype="pivot" subtypeClass="lineChart" title="" dataSource="BI/TechnologyTopicAnalyticsCount.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="8" colSpanL="2" rowSpanL="4" showToolbar="true" theme="" dataColorList="">
+  </widget>
+  <widget name="Answers&amp;Views" type="pivot" subtype="pivot" subtypeClass="lineChart" title="" dataSource="BI/TechnologyTopicAnalyticsAV.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="4" homeColL="7" colSpanL="3" rowSpanL="6" showToolbar="true" theme="" dataColorList="">
+  </widget>
+</dashboard>
+</Document></Export>
