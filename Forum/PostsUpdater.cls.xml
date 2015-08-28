@@ -2,7 +2,8 @@
 <Export generator="Cache" version="25">
 <Class name="Forum.PostsUpdater">
 <Description>
-Initial post updater</Description>
+Initial post updater
+Called from TopicsUpdater</Description>
 <Super>Forum.PostsPage</Super>
 <TimeCreated>63785,86397.663962</TimeCreated>
 
@@ -16,7 +17,8 @@ Initial post updater</Description>
 
 <Method name="Scan">
 <Description>
-scan across all forum posts pages</Description>
+scan across all forum posts pages
+NOTE: if then if then if then - something wrong</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>topic:%Integer,amountInfo:%String</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -28,32 +30,34 @@ scan across all forum posts pages</Description>
 	s postsAmount = $p(amountInfo,"delimeter",3)
 	
 	if +lastPageNum = 0 { ;lastPageNum = "a"
+	
 		s page = ..GetPage( topic, lastPageNum, .sc ) Q:'sc
 		s sc = page.Parse( oldPostsAmount) Q:'sc sc
-		}
 		
-	else{
+	} else {
 		
-		s startPage = (oldPostsAmount\25) + 1
-		s oldPostsOnStartPage = oldPostsAmount#25
+		s MAX = 25 ;NOTE: what is magic number???
+		s startPage = ( oldPostsAmount \ MAX ) + 1 
+		s oldPostsOnStartPage = oldPostsAmount#MAX
 		
 		if lastPageNum = startPage {
 			
 			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
 			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
 			
-			}
-		else{
+		} else {
 			
 			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
 			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
 			
 			for pageNum = startPage:1:lastPageNum {
+				
 				s page = ..GetPage( topic, pageNum, .sc ) Q:'sc
 				s sc = page.Parse(0) Q:'sc
-				}
+				
+			}
 
-			}			
+		}			
 		
 		}
 	Q sc
@@ -69,7 +73,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
-	s data("Topic") = topicId
+	s data("Topic") = topicId ;add link to parent
 
 	s sc = ##class(Post).Insert( .data ) 
 	Q sc
