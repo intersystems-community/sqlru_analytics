@@ -53,10 +53,7 @@ account of post author</Description>
 
 <Property name="Text">
 <Description>
-
-
-
-
+text of post</Description>
 <Type>%Stream.GlobalCharacter</Type>
 </Property>
 
@@ -95,8 +92,6 @@ type of post; like messege, cry, question e.t.c.</Description>
 <IndexLocation>^Forum.PostI</IndexLocation>
 <StreamLocation>^Forum.PostS</StreamLocation>
 <Data name="PostDefaultData">
-
-
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
