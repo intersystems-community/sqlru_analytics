@@ -8,7 +8,8 @@
 <TimeCreated>63788,74950.849462</TimeCreated>
 <DependsOn>Forum.Topic</DependsOn>
 
-<Parameter name="DOMAIN"/>
+<Parameter name="DOMAIN">
+</Parameter>
 
 <XData name="Cube">
 <Description>
@@ -44,33 +45,26 @@ Cube definition from Architect.</Description>
 ]]></Data>
 </XData>
 
-<Parameter name="TechnologyList">
-<Default>Cache-DeepSee-iKnow-Ensemble-GlobalsDB-gt.m-Other</Default>
-</Parameter>
-
-<Parameter name="TechSearchList">
-<Default>cach-deepsee-iknow-ensemble-globalsdb-gt.m</Default>
-</Parameter>
-
 <Method name="TopicNameToTechnology">
+<Description>
+determine technology areas</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>topic:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	s topic=$zcvt(topic,"l"), technology = ""
-	
-	s technologyCount = $l(..#TechSearchList,"-")
-	
- 	for i=1:1:(technologyCount) {
-		
-		s iTechnology = $p(..#TechSearchList,"-",i)
-		s:$FIND(topic,iTechnology) technology = $p(..#TechnologyList,"-",i)
-		Q:technology'=""
- 	
- 	}
- 	
- 	s:technology="" technology = $p(..#TechnologyList,"-",technologyCount+1)
- 	Q technology
+    
+    s topic = $zcvt(topic,"l") ;lower
+    #define f(%term) $f(topic,%term)
+    
+    Q $SELECT(
+        $$$f("cach"): "Cache",
+        $$$f("deepsee"): "DeepSee",
+        $$$f("iknow"): "iKnow",
+        $$$f("ensemble"): "Ensemble",
+        $$$f("globalsdb"): "GlobalsDB",
+        $$$f("gt.m"): "gt.m",
+        1: "Other"
+    )
 ]]></Implementation>
 </Method>
 </Class>
