@@ -54,8 +54,7 @@ account of post author</Description>
 <Property name="Text">
 <Description>
 text of post</Description>
-<Type>%String</Type>
-<Parameter name="MAXLEN" value="32000"/>
+<Type>%Stream.GlobalCharacter</Type>
 </Property>
 
 <Property name="Type">
@@ -93,8 +92,6 @@ type of post; like messege, cry, question e.t.c.</Description>
 <IndexLocation>^Forum.PostI</IndexLocation>
 <StreamLocation>^Forum.PostS</StreamLocation>
 <Data name="PostDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>

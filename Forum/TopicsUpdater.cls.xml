@@ -14,6 +14,32 @@ Initial topic updater</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="Scan">
+<Description>
+Scan across all forum topic pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	s i = 1, sc = 1
+	
+	s page = ..GetPage( forum, i, .sc ) Q:'sc
+	s count = page.Pages() ; get pages count
+	s sc = page.Parse() Q:'sc
+	
+	for {
+		
+		w !, "Page #"_i_" successfuly loaded", !
+		s i = i + 1  if i > count Q
+		s sc = page.UpdateRequest( , i ) Q:'sc ;load page #i in parser  
+		s sc = page.Parse() Q:'sc
+		
+	}
+	Q sc
+]]></Implementation>
+</Method>
+
 <Method name="OnTopic">
 <Description><![CDATA[
 Event handler 
@@ -76,27 +102,6 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	w sc
 	Q 1
-]]></Implementation>
-</Method>
-
-<Method name="Scan">
-<Description>
-Example scan across all forum topic pages</Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>forum="cache"</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	s i = 0, count = 1, sc = 1
-	for {
-		
-		s i = i + 1  if i > count Quit
-		s page = ..GetPage( forum, i, .sc ) Q:'sc
-		s:i=1 count = page.Pages() ; get pages count once
-		s sc = page.Parse() Q:'sc
-		w !, "Page #"_i_" successfuly updated", !
-		
-	}
-	Q sc
 ]]></Implementation>
 </Method>
 </Class>

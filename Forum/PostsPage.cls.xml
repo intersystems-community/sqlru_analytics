@@ -40,6 +40,7 @@ Topic's ExtId</Description>
 <Description>
 Topics's amount of pages of posts
 If it is "a", it mean that we can load all posts on one page
+For example, url: http://www.sql.ru/forum/1167798-a/ - show all topic pages
 If it is number it mean than we must only load all pages by page-to-page</Description>
 <Type>%String</Type>
 </Property>
@@ -110,7 +111,24 @@ Load page content from sql.ru/forum/<var>topic</var>-<var>amount</var>]]></Descr
 	s ..request.Server = ..#SERVER
 	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
 		
-	Quit 1
+	Q 1
+]]></Implementation>
+</Method>
+
+<Method name="UpdateRequest">
+<Description><![CDATA[
+Update Url for HttpRequest, created  of
+<object>page</object>, created in <CLASSMETHOD>GetPage</CLASSMETHOD>]]></Description>
+<FormalSpec>topic="",amount=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	if $g(topic)'="" s ..Topic = topic
+	if $g(amount)'="" s ..Amount = amount
+	
+	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
+		
+	Q 1
 ]]></Implementation>
 </Method>
 
@@ -118,10 +136,10 @@ Load page content from sql.ru/forum/<var>topic</var>-<var>amount</var>]]></Descr
 <Description>
 Return posts page parser</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec><![CDATA[topic:%Integer,pagesAmount,&sc]]></FormalSpec>
+<FormalSpec><![CDATA[topic:%Integer,pagesAmount="a",&sc]]></FormalSpec>
 <ReturnType>PostsPage</ReturnType>
 <Implementation><![CDATA[
-	s page = ..%New(topic,pagesAmount)
+	s page = ..%New(topic, pagesAmount )
 	s sc = page.Get()
 	Q page
 ]]></Implementation>
@@ -153,17 +171,19 @@ May miss amount of posts = <var>fromPost</var>]]></Description>
 	
 	s sc = html.MoveTo( pos ) Q:'sc ""
 	
-	s num = 0
-	for {
-		s num = num + 1
+	s num = 0 for { s num = num + 1
+	
 		s pos = html.FindAt( pos, ..#PostBegin ) Q:pos=-1
-		if num'>fromPost{
+		if num '> fromPost {
 			s pos = pos + $l(..#PostBegin) ;offset
 			Continue
-			}
+		}
+		
 		s sc = ..postBegin( pos ) Q:'sc
 		s pos = pos + $l(..#PostBegin) ;offset
-		}
+		
+	}
+	
 	if sc && ( ..pos < end) {
 		s sc = ..postBegin( end ) ;for last topic	
 	}
@@ -179,6 +199,7 @@ found begin of topic in html content</Description>
 <Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
+	
 	if ..pos = 0 { ;first post begin
 		s ..pos = pos
 		Q 1	
@@ -244,8 +265,11 @@ Extract post's id from html
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
 	s startExtId = $f(post,"<td id=""id")
-	s endExtId = $f(post,""" class=""messageHeader""",startExtId),endExtId = endExtId - ($l(""" class=""messageHeader""") + 1)
-	s extId = $e( post,startExtId,endExtId)	
+	, DM = """ class=""messageHeader""" ;delimeter
+	
+	s endExtId = $f(post, DM , startExtId)
+	, endExtId = endExtId - ( $l( DM ) + 1 )
+	s extId = $e( post, startExtId, endExtId)	
 
 	Q extId
 ]]></Implementation>
@@ -260,9 +284,10 @@ Extract type from post html <var>post<var>
 <FormalSpec>post:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
-	s startType = $f(post,"<img src=""/forum/images/")
-	s endType = $f(post,".",startType),endType = endType - ($l(".") + 1)
-	s type = $e( post,startType,endType)
+	s startType = $f( post, "<img src=""/forum/images/" )
+	s endType = $f( post, ".", startType )
+	, endType = endType - 2 ;2 = ( $l(".") + 1 )
+	s type = $e( post, startType, endType )
 
 	Q type
 ]]></Implementation>
@@ -284,7 +309,8 @@ Extract author of post from html
 	
 	k author
 	s startAuthor = $f(post,"<td style=""width:15%"" class=""msgBody"">")
-	s endAuthor = $f(post,"</td>",startAuthor),endAuthor = endAuthor - ($l("</td>") + 1)
+	s endAuthor = $f(post,"</td>",startAuthor)
+	, endAuthor = endAuthor - 6 ; ($l("</td>") + 1)
 	s author = $e( post,startAuthor,endAuthor)
 	
 	if $f( author, "<a href") { ;registered author
@@ -298,9 +324,7 @@ Extract author of post from html
 		
 		s author = name, author("ExtId") = extId
 		
-	}
-	
-	else { ;unregistered author
+	} else { ;unregistered author
 
 		s author = $p(author,"<")
 		s author = $zstrip(author,"<>WC")
@@ -323,209 +347,14 @@ Extract text of post
 <Implementation><![CDATA[
 
 	s startText = $f(post,"<td class=""msgBody"">")
-	s endText = $f(post,"<td colspan=""2"" class=""msgFooter"">",startText),endText = endText - ($l("<td colspan=""2"" class=""msgFooter"">") + 1)
-	s text = $e( post,startText,endText)
-	s text = $p( text, "</td>",1,*-1)
-	s text = $zstrip(text,"<>WC")
+	s DM = "<td colspan=""2"" class=""msgFooter"">"
 	
-	//s text = ..CleanText(text)
-	s:$f(text,"<a href") text = ..LinksCutOut(text)
-	while $f(text,"<table class='quote'>") {
-		s text = ..QuoteCutOut(text)
-		}
-	s:$f(text,"<pre ") text = ..PreCutOut(text)
-	s:$f(text,"<PRE ") text = ..PreCutOut(text,"u")
-	s:$f(text,"<!--begin case_isattach-->") text = ..AttachesCutOut(text)
-	s:$f(text,"http://www.sql.ru/forum/images/") text = ..ImgCutOut(text)
-	s:$f(text,"<table ") text = ..SpecQuoteCutOut(text)
+	s endText = $f(post, DM, startText)
+	, endText = endText - ( $l(DM) + 1 )
 	
-	if $l(text)>32000 s text = "!!!Text of post was cutted, because it's length more than 32000. Here is first 1000!!! "_$e(text,1,1000)
-	
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="CleanText">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	
-	s text = $lfs(text,"<br />"), text = $lts(text,"")
-	
-	s text = $lfs(text,"<b>"), text = $lts(text,"")
-	s text = $lfs(text,"</b>"), text = $lts(text,"")
-	
-	s text = $lfs(text,"&quot;"), text = $lts(text, """")
-	
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="LinksCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	s count = 0
-	
-	while $f(text,"<a href"){
-		
-		s count = count+1
-		
-		s startLink = $f(text,"<a href"), startLink = startLink - $l("<a href")
-		s endLink = $f(text,">",startLink)
-		
-		s beforeLink = $e(text,1,startLink-1), afterLink = $e(text,endLink,*)
-		s text = beforeLink_afterLink
-
-		}
-	
-	s length = $l("</a>")
-	for num = 1:1:count {
-		
-		s pos = $f(text,"</a>")-1
-		s beforePos = $e(text,1,pos-length), afterPos = $e(text,pos+1,*)
-		s text = beforePos_afterPos
-		
-		}
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="QuoteCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	
-	#define fQuote(%pos) $f(text,"<table class='quote'>",%pos)
-	
-	s startQuote = $f(text,"<table class='quote'>"), endQuote = $f(text,"</table>",startQuote), 
-		embQuote = $$$fQuote(startQuote)
-	
-	if (embQuote'=0)&(embQuote<endQuote) s endQuote = ..EmbQuoteCutOut(text)
-	
-	s startQuote = startQuote - $l("<table class='quote'>")
-	s beforeQuote = $e(text,1,startQuote-1), afterQuote = $e(text,endQuote,*)
-	s text = beforeQuote_" !!!QUOTE!!! "_afterQuote
-
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="EmbQuoteCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%Integer</ReturnType>
-<Implementation><![CDATA[
-
-	#define fQuote(%pos) $f(text,"<table class='quote'>",%pos)
-	
-	s quotePos = 1, levelQuote = 0, endQuote = $f(text,"</table>")
-	for {
-		
-		s:$$$fQuote(quotePos) tmpQuotePos = $$$fQuote(quotePos)
-		s:'$$$fQuote(quotePos) tmpQuotePos = $l(text)+1
-		
-		if tmpQuotePos < endQuote {
-			s levelQuote = levelQuote + 1, quotePos = tmpQuotePos
-			Continue
-			}
-		else {
-			s levelQuote = levelQuote - 1
-			s:levelQuote'=0 endQuote = $f(text,"</table>",endQuote)
-			Continue:levelQuote'=0
-			}
-		Q
-		}
-	Q endQuote
-]]></Implementation>
-</Method>
-
-<Method name="PreCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String,mode="l"</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	s lowerText = text
-	if mode '= "l" s lowerText = $zconvert(text,"l")
-	
-	while $f(lowerText,"<pre "){
-		
-		s startPre = $f(lowerText,"<pre "), startPre = startPre - $l("<pre ")
-		s endPre = $f(lowerText,"</pre>",startPre)
-	
-		s beforePre = $e(text,1,startPre-1), afterPre = $e(text,endPre,*)
-		s text = beforePre_" !!!SOME PRE!!! "_afterPre
-
-		s lowerText = text
-		if mode '= "l" s lowerText = $zconvert(text,"l")
-
-		}
-	
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="AttachesCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	
-	while $f(text,"<!--begin case_isattach-->"){
-		
-		s startAttache = $f(text,"<!--begin case_isattach-->"), startAttache = startAttache - $l("<!--begin case_isattach-->")
-		s endAttache = $f(text,"<!--end case_isattach-->",startAttache)
-	
-		s beforeAttache = $e(text,1,startAttache-1), afterAttache = $e(text,endAttache,*)
-		s text = beforeAttache_" !!!ATTACHE!!! "_afterAttache
-
-		}
-	
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="ImgCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-
-	while $f(text,"http://www.sql.ru/forum/images/"){
-		
-		s startImg = $f(text,"http://www.sql.ru/forum/images/")
-		s endImg = $f(text,".",startImg), 
-			length = $l("."),
-			typeImg = $e(text,startImg,endImg-(length+1)), 
-			startImg = startImg - $l("http://www.sql.ru/forum/images/")
-	
-		s beforeImg = $e(text,1,startImg-1), afterImg = $e(text,endImg,*)
-		s text = beforeImg_" !!!IMG!!!"_typeImg_"!!! "_afterImg
-
-		}
-	
-	Q text
-]]></Implementation>
-</Method>
-
-<Method name="SpecQuoteCutOut">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>text:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	
-	while $f(text,"<table "){
-		
-		s startSQ = $f(text,"<table "), startSQ = startSQ - $l("<table ")
-		s endSQ = $f(text,"</table>",startSQ)
-	
-		s beforeSQ = $e(text,1,startSQ-1), afterSQ = $e(text,endSQ,*)
-		s text = beforeSQ_" !!!SPEC.QUOTE!!! "_afterSQ
-
-		}
+	s text = $e( post, startText, endText )
+	s text = $p( text, "</td>", 1, *-1 )
+	s text = $zstrip( text, "<>WC" )
 	
 	Q text
 ]]></Implementation>
@@ -533,21 +362,26 @@ Extract text of post
 
 <Method name="ParsePosted">
 <Description><![CDATA[
+NOTE: This method repeat method in <class>Forum.TopicsPage</class>
 Extract date and time of post
 <td colspan="2" class="msgFooter">
-	8 фев 13, 14:55    [<a onclick="showCopy...]]></Description>
+8 фев 13, 14:55 [<a onclick="showCopy...]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>post:%String</FormalSpec>
 <ReturnType>%String</ReturnType>
 <Implementation><![CDATA[
 	
 	s startPosted = $f(post,"<td colspan=""2"" class=""msgFooter"">")
-	s endPosted = $f(post,"[<a onclick",startPosted),endPosted = endPosted - ($l("[<a onclick") + 1)
-	s posted= $e( post,startPosted,endPosted) ; 8 фев 13, 14:55
+	s DM = "[<a onclick"
+	s endPosted = $f(post, DM, startPosted), endPosted = endPosted - ( $l(DM) + 1 )
+	s posted= $e( post, startPosted, endPosted) ; 8 фев 13, 14:55
 
-	s date = $p(posted,","), date = $zstrip(date, "<>WC" ) ;8 фев 13
-	s time = $p(posted,",",2), time = $zstrip(time, "<>W" ) ;14:55
+	s date = $p(posted, ","), date = $zstrip(date, "<>WC" ) ;8 фев 13
+	s time = $p(posted, ",", 2), time = $zstrip(time, "<>W" ) ;14:55
 	
+	#; NOTE: this part of code already exists in <class>TopicsPage</class>!!!.  
+	#; Once and only once!
+	#; Create method please
 	s months = $zcvt(" Янв Фев Мар Апр Май Июн Июл Авг Сен Окт Ноя Дек", "L" )
 	
 	///58074 - convert as two digits from 2000-01-01
