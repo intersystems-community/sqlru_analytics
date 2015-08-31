@@ -53,7 +53,15 @@ account of post author</Description>
 
 <Property name="Text">
 <Description>
-text of post</Description>
+text of post in string, if lenght more than 32676 then it truncate</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="32676"/>
+<Parameter name="TRUNCATE" value="1"/>
+</Property>
+
+<Property name="TextStream">
+<Description>
+text of post in stream</Description>
 <Type>%Stream.GlobalCharacter</Type>
 </Property>
 
@@ -70,11 +78,12 @@ type of post; like messege, cry, question e.t.c.</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	&sql(
-		Insert Into Forum.Post (Topic, ExtId, Author, AuthorExtId, Posted, Text, Type)
+		Insert Into Forum.Post (Topic, ExtId, Author, AuthorExtId, Posted, TextStream, Text, Type)
 		Values (
 			:data("Topic"), :data("ExtId")
 			, :data("Author"), :data("Author","ExtId")
-			, :data("Posted"), :data("Text"), :data("Type")
+			, :data("Posted"), :data("Text")
+			, :data("Text"), :data("Type")
 		)
 	)
 	if SQLCODE=0 {

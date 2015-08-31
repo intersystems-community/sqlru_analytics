@@ -11,9 +11,9 @@ Initial post loader</Description>
 Load posts of topic with ExtId <var>topic</var>
 <var>amount</var> = "a" - all - if we can load all pages for one time, or number of pages of posts of topic]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,amount</FormalSpec>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ..Scan( topic, amount )
+<Implementation><![CDATA[	Q ..Scan(.data)
 ]]></Implementation>
 </Method>
 
@@ -21,10 +21,14 @@ Load posts of topic with ExtId <var>topic</var>
 <Description>
 scan across all forum posts pages</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,pagesAmount:%String</FormalSpec>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-
+	#define g(%prop) $g(data(%prop))
+	
+	s topic = $$$g("topic")
+	s pagesAmount = $$$g("pages")
+	
 	if +pagesAmount = 0 { ;pagesAmount = "a" - all
 	
 		s page = ..GetPage( topic, pagesAmount, .sc ) Q:'sc
@@ -39,7 +43,7 @@ scan across all forum posts pages</Description>
 		#; Load and parse pages from 1 to <var>pagesAmount</var>
 		for { s i = i + 1  Q:i>pagesAmount 
 			
-			s sc = page.UpdateRequest( , i ) Q:'sc ;load page #i in parser  
+			s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
 			s sc = page.Parse() Q:'sc
 		}
 	}

@@ -114,25 +114,6 @@ Load page content from sql.ru/forum/<var>forum</var>/<var>num</var>]]></Descript
 	if $g(forum)'="" s ..Forum = forum
 	if $g(num)'="" s ..Num = num
 	
-	s ..request = ##class(%Net.HttpRequest).%New()
-	s ..request.Server = ..#SERVER
-	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
-		
-	Quit 1
-]]></Implementation>
-</Method>
-
-<Method name="UpdateRequest">
-<Description><![CDATA[
-Update Url for HttpRequest, created  of
-<object>page</object>, created in <CLASSMETHOD>GetPage</CLASSMETHOD>]]></Description>
-<FormalSpec>forum="",num=""</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	
-	if $g(forum)'="" s ..Forum = forum
-	if $g(num)'="" s ..Num = num
-
 	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
 		
 	Q 1
@@ -147,6 +128,10 @@ Return topic page parser</Description>
 <ReturnType>TopicsPage</ReturnType>
 <Implementation><![CDATA[
 	s page = ..%New(forum, num)
+	
+	s page.request = ##class(%Net.HttpRequest).%New()
+	s page.request.Server = ..#SERVER
+	
 	s sc = page.Get()
 	Q page
 ]]></Implementation>

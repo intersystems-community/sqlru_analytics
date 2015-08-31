@@ -9,9 +9,9 @@ Called from TopicsUpdater</Description>
 
 <Method name="Update">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,amountInfo:%String</FormalSpec>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ..Scan( topic, amountInfo)
+<Implementation><![CDATA[	Q ..Scan(.data)
 ]]></Implementation>
 </Method>
 
@@ -20,14 +20,15 @@ Called from TopicsUpdater</Description>
 scan across all forum posts pages
 NOTE: if then if then if then - something wrong</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,amountInfo:%String</FormalSpec>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	;#amountInfo = pagesAmount_"delimeter"_oldPostsAmount_"delimeter"_postsAmount
-
-	s lastPageNum = $p(amountInfo,"delimeter") ; it's or "a"(if we can load all pages), or number of last page of topics
-	s oldPostsAmount = $p(amountInfo,"delimeter",2)
-	s postsAmount = $p(amountInfo,"delimeter",3)
+	#define g(%prop) $g(data(%prop))
+	
+	s topic = $$$g("topic") ;ExtId of topic
+	s lastPageNum = $$$g("pages") ; it's or "a"(if we can load all pages), or number of last page of topics
+	s oldPostsAmount = $$$g("from")
+	s postsAmount = $$$g("to")
 	
 	if +lastPageNum = 0 { ;lastPageNum = "a"
 	
@@ -52,7 +53,7 @@ NOTE: if then if then if then - something wrong</Description>
 			
 			for pageNum = startPage:1:lastPageNum {
 				
-				s sc = page.UpdateRequest( , pageNum ) Q:'sc
+				s sc = page.Get( , pageNum ) Q:'sc
 				s sc = page.Parse() Q:'sc
 				
 			}

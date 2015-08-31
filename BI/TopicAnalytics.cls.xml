@@ -8,8 +8,7 @@
 <TimeCreated>63788,74950.849462</TimeCreated>
 <DependsOn>Forum.Topic</DependsOn>
 
-<Parameter name="DOMAIN">
-</Parameter>
+<Parameter name="DOMAIN"/>
 
 <XData name="Cube">
 <Description>
@@ -20,8 +19,6 @@ Cube definition from Architect.</Description>
   <dimension name="Name" disabled="false" hasAll="false" allCaption="All Name" allDisplayName="Name" type="data" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
       <level sourceExpression="%cube.TopicNameToTechnology(%source.Name)" name="Technology" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
-      </level>
-      <level sourceProperty="Name" name="Topic" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
       </level>
     </hierarchy>
   </dimension>
@@ -41,6 +38,7 @@ Cube definition from Architect.</Description>
   </dimension>
   <measure sourceProperty="Answers" name="Answers" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
   <measure sourceProperty="Views" name="Views" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
+  <listing name="Listing" disabled="false" listingType="table" fieldList="Author,Name"></listing>
 </cube>
 ]]></Data>
 </XData>

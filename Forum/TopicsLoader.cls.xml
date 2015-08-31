@@ -40,7 +40,7 @@ Scan across all forum topic pages</Description>
 		
 		w !, "Page #"_i_" successfuly loaded", !
 		s i = i + 1  if i > count Q
-		s sc = page.UpdateRequest( , i ) Q:'sc ;load page #i in parser  
+		s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
 		s sc = page.Parse() Q:'sc
 		
 	}
@@ -71,7 +71,11 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	s topicId = $g(data) w topicId_" "
 
-	Q ##class(PostsLoader).Load(topic,amount)
+	k data	
+	s data("pages") = amount 
+	s data("topic") = topic
+
+	Q ##class(PostsLoader).Load(.data)
 ]]></Implementation>
 </Method>
 </Class>

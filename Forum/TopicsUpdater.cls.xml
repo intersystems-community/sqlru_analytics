@@ -30,9 +30,9 @@ Scan across all forum topic pages</Description>
 	
 	for {
 		
-		w !, "Page #"_i_" successfuly loaded", !
+		w !, "Page #"_i_" successfuly updated", !
 		s i = i + 1  if i > count Q
-		s sc = page.UpdateRequest( , i ) Q:'sc ;load page #i in parser  
+		s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
 		s sc = page.Parse() Q:'sc
 		
 	}
@@ -96,9 +96,15 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	s sc = topic.%Save() 
 	
-	s amountInfo = pagesAmount_"delimeter"_oldPostsAmount_"delimeter"_postsAmount
+	s topic = $$$g("ExtId")
 	
-	s:newPostsAmount'=0 sc = ##class(PostsUpdater).Update($$$g("ExtId"),amountInfo)
+	k data	
+	s data("pages") = pagesAmount 
+	s data("from") = oldPostsAmount
+	s data("to") = postsAmount
+	s data("topic") = topic
+	
+	s:newPostsAmount'=0 sc = ##class(PostsUpdater).Update(.data)
 	
 	w sc
 	Q 1

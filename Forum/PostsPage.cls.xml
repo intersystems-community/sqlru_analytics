@@ -107,25 +107,6 @@ Load page content from sql.ru/forum/<var>topic</var>-<var>amount</var>]]></Descr
 	if $g(topic)'="" s ..Topic = topic
 	if $g(amount)'="" s ..Amount = amount
 	
-	s ..request = ##class(%Net.HttpRequest).%New()
-	s ..request.Server = ..#SERVER
-	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
-		
-	Q 1
-]]></Implementation>
-</Method>
-
-<Method name="UpdateRequest">
-<Description><![CDATA[
-Update Url for HttpRequest, created  of
-<object>page</object>, created in <CLASSMETHOD>GetPage</CLASSMETHOD>]]></Description>
-<FormalSpec>topic="",amount=""</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	
-	if $g(topic)'="" s ..Topic = topic
-	if $g(amount)'="" s ..Amount = amount
-	
 	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
 		
 	Q 1
@@ -140,6 +121,10 @@ Return posts page parser</Description>
 <ReturnType>PostsPage</ReturnType>
 <Implementation><![CDATA[
 	s page = ..%New(topic, pagesAmount )
+
+	s page.request = ##class(%Net.HttpRequest).%New()
+	s page.request.Server = ..#SERVER
+	
 	s sc = page.Get()
 	Q page
 ]]></Implementation>
@@ -400,7 +385,7 @@ Extract date and time of post
 <Method name="OnPost">
 <Description><![CDATA[
 Event handler 
-<var>post</var> - key-value array 
+<var>data</var> - key-value array 
 If handler return 0, parsing will be interrupted]]></Description>
 <Abstract>1</Abstract>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
@@ -414,7 +399,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 scan across all forum topic pages</Description>
 <Abstract>1</Abstract>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>topic:%Integer,pagesAmount:%String</FormalSpec>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[	Q 1
 ]]></Implementation>
