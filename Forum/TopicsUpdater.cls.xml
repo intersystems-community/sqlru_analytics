@@ -12,20 +12,20 @@ Initial topic updater</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	; wSS - write Successful Statuses
-	#Define wSSa w !,"Statuses of successful update:",!,"-""1"" - In topic updated only views"
-	#Define wSSb w !,"-""1""-<var>n</var> - In topic added ""n"" posts",!,"-<var>Id</var> - New topic loaded and saved with Id -""Id""",!
-
+	#Define SSa "Statuses of successful update:"
+	#Define SSb "-""1"" - In topic updated only views"
+	#Define SSc "-""1""-<var>n</var> - In topic added ""n"" posts"
+	#Define SSd "-<var>Id</var> - New topic loaded and saved with Id -""Id"""
+	#Define wSS w !,$$$SSa,!,$$$SSb,!,$$$SSc,!,$$$SSd,!
 	
 	if '##class(Forum).NameExists( forum ) {
 		k data s data("Name") = forum 
 		s sc = ##class(Forum).Insert( .data ) Q:'sc sc
 	}
 	
-	$$$wSSa
-	$$$wSSb	
+	$$$wSS	
 	s sc = ..Scan( forum )
-	$$$wSSa
-	$$$wSSb
+	$$$wSS
 	
 	Q sc
 ]]></Implementation>
