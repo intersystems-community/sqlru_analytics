@@ -88,6 +88,12 @@ views of topic</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="Posted">
+<Description>
+Date and time of topic create</Description>
+<Type>%TimeStamp</Type>
+</Property>
+
 <Property name="Updated">
 <Type>%TimeStamp</Type>
 <Required>1</Required>
@@ -159,6 +165,9 @@ views of topic</Description>
 </Value>
 <Value name="10">
 <Value>Updated</Value>
+</Value>
+<Value name="11">
+<Value>Posted</Value>
 </Value>
 </Data>
 </Storage>

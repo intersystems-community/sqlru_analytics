@@ -32,12 +32,18 @@ scan across all forum posts pages</Description>
 	if +pagesAmount = 0 { ;pagesAmount = "a" - all
 	
 		s page = ..GetPage( topic, pagesAmount, .sc ) Q:'sc
+		
+		s page.firstPost=1 ; if = 1 then it's the first post of topic
+		
 		s sc = page.Parse() Q:'sc sc	
 		
 	} else { ;pagesAmount - numeric
 		
 		s i = 1		
 		s page = ..GetPage( topic, i, .sc ) Q:'sc ;creating <object>page</object> with Http.Response and load page #1 in parser
+	
+		s page.firstPost=1 ; if = 1 then it's the first post of topic
+	
 		s sc = page.Parse() Q:'sc
 
 		#; Load and parse pages from 1 to <var>pagesAmount</var>
@@ -63,7 +69,17 @@ If handler return 0, parsing will be interrupted]]></Description>
 	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
 	s data("Topic") = topicId ;set parent
 
-	s sc = ##class(Post).Insert( .data ) 
+	s sc = ##class(Post).Insert( .data ) Q:'sc sc
+	
+	if ..firstPost { ;first post's date is the date of topic's creation
+		
+		s topicObj = ##class(Topic).%OpenId(topicId)
+		s topicObj.Posted = $g(data("Posted"))
+		s sc = topicObj.%Save() Q:'sc sc
+		s ..firstPost = 0
+		
+	}
+	
 	Q sc
 ]]></Implementation>
 </Method>

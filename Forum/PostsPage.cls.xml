@@ -97,6 +97,13 @@ current position in content</Description>
 <Private>1</Private>
 </Property>
 
+<Property name="firstPost">
+<Description>
+current row of topics table</Description>
+<Type>%Integer</Type>
+<Private>1</Private>
+</Property>
+
 <Method name="Get">
 <Description><![CDATA[
 Load page content from sql.ru/forum/<var>topic</var>-<var>amount</var>]]></Description>

@@ -10,7 +10,24 @@ Initial topic updater</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ..Scan( forum )
+<Implementation><![CDATA[
+	; wSS - write Successful Statuses
+	#Define wSSa w !,"Statuses of successful update:",!,"-""1"" - In topic updated only views"
+	#Define wSSb w !,"-""1""-<var>n</var> - In topic added ""n"" posts",!,"-<var>Id</var> - New topic loaded and saved with Id -""Id""",!
+
+	
+	if '##class(Forum).NameExists( forum ) {
+		k data s data("Name") = forum 
+		s sc = ##class(Forum).Insert( .data ) Q:'sc sc
+	}
+	
+	$$$wSSa
+	$$$wSSb	
+	s sc = ..Scan( forum )
+	$$$wSSa
+	$$$wSSb
+	
+	Q sc
 ]]></Implementation>
 </Method>
 
@@ -61,21 +78,30 @@ If handler return 0, parsing will be interrupted]]></Description>
 	if 'exist {
 		s data("Forum") = forumId
 		
-		s topic = $g(data("ExtId")), amount = $g(data("PagesAmount"))
+		s topic = $$$g("ExtId"), amount = $$$g("PagesAmount")
 		
 		s sc = ##class(Topic).Insert( .data ) Q:'sc sc
 		
-		Q ##class(PostsLoader).Load(topic,amount)
+		s topicId = $g(data) w topicId," "
+	
+		k data	
+		s data("pages") = amount 
+		s data("topic") = topic
+		
+		Q ##class(PostsLoader).Load(.data)
 	}
 	
 	#; This object exist
 	s topic = ##class(Topic).%OpenId(topicId)
-	#;Update Views
+	#; Update Views
 	s topic.Views = $$$g("Views")
 	
 	#; If property "Updated" don't changed, than there is nothing to change
-	s updated = ##class(Topic).UpdatedGetStored( topic )
-	if updated = $$$g("Updated") Q 1 
+	s updated = ##class(Topic).UpdatedGetStored( topicId )
+	if updated = $$$g("Updated") {
+		w "1"
+		Q 1 
+	}
 	
 	#; If updated '= $g(data("Updated")), than
 	#; We need to import new posts	
@@ -106,8 +132,8 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	s:newPostsAmount'=0 sc = ##class(PostsUpdater).Update(.data)
 	
-	w sc
-	Q 1
+	w """",sc,"-",newPostsAmount,""""
+	Q sc
 ]]></Implementation>
 </Method>
 </Class>
