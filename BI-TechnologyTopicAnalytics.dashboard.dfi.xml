@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Document name="BI-TechnologyTopicAnalytics.dashboard.DFI">
+<Document name="BI-TechnologyTopicAnalytics.dashboard.dfi">
 <dashboard xmlns="http://www.intersystems.com/deepsee/library" name="TechnologyTopicAnalytics" folderName="BI" title="Аналитика по технологии" description="" keywords="" owner="" shared="true" public="true" locked="false" resource="" timeCreated="2015-08-27T13:36:29.079Z" createdBy="UnknownUser" category="" bookCover="" scheme="" worklistCount="0" snapTo="true" snapGrid="true" gridRows="10" gridCols="9" canResize="true" canModify="true" showTitleBar="true" companyName="" companyLogo="" companyStyle="">
   <widget name="Count" type="pivot" subtype="columnChart3D" subtypeClass="barChart" title="Количество топиков" dataSource="BI/TechnologyTopicAnalyticsCount.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="3" rowSpanL="10" showToolbar="true" theme="" dataColorList="">
     <property name="analyzer">1</property>
     <property name="chartToggle">chart</property>
     <property name="drillDown">1</property>
     <property name="initialExecute">1</property>
-    <property name="legendPos">right</property>
+    <property name="legendPos">none</property>
     <property name="pivotSelect"></property>
     <property name="showDimensions">0</property>
     <override name="barChart">{appearance:'3D',hasZoom:true,labelStyle:'stroke:none;',legendVisible:'false',maxLabelLen:20,subtitleStyle:'fill:transparent;',titleBoxStyle:'fill:transparent;',valueLabelFormat:'###',valueLabelsVisible:true,xAxis:{labelPosition:'bottom',majorGridLines:false,_type:'axis'},yAxisList:[{labelPosition:'left',_type:'axis'}],_type:'barChart'}</override>
-    <override name="legend">{hidden:true,legendLabels:'Count',legendPosition:'right',_type:'chartLegend'}</override>
+    <override name="legend">{hidden:true,legendLabels:'количество',legendPosition:'right',_type:'chartLegend'}</override>
     <override name="pivot">{cellStyle:'text-align: right;',cellWidth:'100',columnHeaderStyle:'text-align: center;',crossJoinRowLimit:2000,currListingPage:-1,currPage:1,currentQueryText:{1:{_type:'queryChunk'},2:{_type:'queryChunk'}},evenRowStyle:'text-align: left;',listingFields:[],listingSelect:'multi',pivotVariables:{},resolvedQueryText:{1:{_type:'queryChunk'},2:{_type:'queryChunk'}},rowTotals:true,_type:'pivotTable'}</override>
   </widget>
   <widget name="Answers" type="pivot" subtype="columnChart3D" subtypeClass="barChart" title="Количество ответов" dataSource="BI/TechnologyTopicAnalyticsAnswers.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="3" colSpanL="3" rowSpanL="10" showToolbar="true" theme="" dataColorList="">
@@ -19,7 +19,7 @@
     <property name="chartToggle">chart</property>
     <property name="drillDown">1</property>
     <property name="initialExecute">1</property>
-    <property name="legendPos">right</property>
+    <property name="legendPos">none</property>
     <property name="pivotSelect"></property>
     <property name="showDimensions">0</property>
     <override name="barChart">{appearance:'3D',labelStyle:'stroke:none;',legendVisible:'false',seriesColorsOverride:'rgb(210,156,80)',subtitleStyle:'fill:transparent;',titleBoxStyle:'fill:transparent;',valueLabelFormat:'###',valueLabelsVisible:true,xAxis:{labelPosition:'bottom',majorGridLines:false,_type:'axis'},yAxisList:[{labelPosition:'left',_type:'axis'}],_type:'barChart'}</override>
