@@ -13,12 +13,44 @@ Entry point</Description>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	if ##class(Forum).NameExists( forum ) {
-		s sc = ##class(Forum).NameDelete( forum ) Q:'sc sc
+	s sc = 1
+
+	if ##class(Forum).NameExists( forum, .forumId ) {
+		
+		#;s sc = ##class(Forum).NameDelete( forum ) Q:'sc sc
+		#; 5803,"Forum.Topic" ERROR #5803: Can't get exclusive lock
+		#; workaround:
+		w !, "Delete old posts..." 
+				
+		s sql = "Select ID From Forum.Post Where Topic->Forum = ?"
+		s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forumId)
+		while rs.%Next() {
+			s sc = sc && ##class(Forum.Post).%DeleteId( rs.ID )
+			Q:'sc	
+		}
+		
+		w " Deleted! ", sc
+		Q:'sc sc 
+		
+		w !, "Delete old topics..." 
+		s sql = "Select ID From Forum.Topic Where Forum = ?"
+		s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forumId)
+		while rs.%Next(){
+			s sc = sc && ##class(Forum.Topic).%DeleteId( rs.ID )
+			Q:'sc	
+		}
+		w " Deleted! ", sc,!
+		Q:'sc sc 
+		
+	} else {
+		
+		k data s data("Name") = forum 
+		w !, "Create new forum: ", forum 
+		s sc = ##class(Forum).Insert( .data ) 
+		w " Created! ", sc
+		Q:'sc sc
+		
 	}
-	
-	k data s data("Name") = forum 
-	s sc = ##class(Forum).Insert( .data ) Q:'sc sc
 	
 	Q ..Scan( forum )
 ]]></Implementation>
