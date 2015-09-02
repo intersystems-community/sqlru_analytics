@@ -2,6 +2,7 @@ BI-TechnologyTopicAnalytics.dashboard.dfi
 BI-TechnologyTopicAnalyticsAV.pivot.dfi
 BI-TechnologyTopicAnalyticsAnswers.pivot.dfi
 BI-TechnologyTopicAnalyticsCount.pivot.dfi
+BI-TechnologyTopicAnalyticsDrillDown.dashboard.dfi
 BI-TechnologyTopicAnalyticsViews.pivot.dfi
 BI.TopicAnalytics.cls
 Forum.Forum.cls
