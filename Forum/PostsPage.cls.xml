@@ -360,32 +360,14 @@ Extract date and time of post
 8 фев 13, 14:55 [<a onclick="showCopy...]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>post:%String</FormalSpec>
-<ReturnType>%String</ReturnType>
+<ReturnType>%TimeStamp</ReturnType>
 <Implementation><![CDATA[
 	
 	s startPosted = $f(post,"<td colspan=""2"" class=""msgFooter"">")
 	s DM = "[<a onclick"
 	s endPosted = $f(post, DM, startPosted), endPosted = endPosted - ( $l(DM) + 1 )
 	s posted= $e( post, startPosted, endPosted) ; 8 фев 13, 14:55
-
-	s date = $p(posted, ","), date = $zstrip(date, "<>WC" ) ;8 фев 13
-	s time = $p(posted, ",", 2), time = $zstrip(time, "<>W" ) ;14:55
-	
-	#; NOTE: this part of code already exists in <class>TopicsPage</class>!!!.  
-	#; Once and only once!
-	#; Create method please
-	s months = $zcvt(" Янв Фев Мар Апр Май Июн Июл Авг Сен Окт Ноя Дек", "L" )
-	
-	///58074 - convert as two digits from 2000-01-01
-	#define 2000 58074 
-	
-	if $f(date, "сегодня") s date = $zd( +$h, 2, months, 3, $$$2000)
-	if $f(date, "вчера") s date = $zd( $h-1, 2, months, 3, $$$2000)
-	
-	s dateh = $zdh( date, 2, months, 3, $$$2000 ) 
-	s timeh = $zth( time )
-	s ts = $zdt( dateh_","_timeh, 3 ) ;odbc timestamp
-	Q ts
+	Q ##class(Forum.TopicsPage).ParseDate( posted )
 ]]></Implementation>
 </Method>
 

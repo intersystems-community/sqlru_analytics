@@ -8,7 +8,7 @@ Initial topic loader </Description>
 
 <Method name="Load">
 <Description>
-Run, Main, Load</Description>
+Entry point</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -16,8 +16,10 @@ Run, Main, Load</Description>
 	if ##class(Forum).NameExists( forum ) {
 		s sc = ##class(Forum).NameDelete( forum ) Q:'sc sc
 	}
+	
 	k data s data("Name") = forum 
 	s sc = ##class(Forum).Insert( .data ) Q:'sc sc
+	
 	Q ..Scan( forum )
 ]]></Implementation>
 </Method>
@@ -67,15 +69,11 @@ If handler return 0, parsing will be interrupted]]></Description>
 	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
 		Q 1
 	}
-	Q:'sc sc
+
+	w $g(data), " " ;output topic id (not ExtId) 
 	
-	s topicId = $g(data) w topicId_" "
-
-	k data	
-	s data("pages") = amount 
-	s data("topic") = topic
-
-	Q ##class(PostsLoader).Load(.data)
+	k args s args( "topic" ) = topic, args( "pages" ) = amount 
+	Q ##class(PostsLoader).Load( .args )
 ]]></Implementation>
 </Method>
 </Class>
