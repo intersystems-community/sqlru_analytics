@@ -9,7 +9,10 @@ Initial post loader</Description>
 <Method name="Load">
 <Description><![CDATA[
 Load posts of topic with ExtId <var>topic</var>
-<var>amount</var> = "a" - all - if we can load all pages for one time, or number of pages of posts of topic]]></Description>
+<var>data</var> - key-value array
+<var>data("topic")</var> - topicId by sql.ru
+<var>data("pages")</var> = "a" - all - if we can load all pages for one time
+, or number of pages of posts of topic]]></Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
@@ -26,33 +29,28 @@ scan across all forum posts pages</Description>
 <Implementation><![CDATA[
 	#define g(%prop) $g(data(%prop))
 	
-	s topic = $$$g("topic")
-	s pagesAmount = $$$g("pages")
+	s topic = $$$g("topic") ;topicid from sql.ru
+	s pages = $$$g("pages") ;pages - pages count (number) or "a" - all, convention from sql.ru
 	
-	if +pagesAmount = 0 { ;pagesAmount = "a" - all
+	s i = 1 s:pages="a" i = "a" ;current page with posts
+	s page = ..GetPage( topic, i, .sc ) Q:'sc
 	
-		s page = ..GetPage( topic, pagesAmount, .sc ) Q:'sc
-		
-		s page.firstPost=1 ; if = 1 then it's the first post of topic
-		
-		s sc = page.Parse() Q:'sc sc	
-		
-	} else { ;pagesAmount - numeric
-		
-		s i = 1		
-		s page = ..GetPage( topic, i, .sc ) Q:'sc ;creating <object>page</object> with Http.Response and load page #1 in parser
+	#; first post in topic contain date of topic creation
+	s page.firstPost = 1 ; < - violation of encapsulation!!!
 	
-		s page.firstPost=1 ; if = 1 then it's the first post of topic
+	s sc = page.Parse() Q:'sc sc
 	
+	#; Load and parse pages from 1 to pages
+	#;"a" - all posts of topic - convention from sql.ru
+	if pages = "a" Q sc  
+	
+	#; if pages is numeric	
+	for { s i = i + 1  Q:i>pages
+		
+		s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
 		s sc = page.Parse() Q:'sc
-
-		#; Load and parse pages from 1 to <var>pagesAmount</var>
-		for { s i = i + 1  Q:i>pagesAmount 
-			
-			s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
-			s sc = page.Parse() Q:'sc
-		}
 	}
+	
 			
 	Q sc
 ]]></Implementation>
@@ -73,9 +71,8 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	if ..firstPost { ;first post's date is the date of topic's creation
 		
-		s topicObj = ##class(Topic).%OpenId(topicId)
-		s topicObj.Posted = $g(data("Posted"))
-		s sc = topicObj.%Save() Q:'sc sc
+		s sc = ##class(Topic).SetPosted(topicId, data("Posted") )
+		Q:'sc $$$ERROR(," update topic.posted error")
 		s ..firstPost = 0
 		
 	}

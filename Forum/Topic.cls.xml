@@ -94,6 +94,18 @@ Date and time of topic create</Description>
 <Type>%TimeStamp</Type>
 </Property>
 
+<Method name="SetPosted">
+<Description>
+Update topic date by first post date</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id,posted:%TimeStamp</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql( Update Forum.Topic Set Posted = :posted Where id = :id )
+	Q ( SQLCODE = 0 )
+]]></Implementation>
+</Method>
+
 <Property name="Updated">
 <Type>%TimeStamp</Type>
 <Required>1</Required>

@@ -397,13 +397,25 @@ Extract posts count from html <var>topic</var>
 	s updated = $lg( updated, 7) ; 6 + 1
 	s updated = $p( updated, "</td>")
 	s updated = $p( updated, ">",2 ) ; 30 июн 15, 13:46
+	Q ..ParseDate( updated )
+]]></Implementation>
+</Method>
+
+<Method name="ParseDate">
+<Description><![CDATA[
+Convert extracted datetime expression to timestamp value
+<var> dtexpr </var> - [30 июн 15, 13:46], [вчера], [сегодня]]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>dtexpr:%String</FormalSpec>
+<ReturnType>%TimeStamp</ReturnType>
+<Implementation><![CDATA[
 	
-	s date = $p(updated,","), date = $zstrip(date, "<>W" ) ;30 июн 15
-	s time = $p(updated,",",2), time = $zstrip(time, "<>W" ) ;13:46
+	s date = $p( dtexpr,","), date = $zstrip(date, "<>WC" ) ;30 июн 15
+	s time = $p( dtexpr,",",2), time = $zstrip(time, "<>WC" ) ;13:46
 	
 	s months = $zcvt(" Янв Фев Мар Апр Май Июн Июл Авг Сен Окт Ноя Дек", "L" )
 	
-	///58074 - convert as two digits from 2000-01-01
+	///convert as two digits year from 2000-01-01
 	#define 2000 58074 
 	
 	if $f(date, "сегодня") s date = $zd( +$h, 2, months, 3, $$$2000)

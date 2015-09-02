@@ -47,13 +47,13 @@ account of post author</Description>
 </Property>
 
 <Property name="Posted">
-<Type>%String</Type>
+<Type>%TimeStamp</Type>
 <Required>1</Required>
 </Property>
 
 <Property name="Text">
 <Description>
-text of post in string, if lenght more than 32676 then it truncate</Description>
+text of post in string, if length more than 32676 then it truncate</Description>
 <Type>%String</Type>
 <Parameter name="MAXLEN" value="32676"/>
 <Parameter name="TRUNCATE" value="1"/>
@@ -124,6 +124,9 @@ type of post; like messege, cry, question e.t.c.</Description>
 </Value>
 <Value name="8">
 <Value>Type</Value>
+</Value>
+<Value name="9">
+<Value>TextStream</Value>
 </Value>
 </Data>
 </Storage>
