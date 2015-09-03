@@ -44,6 +44,8 @@ Cube definition from Architect.</Description>
   </dimension>
   <measure sourceProperty="Answers" name="Answers" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
   <measure sourceProperty="Views" name="Views" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
+  <calculatedMember name="AVGAnswers" disabled="false" dimension="Measures" valueExpression="[Measures].[Answers]/[Measures].[%Count]" hidden="false"></calculatedMember>
+  <calculatedMember name="AVGViews" disabled="false" dimension="Measures" valueExpression="[Measures].[Views]/[Measures].[%Count]" hidden="false"></calculatedMember>
   <listing name="Listing" disabled="false" listingType="table" fieldList="Author,Name"></listing>
 </cube>
 ]]></Data>

@@ -1,5 +1,7 @@
 BI-TechnologyTopicAnalytics.dashboard.dfi
 BI-TechnologyTopicAnalyticsAV.pivot.dfi
+BI-TechnologyTopicAnalyticsAVGAnswers.pivot.dfi
+BI-TechnologyTopicAnalyticsAVGViews.pivot.dfi
 BI-TechnologyTopicAnalyticsAnswers.pivot.dfi
 BI-TechnologyTopicAnalyticsCount.pivot.dfi
 BI-TechnologyTopicAnalyticsDrillDown.dashboard.dfi
