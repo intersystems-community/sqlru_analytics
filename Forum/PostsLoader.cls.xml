@@ -20,6 +20,13 @@ Load posts of topic with ExtId <var>topic</var>
 ]]></Implementation>
 </Method>
 
+<Property name="firstPost">
+<Description>
+current row of topics table</Description>
+<Type>%Integer</Type>
+<Private>1</Private>
+</Property>
+
 <Method name="Scan">
 <Description>
 scan across all forum posts pages</Description>
@@ -36,7 +43,7 @@ scan across all forum posts pages</Description>
 	s page = ..GetPage( topic, i, .sc ) Q:'sc
 	
 	#; first post in topic contain date of topic creation
-	s page.firstPost = 1 ; < - violation of encapsulation!!!
+	s page.firstPost = 1 
 	
 	s sc = page.Parse() Q:'sc sc
 	
