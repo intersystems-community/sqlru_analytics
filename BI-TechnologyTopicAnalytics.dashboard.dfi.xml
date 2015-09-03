@@ -22,7 +22,7 @@
     <property name="legendPos">none</property>
     <property name="pivotSelect"></property>
     <property name="showDimensions">0</property>
-    <override name="barChart">{appearance:'3D',labelStyle:'stroke:none;',legendVisible:'false',seriesColorsOverride:'rgb(210,156,80)',subtitleStyle:'fill:transparent;',titleBoxStyle:'fill:transparent;',valueLabelFormat:'#,##.##',valueLabelsVisible:true,xAxis:{labelPosition:'bottom',majorGridLines:false,_type:'axis'},yAxisList:[{labelPosition:'left',_type:'axis'}],_type:'barChart'}</override>
+    <override name="barChart">{appearance:'3D',labelStyle:'stroke:none;',legendVisible:'false',seriesColorsOverride:'rgb(210,156,80)',subtitleStyle:'fill:transparent;',titleBoxStyle:'fill:transparent;',valueLabelFormat:'###',valueLabelsVisible:true,xAxis:{labelPosition:'bottom',majorGridLines:false,_type:'axis'},yAxisList:[{labelPosition:'left',_type:'axis'}],_type:'barChart'}</override>
     <override name="legend">{hidden:true,legendLabels:'Answers',legendPosition:'right',_type:'chartLegend'}</override>
     <override name="pivot">{cellStyle:'text-align: right;',cellWidth:'100',columnHeaderStyle:'text-align: center;',crossJoinRowLimit:2000,currListingPage:-1,currPage:1,currentQueryText:{1:{_type:'queryChunk'},2:{_type:'queryChunk'}},evenRowStyle:'text-align: left;',listingFields:[],listingSelect:'multi',pivotVariables:{},resolvedQueryText:{1:{_type:'queryChunk'},2:{_type:'queryChunk'}},rowTotals:true,_type:'pivotTable'}</override>
   </widget>
@@ -58,7 +58,7 @@
     <property name="legendPos">none</property>
     <property name="pivotSelect"></property>
     <property name="showDimensions">0</property>
-    <override name="barChart">{appearance:'3D',labelStyle:'stroke:none;',legendVisible:'false',seriesColorsOverride:'rgb(251,200,120)',subtitleStyle:'fill:transparent;',titleBoxStyle:'fill:transparent;',valueLabelFormat:'###',valueLabelsVisible:true,xAxis:{labelPosition:'bottom',majorGridLines:false,_type:'axis'},yAxisList:[{labelPosition:'left',_type:'axis'}],_type:'barChart'}</override>
+    <override name="barChart">{appearance:'3D',labelStyle:'stroke:none;',legendVisible:'false',seriesColorsOverride:'rgb(251,200,120)',subtitleStyle:'fill:transparent;',titleBoxStyle:'fill:transparent;',valueLabelFormat:'#,##.##',valueLabelsVisible:true,xAxis:{labelPosition:'bottom',majorGridLines:false,_type:'axis'},yAxisList:[{labelPosition:'left',_type:'axis'}],_type:'barChart'}</override>
     <override name="legend">{hidden:true,legendLabels:'Views',legendPosition:'right',_type:'chartLegend'}</override>
     <override name="pivot">{cellStyle:'text-align: right;',cellWidth:'100',columnHeaderStyle:'text-align: center;',crossJoinRowLimit:2000,currListingPage:-1,currPage:1,currentQueryText:{1:{_type:'queryChunk'},2:{_type:'queryChunk'}},evenRowStyle:'text-align: left;',listingFields:[],listingSelect:'multi',pivotVariables:{},resolvedQueryText:{1:{_type:'queryChunk'},2:{_type:'queryChunk'}},rowTotals:true,_type:'pivotTable'}</override>
   </widget>

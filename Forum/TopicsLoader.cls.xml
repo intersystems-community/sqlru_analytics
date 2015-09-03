@@ -39,15 +39,15 @@ Entry point</Description>
 			s sc = sc && ##class(Forum.Topic).%DeleteId( rs.ID )
 			Q:'sc	
 		}
-		w " Deleted! ", sc,!
+		w " Deleted! ", sc, !
 		Q:'sc sc 
 		
 	} else {
 		
 		k data s data("Name") = forum 
-		w !, "Create new forum: ", forum 
+		w !, "Create new forum: ", forum
 		s sc = ##class(Forum).Insert( .data ) 
-		w " Created! ", sc
+		w " Created! ", sc, !
 		Q:'sc sc
 		
 	}
