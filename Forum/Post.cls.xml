@@ -46,6 +46,10 @@ account of post author</Description>
 <Type>%String</Type>
 </Property>
 
+<Property name="AuthorId">
+<Type>Forum.Author</Type>
+</Property>
+
 <Property name="Posted">
 <Type>%TimeStamp</Type>
 <Required>1</Required>
@@ -55,14 +59,14 @@ account of post author</Description>
 <Description>
 text of post in string, if length more than 32676 then it truncate</Description>
 <Type>%String</Type>
-<Parameter name="MAXLEN" value="32676"/>
+<Parameter name="MAXLEN" value="255"/>
 <Parameter name="TRUNCATE" value="1"/>
 </Property>
 
 <Property name="TextStream">
 <Description>
 text of post in stream</Description>
-<Type>%Stream.GlobalCharacter</Type>
+<Type>%Stream.FileCharacter</Type>
 </Property>
 
 <Property name="Type">
@@ -72,16 +76,31 @@ type of post; like messege, cry, question e.t.c.</Description>
 <Required>1</Required>
 </Property>
 
+<Property name="Link">
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Post).GetLink({ExtId})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extId</FormalSpec>
+<Implementation><![CDATA[$S(extId'="":"http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg="_extId,1:"")
+]]></Implementation>
+</Method>
+
 <Method name="Insert">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&data=""]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	&sql(
-		Insert Into Forum.Post (Topic, ExtId, Author, AuthorExtId, Posted, TextStream, Text, Type)
+		Insert Into Forum.Post (Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, TextStream, Text, Type)
 		Values (
 			:data("Topic"), :data("ExtId")
-			, :data("Author"), :data("Author","ExtId")
+			, :data("Author"), :data("Author","ExtId"), :data("AuthorId")
 			, :data("Posted"), :data("Text")
 			, :data("Text"), :data("Type")
 		)
@@ -89,7 +108,7 @@ type of post; like messege, cry, question e.t.c.</Description>
 	if SQLCODE=0 {
 		s data = %ROWID Q 1	
 	}	
-	Q $$$ERROR(,$system.SQL.SQLCODE(SQLCODE))
+	Q $$$ERROR($$$GeneralError,$system.SQL.SQLCODE(SQLCODE))
 ]]></Implementation>
 </Method>
 
@@ -127,6 +146,12 @@ type of post; like messege, cry, question e.t.c.</Description>
 </Value>
 <Value name="9">
 <Value>TextStream</Value>
+</Value>
+<Value name="10">
+<Value>Link</Value>
+</Value>
+<Value name="11">
+<Value>AuthorId</Value>
 </Value>
 </Data>
 </Storage>

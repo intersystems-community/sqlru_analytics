@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Http.Request">
+<Description>
+Adaptor for %Net.HttpRequest
+class %Net.HttpRequest has different behavior:
+in v2015.1 property .HttpResponse.Data has type %Stream.GlobalBinary
+in v2015.2 property .HttpResponse.Data has type %Stream.FileCharacterGzip
+
+%Stream.FileCharacterGzip perhaps has a bug in the method ReadLine()</Description>
+<Super>%RegisteredObject</Super>
+<TimeCreated>63798,63618.58211</TimeCreated>
+
+<Property name="request">
+<Type>%Net.HttpRequest</Type>
+<Private>1</Private>
+</Property>
+
+<Property name="Data">
+<Description>
+ workaround for %Stream.FileCharacterGzip bug</Description>
+<Type>%Stream.FileCharacter</Type>
+</Property>
+
+<Method name="Get">
+<FormalSpec>page,dump:%Boolean=0,reset:%Boolean=1</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s ..Data = ##class(%Stream.FileBinary).%New()
+	s sc = ..request.Get( page, dump, reset ) Q:'sc sc
+	#; workaround for %Stream.FileCharacterGzip bug
+	s sc = ..Data.CopyFrom( ..request.HttpResponse.Data )
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="%OnNew">
+<Description><![CDATA[
+This callback method is invoked by the <METHOD>%New</METHOD> method to 
+provide notification that a new instance of an object is being created.
+
+<P>If this method returns an error then the object will not be created.
+<p>It is passed the arguments provided in the %New call.
+When customizing this method, override the arguments with whatever variables and types you expect to receive from %New().
+For example, if you're going to call %New, passing 2 arguments, %OnNew's signature could be:
+<p>Method %OnNew(dob as %Date = "", name as %Name = "") as %Status
+If instead of returning a %Status code this returns an oref and this oref is a subclass of the current
+class then this oref will be the one returned to the caller of %New method.]]></Description>
+<FormalSpec>server="sql.ru"</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	s ..request = ##class(%Net.HttpRequest).%New()
+	s ..request.Server = server
+	
+	s ..Data = ##class(%Stream.FileBinary).%New()
+	
+	Quit $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>

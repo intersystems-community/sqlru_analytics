@@ -67,7 +67,9 @@ Build url path for current page</Description>
 </Method>
 
 <Property name="request">
-<Type>%Net.HttpRequest</Type>
+<Description>
+wrapper for %Net.HttpRequest</Description>
+<Type>Http.Request</Type>
 <Private>1</Private>
 </Property>
 
@@ -85,8 +87,7 @@ getter</Description>
 <Implementation><![CDATA[
 	
 	Q:'$IsObject(..request) ""
-	Q:'$IsObject(..request.HttpResponse) ""
-	Q ..request.HttpResponse.Data
+	Q ..request.Data
 ]]></Implementation>
 </Method>
 
@@ -114,7 +115,7 @@ Load page content from sql.ru/forum/<var>forum</var>/<var>num</var>]]></Descript
 	if $g(forum)'="" s ..Forum = forum
 	if $g(num)'="" s ..Num = num
 	
-	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
+	s sc = ..request.Get( ..Url() ) Q:'sc sc
 		
 	Q 1
 ]]></Implementation>
@@ -129,10 +130,9 @@ Return topic page parser</Description>
 <Implementation><![CDATA[
 	s page = ..%New(forum, num)
 	
-	s page.request = ##class(%Net.HttpRequest).%New()
-	s page.request.Server = ..#SERVER
-	
+	s page.request = ##class(Http.Request).%New( ..#SERVER )
 	s sc = page.Get()
+	
 	Q page
 ]]></Implementation>
 </Method>
@@ -146,9 +146,10 @@ And extract data from last available page link]]></Description>
 <FormalSpec>html:%Stream</FormalSpec>
 <ReturnType>%Integer</ReturnType>
 <Implementation><![CDATA[
+	
 	s end = html.FindAt( 1, ..#TopicTableEnd ) 
 	s begin = html.FindAt( end , "Страницы: "  )
-	s sc = html.MoveTo( begin )
+	s sc = html.MoveTo( begin ) 
 	s str = html.ReadLine() ; "Страницы:  <b>1</b>  <a href="http://www.sql.ru/forum/cache/2">2</a> <a href="http://www.sql.ru/forum/cache/3">3</a>"
 	s list = $LFS( str,"</a>") ;$lb("<a href='http://www.sql.ru/forum/cache/2'>2","<a href='http://www.sql.ru/forum/cache/3'>3") 
 	s last = $LG( list, $ll( list ) - 1 ) ;<a href="http://www.sql.ru/forum/cache/3">3

@@ -19,40 +19,35 @@ Entry point</Description>
 		
 		#;s sc = ##class(Forum).NameDelete( forum ) Q:'sc sc
 		#; 5803,"Forum.Topic" ERROR #5803: Can't get exclusive lock
+		#; 
 		#; workaround:
-		w !, "Delete old posts..." 
-				
-		s sql = "Select ID From Forum.Post Where Topic->Forum = ?"
-		s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forumId)
-		while rs.%Next() {
-			s sc = sc && ##class(Forum.Post).%DeleteId( rs.ID )
-			Q:'sc	
-		}
-		
-		w " Deleted! ", sc
-		Q:'sc sc 
-		
-		w !, "Delete old topics..." 
-		s sql = "Select ID From Forum.Topic Where Forum = ?"
-		s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forumId)
-		while rs.%Next(){
-			s sc = sc && ##class(Forum.Topic).%DeleteId( rs.ID )
-			Q:'sc	
-		}
-		w " Deleted! ", sc,!
-		Q:'sc sc 
+		s sc = ..DeletePosts( forumId ) Q:'sc sc
+		s sc = ..DeleteTopics( forumId ) Q:'sc sc
 		
 	} else {
 		
 		k data s data("Name") = forum 
-		w !, "Create new forum: ", forum 
+		w !, forum 
 		s sc = ##class(Forum).Insert( .data ) 
-		w " Created! ", sc
+		w " forum created! ", sc
 		Q:'sc sc
 		
 	}
 	
-	Q ..Scan( forum )
+	w !,"Load Topics... "
+	s sc = ..Scan( forum ) 
+	if 'sc w sc Q sc
+	
+	w !,"Load Topic Posts ... "
+	s sc = ..LoadPosts( forum ) 
+	if 'sc w sc Q sc
+	
+	
+	w !,"Update Authors... "
+	s sc = ..UpdateAuthors( forum ) 
+	w sc 
+	
+	Q sc
 ]]></Implementation>
 </Method>
 
@@ -64,21 +59,171 @@ Scan across all forum topic pages</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
-	s i = 1, sc = 1
+	s sc = 1, i = 1 
+	s page = ..GetPage( forum, i, .sc ) Q:'sc sc
+	s pages = page.Pages() Q:pages=0 $$$ERROR($$$GeneralError,"Can't parse pages count ") 
 	
-	s page = ..GetPage( forum, i, .sc ) Q:'sc
-	s count = page.Pages() ; get pages count
-	s sc = page.Parse() Q:'sc
-	
-	for {
+	while i <= pages {
 		
-		w !, "Page #"_i_" successfuly loaded", !
-		s i = i + 1  if i > count Q
-		s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
 		s sc = page.Parse() Q:'sc
+		w !, "Page #", i, " successfuly loaded", !
+		s i = i + 1, sc = page.Get( , i ) ;load next page #i in parser  
+		Q:'sc 
 		
 	}
 	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="DeleteTopics">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+
+	w !, "Delete old topics..." 
+	s sql = "Select ID From Forum.Topic Where Forum = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forum )
+	s sc = 1
+	while rs.%Next(){
+		s sc = sc && ##class(Forum.Topic).%DeleteId( rs.ID )
+		Q:'sc	
+	}
+	w " Deleted! ", sc,!
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="DeletePosts">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	w !, "Delete old posts..." 
+	s sql = "Select ID From Forum.Post Where Topic->Forum = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forum)
+	s sc = 1
+	while rs.%Next() {
+		s sc = sc && ##class(Forum.Post).%DeleteId( rs.ID )
+		Q:'sc	
+	}
+	w " Deleted! ", sc
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="LoadPosts">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum</FormalSpec>
+<Implementation><![CDATA[
+	s sql = "Select ExtId,Pages From Forum.Topic Where Forum->Name = ? "
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, forum)
+	s sc = 1, ok = 1
+	while rs.%Next(){
+		k data s data("topic") = rs.ExtId, data("pages")=rs.Pages
+		#; ExtId = 349188 - long long topic
+		w !,"Topic ", data("topic")
+		s sc = ##class(Forum.PostsLoader).Load(.data)
+		s ok = ok && sc
+	}
+	Q ok
+]]></Implementation>
+</Method>
+
+<Method name="UpdateAuthors">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum</FormalSpec>
+<Implementation><![CDATA[
+	s sql = "Select Distinct AuthorId From Forum.Post "
+		_" Where Topic->Forum->Name = ? "
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, forum)
+	s sc = 1, ok = 1 
+	
+	s geocoder = ..Geocoder()
+	
+	while rs.%Next(){
+		
+		k author s author = rs.AuthorId
+		s sc = ##class(Forum.AuthorPage).Parse( .author ) ;get location
+		s location = $g(author("Location")) if location = "" continue
+		s point = ..Geolocation( location, geocoder, .sc ) if 'sc continue
+		s aname = ##class(Forum.Author).NameGetStored( author )
+		w !, aname, ": ", location, " -> ", point 
+		s sc = ##class(Forum.Author).SetLocation( author, location, $p(point," "), $p(point," ",2)  )
+	}
+	
+	Q ok
+]]></Implementation>
+</Method>
+
+<Method name="Geocoder">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Net.HttpRequest</ReturnType>
+<Implementation><![CDATA[
+	s gc = ##class(%Net.HttpRequest).%New()
+	s gc.Server = "geocode-maps.yandex.ru"
+	d ..SSLConfig()
+	s gc.SSLConfiguration = "geocode-maps.yandex.ru"
+	s gc.Https=1
+	Q gc
+]]></Implementation>
+</Method>
+
+<Method name="Geolocation">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[location,geocoder="",&sc:%Status]]></FormalSpec>
+<Implementation><![CDATA[
+	if $g(location) ="" Q:""
+	s:'$IsObject(geocoder) geocoder = ..Geocoder()
+	
+	s page = "/1.x/"
+	d geocoder.SetParam("geocode", location )
+	d geocoder.SetParam("kind", "locality" )
+	d geocoder.SetParam("format", "json" )
+	d geocoder.SetParam("results", 1 )
+	
+	s sc = geocoder.Get( page ) 
+	Q:'sc sc
+	
+	s strm = ##class(%Stream.FileCharacter).%New()
+	s sc = strm.CopyFrom( geocoder.HttpResponse.Data )
+	
+	#define point "Point"":{""pos"":"""
+	s pos = strm.FindAt(1, $$$point ) 
+	s pos = pos + $l( $$$point )
+	s sc = strm.MoveTo( pos )
+	s point = strm.ReadLine()
+	s point = $p(point, """")
+	Q point
+]]></Implementation>
+</Method>
+
+<Method name="SSLConfig">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>config="geocode-maps.yandex.ru"</FormalSpec>
+<Implementation><![CDATA[
+	s ns = $namespace,  $namespace = "%SYS"
+	if ##class(Security.SSLConfigs).Exists( config ){
+		s $namespace = ns Q 1	
+	}
+	
+	s config("CAFile")=""
+	s config("CAPath")=""
+	s config("CRLFile")=""
+	s config("CertificateFile")=""
+	s config("CipherList")="ALL:!aNULL:!eNULL:!EXP:!SSLv2"
+	s config("Description")=""
+	s config("Enabled")=1
+	s config("PrivateKeyFile")=""
+	s config("PrivateKeyPassword")=""
+	s config("PrivateKeyType")=2
+	s config("Protocols")=28
+	s config("Type")=0
+	s config("VerifyDepth")=9
+	s config("VerifyPeer")=0
+ 	s sc = ##class(Security.SSLConfigs).Create( config, .config )
+ 	s $namespace = ns Q sc
 ]]></Implementation>
 </Method>
 
@@ -94,18 +239,22 @@ If handler return 0, parsing will be interrupted]]></Description>
 	Q:'##class(Forum).NameExists( ..Forum, .forumId ) 0
 	s data("Forum") = forumId
 
-	s topic = $g(data("ExtId")), amount = $g(data("PagesAmount"))
-
+	s topic = $g(data("ExtId")), pages = $g(data("PagesAmount"))
+	
+	k author s author("Name") = data("Author")
+	s author("ExtId") = $g(data("Author","ExtId"))
+	s sc = ##class(Forum.Author).GetOrSet( .author ) Q:'sc sc
+	s data("AuthorId") = author
+	
 	s sc = ##class(Topic).Insert( .data ) 
 	#; any TopicsPage may have repeated first topic 
 	if 'sc && ( $system.Status.GetErrorCodes( sc ) = 5808 ) {
 		Q 1
 	}
 
-	w $g(data), " " ;output topic id (not ExtId) 
+	w $g(data), " " ;output topic id (not ExtId)
 	
-	k args s args( "topic" ) = topic, args( "pages" ) = amount 
-	Q ##class(PostsLoader).Load( .args )
+	Q sc
 ]]></Implementation>
 </Method>
 </Class>

@@ -7,6 +7,23 @@ For example: www.sql.ru/forum/cache</Description>
 <Super>%Persistent</Super>
 <TimeCreated>63770,69486.949772</TimeCreated>
 
+<Property name="Link">
+<Description>
+url</Description>
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Forum).GetLink({Name})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>name</FormalSpec>
+<Implementation><![CDATA[$S(name'="":"www.sql.ru/forum/"_name,1:"")
+]]></Implementation>
+</Method>
+
 <Property name="Name">
 <Description>
 Forum name. For example: cache, oracle, mysql, etc.  </Description>
@@ -64,13 +81,14 @@ inline sql is more quicker than OOP</Description>
 <IndexLocation>^Forum.ForumI</IndexLocation>
 <StreamLocation>^Forum.ForumS</StreamLocation>
 <Data name="ForumDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
 <Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>Link</Value>
 </Value>
 </Data>
 </Storage>

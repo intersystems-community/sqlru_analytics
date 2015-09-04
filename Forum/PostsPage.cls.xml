@@ -67,7 +67,7 @@ To load all pages of posts we adding "-a", that mean "all"</Description>
 </Method>
 
 <Property name="request">
-<Type>%Net.HttpRequest</Type>
+<Type>Http.Request</Type>
 <Private>1</Private>
 </Property>
 
@@ -85,8 +85,7 @@ getter</Description>
 <Implementation><![CDATA[
 	
 	Q:'$IsObject(..request) ""
-	Q:'$IsObject(..request.HttpResponse) ""
-	Q ..request.HttpResponse.Data
+	Q ..request.Data
 ]]></Implementation>
 </Method>
 
@@ -113,9 +112,7 @@ Load page content from sql.ru/forum/<var>topic</var>-<var>amount</var>]]></Descr
 	
 	if $g(topic)'="" s ..Topic = topic
 	if $g(amount)'="" s ..Amount = amount
-	
-	s sc = ..request.Get( ..Url(), , 0) Q:'sc sc
-		
+	s sc = ..request.Get( ..Url() ) Q:'sc sc
 	Q 1
 ]]></Implementation>
 </Method>
@@ -128,10 +125,7 @@ Return posts page parser</Description>
 <ReturnType>PostsPage</ReturnType>
 <Implementation><![CDATA[
 	s page = ..%New(topic, pagesAmount )
-
-	s page.request = ##class(%Net.HttpRequest).%New()
-	s page.request.Server = ..#SERVER
-	
+	s page.request = ##class(Http.Request).%New(..#SERVER)
 	s sc = page.Get()
 	Q page
 ]]></Implementation>
@@ -152,13 +146,13 @@ May miss amount of posts = <var>fromPost</var>]]></Description>
 	
 	s pos = html.FindAt( 1, ..#PostTableBegin ) 
     if pos = -1 {
-	    s sc = $$$ERROR(,"Not found begin of post's table") Q 0
+	    s sc = $$$ERROR($$$GeneralError,"Not found begin of post's table") Q 0
     }
     s pos = pos + $l(..#PostTableBegin)
     
     s end = html.FindAt( pos, ..#PostTableEnd ) 
     if end = -1 {
-	    s sc = $$$ERROR(,"Not found end of post's table") Q 0
+	    s sc = $$$ERROR($$$GeneralError,"Not found end of post's table") Q 0
     }
 	
 	s sc = html.MoveTo( pos ) Q:'sc ""

@@ -33,10 +33,10 @@ scan across all forum posts pages</Description>
 	s pages = $$$g("pages") ;pages - pages count (number) or "a" - all, convention from sql.ru
 	
 	s i = 1 s:pages="a" i = "a" ;current page with posts
-	s page = ..GetPage( topic, i, .sc ) Q:'sc
+	s page = ..GetPage( topic, i, .sc ) Q:'sc sc
 	
 	#; first post in topic contain date of topic creation
-	s page.firstPost = 1 ; < - violation of encapsulation!!!
+	s page.firstPost = 1
 	
 	s sc = page.Parse() Q:'sc sc
 	
@@ -66,13 +66,18 @@ If handler return 0, parsing will be interrupted]]></Description>
 <Implementation><![CDATA[
 	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
 	s data("Topic") = topicId ;set parent
+	
+	k author s author("Name") = data("Author")
+	s author("ExtId") = $g(data("Author","ExtId"))
+	s sc = ##class(Forum.Author).GetOrSet(.author) Q:'sc sc 
+	s data("AuthorId") = author
 
 	s sc = ##class(Post).Insert( .data ) Q:'sc sc
-	
+	w "." 
 	if ..firstPost { ;first post's date is the date of topic's creation
 		
 		s sc = ##class(Topic).SetPosted(topicId, data("Posted") )
-		Q:'sc $$$ERROR(," update topic.posted error")
+		Q:'sc $$$ERROR($$$GeneralError," update topic.posted error")
 		s ..firstPost = 0
 		
 	}

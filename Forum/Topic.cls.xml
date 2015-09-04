@@ -19,7 +19,7 @@ One question or theme on the forum</Description>
 <OnDelete>cascade</OnDelete>
 </Property>
 
-<Index name="Forum">
+<Index name="ForumIndex">
 <Properties>Forum</Properties>
 </Index>
 
@@ -55,9 +55,25 @@ that is unique for every topics</Description>
 <Unique>1</Unique>
 </Index>
 
+<Property name="Link">
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Topic).GetLink({ExtId}) </SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extId</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[$S(extId'="":"www.sql.ru/forum/"_extId_"/",1:"")
+]]></Implementation>
+</Method>
+
 <Property name="Author">
 <Description>
-account of topic starter</Description>
+topic starter</Description>
 <Type>%String</Type>
 <Required>1</Required>
 </Property>
@@ -68,6 +84,10 @@ account of topic starter</Description>
 
 <Property name="AuthorExtId">
 <Type>%String</Type>
+</Property>
+
+<Property name="AuthorId">
+<Type>Forum.Author</Type>
 </Property>
 
 <Property name="Posts">
@@ -115,17 +135,25 @@ Update topic date by first post date</Description>
 <Properties>Updated</Properties>
 </Index>
 
+<Property name="Pages">
+<Description>
+Pages of posts in topic</Description>
+<Type>%String</Type>
+<Internal>1</Internal>
+</Property>
+
 <Method name="Insert">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&data=""]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	&sql(
-		Insert Into Forum.Topic (Forum, Type, Name, ExtId, Author, AuthorExtId, Answers, Views, Updated)
+		Insert Into Forum.Topic (Forum, Type, Name, ExtId, Author, AuthorExtId, AuthorId, Answers, Views, Updated, Pages)
 		Values (
 			:data("Forum"), :data("Type"), :data("Name")
-			, :data("ExtId"), :data("Author"), :data("Author","ExtId")
+			, :data("ExtId"), :data("Author"), :data("Author","ExtId"), :data("AuthorId")
 			, :data("Answers"), :data("Views"), :data("Updated")
+			, :data("PagesAmount")
 		)
 	)
 	if SQLCODE=0 {
@@ -180,6 +208,15 @@ Update topic date by first post date</Description>
 </Value>
 <Value name="11">
 <Value>Posted</Value>
+</Value>
+<Value name="12">
+<Value>Link</Value>
+</Value>
+<Value name="13">
+<Value>AuthorId</Value>
+</Value>
+<Value name="14">
+<Value>Pages</Value>
 </Value>
 </Data>
 </Storage>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.AuthorPage">
+<Description>
+ Parser Author Page</Description>
+<Abstract>1</Abstract>
+<Super>%RegisteredObject</Super>
+<TimeCreated>63798,79626.044925</TimeCreated>
+
+<Method name="Parse">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&author]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s extId = ##class(Forum.Author).ExtIdGetStored( author )
+	Q:extId="" 1 ;not registred author
+	
+	s author( "ExtId" ) = extId
+	
+	s req = ##class(Http.Request).%New()
+	s sc = req.Get( ..Url( extId )) Q:'sc sc
+
+	s sc = ..ParseLocation( req.Data, .location ) Q:'sc sc
+	s author("Location") = location
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="ParseLocation">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[strm:%Stream,&location]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#define cr $c(13,10)
+	#define location "<td><strong>Откуда:</strong></td>"_$$$cr
+	s pos = strm.FindAt( 1, $$$location ) + $l( $$$location )
+	s sc = strm.MoveTo( pos )
+	s location = strm.ReadLine( )
+	s location = $p($p(location,"<td>",2),"</td>") ;between <td></td>
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="Url">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extId</FormalSpec>
+<Implementation><![CDATA["/forum/memberinfo.aspx?mid="_extId
+]]></Implementation>
+</Method>
+</Class>
+</Export>
