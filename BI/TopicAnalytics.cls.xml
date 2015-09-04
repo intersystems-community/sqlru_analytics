@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="BI.TopicAnalytics">
+<Description>
+</Description>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>%DeepSee.CubeDefinition</Super>
+<TimeCreated>63788,74950.849462</TimeCreated>
+<DependsOn>Forum.Topic</DependsOn>
+
+<Parameter name="DOMAIN"/>
+
+<XData name="Cube">
+<Description>
+Cube definition from Architect.</Description>
+<XMLNamespace>http://www.intersystems.com/deepsee</XMLNamespace>
+<Data><![CDATA[
+<cube xmlns="http://www.intersystems.com/deepsee" name="TopicAnalytics" displayName="TopicAnalytics" disabled="false" abstract="false" sourceClass="Forum.Topic" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0">
+  <dimension name="Tech" disabled="false" hasAll="false" allCaption="All Name" allDisplayName="Name" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level sourceExpression="%cube.TopicNameToTechnology(%source.Name)" name="Technology" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="Author" disabled="false" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level sourceProperty="Author" name="Author" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="Updated" disabled="false" hasAll="false" allCaption="All Updated" allDisplayName="Updated" sourceProperty="Updated" type="time" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Year" disabled="false" timeFunction="Year" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+      <level name="Month" disabled="false" timeFunction="MonthYear" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="Topic" disabled="false" hasAll="false" allCaption="All Name1" allDisplayName="Name1" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level sourceProperty="Name" name="Topic" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <measure sourceProperty="Answers" name="Answers" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
+  <measure sourceProperty="Views" name="Views" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
+  <calculatedMember name="AVGAnswers" disabled="false" dimension="Measures" valueExpression="[Measures].[Answers]/[Measures].[%Count]" hidden="false"></calculatedMember>
+  <calculatedMember name="AVGViews" disabled="false" dimension="Measures" valueExpression="[Measures].[Views]/[Measures].[%Count]" hidden="false"></calculatedMember>
+  <listing name="Listing" disabled="false" listingType="table" fieldList="Author,Name"></listing>
+</cube>
+]]></Data>
+</XData>
+
+<Method name="TopicNameToTechnology">
+<Description>
+determine technology areas</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topic:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+    
+    s topic = $zcvt(topic,"l") ;lower
+    #define f(%term) $f(topic,%term)
+    
+    Q $SELECT(
+        $$$f("cach"): "Cache",
+        $$$f("deepsee"): "DeepSee",
+        $$$f("iknow"): "iKnow",
+        $$$f("ensemble"): "Ensemble",
+        $$$f("globalsdb"): "GlobalsDB",
+        $$$f("gt.m"): "gt.m",
+        1: "Other"
+    )
+]]></Implementation>
+</Method>
+</Class>
+</Export>
