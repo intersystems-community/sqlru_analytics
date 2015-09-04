@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Document name="Authors.dashboard.DFI">
+<dashboard xmlns="http://www.intersystems.com/deepsee/library" name="Authors" folderName="" title="Авторы" description="" keywords="" owner="" shared="true" public="true" locked="false" resource="" timeCreated="2015-09-03T07:00:26.071Z" createdBy="mobile" category="" bookCover="" scheme="" worklistCount="2" snapTo="true" snapGrid="true" gridRows="10" gridCols="10" canResize="true" canModify="true" showTitleBar="true" companyName="" companyLogo="" companyStyle="">
+  <widget name="Виджет1" type="pivot" subtype="columnChartStacked" subtypeClass="barChart" title="Топ авторы" dataSource="Authors/Top 20.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="4" rowSpanL="10" showToolbar="true" theme="" dataColorList="">
+    <control name="" action="applyFilter" target="*" targetProperty="[Posted].[H1].[Year]" location="dashboard" type="auto" controlClass="" label="Год" title="" value="&amp;[NOW]" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Author].[H1].[AuthorExtId]" location="dashboard" type="auto" controlClass="" label="Автор" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Tech].[H1].[Theme]" location="dashboard" type="auto" controlClass="" label="Технология" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+  </widget>
+  <widget name="Виджет2" type="pivot" subtype="pivot" subtypeClass="lineChart" title="Посты всех авторов" dataSource="Authors/All Authors.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="4" colSpanL="6" rowSpanL="10" showToolbar="true" theme="" dataColorList="">
+  </widget>
+</dashboard>
+</Document></Export>
