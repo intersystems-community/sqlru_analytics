@@ -27,7 +27,7 @@ Entry point</Description>
 	} else {
 		
 		k data s data("Name") = forum 
-		w !, forum 
+		w !, "Create new forum: ", forum 
 		s sc = ##class(Forum).Insert( .data ) 
 		w " forum created! ", sc
 		Q:'sc sc
