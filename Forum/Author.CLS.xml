@@ -32,6 +32,11 @@ user AlViPos  Мордовия г. Саранск ОАО &quot;Станкост�
 <Parameter name="TRUNCATE" value="1"/>
 </Property>
 
+<Index name="Location">
+<Data>Latitude,Longitude</Data>
+<Properties>Location:SQLUPPER</Properties>
+</Index>
+
 <Property name="Latitude">
 <Type>%String</Type>
 </Property>
@@ -94,6 +99,21 @@ Return author id </Description>
 	)
 	Q:SQLCODE=0 1
 	Q $$$ERROR($$$GeneralError,$system.SQL.SQLCODE(SQLCODE))
+]]></Implementation>
+</Method>
+
+<Method name="LocationCache">
+<Description>
+Return known coordinates by name  
+Test: ..LocationCache("Новосибирск") = "82.920430 55.030199"</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>location</FormalSpec>
+<Implementation><![CDATA[
+	s sql = "Select Top 1 Latitude, Longitude From Forum.Author "
+		_"Where ( Latitude Is Not Null And Longitude Is Not Null ) And Location = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,location)
+	if rs.%Next() Q rs.Latitude _ " " _ rs.Longitude
+	Q ""
 ]]></Implementation>
 </Method>
 

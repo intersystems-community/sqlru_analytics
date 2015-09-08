@@ -31,10 +31,13 @@
 <FormalSpec><![CDATA[strm:%Stream,&location]]></FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	#define cr $c(13,10)
-	#define location "<td><strong>Откуда:</strong></td>"_$$$cr
-	s pos = strm.FindAt( 1, $$$location ) + $l( $$$location )
-	s sc = strm.MoveTo( pos )
+	
+	#define location "<td><strong>Откуда:</strong></td>"
+	s pos = strm.FindAt( 1, $$$location )
+	Q:pos=-1 $$$ERROR($$$GeneralError,"AuthorPage structure error")
+	s start = pos + $l( $$$location )
+	s sc = strm.MoveTo( start )
+	d strm.ReadLine() ;read line break
 	s location = strm.ReadLine( )
 	s location = $p($p(location,"<td>",2),"</td>") ;between <td></td>
 	Q sc

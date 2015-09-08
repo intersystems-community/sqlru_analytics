@@ -26,7 +26,7 @@ in v2015.2 property .HttpResponse.Data has type %Stream.FileCharacterGzip
 <FormalSpec>page,dump:%Boolean=0,reset:%Boolean=1</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	s ..Data = ##class(%Stream.FileBinary).%New()
+	s ..Data = ##class(%Stream.FileCharacter).%New()
 	s sc = ..request.Get( page, dump, reset ) Q:'sc sc
 	#; workaround for %Stream.FileCharacterGzip bug
 	s sc = ..Data.CopyFrom( ..request.HttpResponse.Data )
@@ -53,8 +53,7 @@ class then this oref will be the one returned to the caller of %New method.]]></
 <Implementation><![CDATA[
 	s ..request = ##class(%Net.HttpRequest).%New()
 	s ..request.Server = server
-	
-	s ..Data = ##class(%Stream.FileBinary).%New()
+	s ..Data = ##class(%Stream.FileCharacter).%New()
 	
 	Quit $$$OK
 ]]></Implementation>

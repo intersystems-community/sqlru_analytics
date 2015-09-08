@@ -144,29 +144,34 @@ Scan across all forum topic pages</Description>
 	
 	while rs.%Next(){
 		
-		k author s author = rs.AuthorId
-		s sc = ##class(Forum.AuthorPage).Parse( .author ) ;get location
-		s location = $g(author("Location")) if location = "" continue
-		s point = ..Geolocation( location, geocoder, .sc ) if 'sc continue
-		s aname = ##class(Forum.Author).NameGetStored( author )
-		w !, aname, ": ", location, " -> ", point 
-		s sc = ##class(Forum.Author).SetLocation( author, location, $p(point," "), $p(point," ",2)  )
+		s sc = ..UpdateAuthorLocation( rs.AuthorId, geocoder)
+	
+		
 	}
 	
 	Q ok
 ]]></Implementation>
 </Method>
 
-<Method name="Geocoder">
+<Method name="UpdateAuthorLocation">
 <ClassMethod>1</ClassMethod>
-<ReturnType>%Net.HttpRequest</ReturnType>
+<FormalSpec>author,geocoder=""</FormalSpec>
+<ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	s gc = ##class(%Net.HttpRequest).%New()
-	s gc.Server = "geocode-maps.yandex.ru"
-	d ..SSLConfig()
-	s gc.SSLConfiguration = "geocode-maps.yandex.ru"
-	s gc.Https=1
-	Q gc
+	s sc = ##class(Forum.AuthorPage).Parse( .author ) ;parse location
+	s location = $g(author("Location")) if location = "" Q 1
+	
+	s point = ##class(Forum.Author).LocationCache( location ), cache = 1
+	if point="" {
+		s point = ..Geolocation( location, geocoder, .sc ), cache = 0
+	}
+	
+	s name = ##class(Forum.Author).NameGetStored( author )
+	w !, name, ": ", location, " -> ", point w:cache " ( cache )"
+	
+	s latitude = $p( point, " " ), longitude = $p(point, " ", 2)
+	s sc = ##class(Forum.Author).SetLocation( author, location, latitude, longitude )
+	Q sc
 ]]></Implementation>
 </Method>
 
@@ -184,7 +189,7 @@ Scan across all forum topic pages</Description>
 	d geocoder.SetParam("results", 1 )
 	
 	s sc = geocoder.Get( page ) 
-	Q:'sc sc
+	Q:'sc ""
 	
 	s strm = ##class(%Stream.FileCharacter).%New()
 	s sc = strm.CopyFrom( geocoder.HttpResponse.Data )
@@ -199,14 +204,33 @@ Scan across all forum topic pages</Description>
 ]]></Implementation>
 </Method>
 
+<Method name="Geocoder">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Net.HttpRequest</ReturnType>
+<Implementation><![CDATA[
+	s gc = ##class(%Net.HttpRequest).%New()
+	s sslConfigName = "geocode-maps.yandex.ru"
+	s gc.Server = sslConfigName
+	s sc = ..SSLConfig( sslConfigName ) if 'sc {
+		w !, "SSLConfig error: ", sc 	
+	}
+	s gc.SSLConfiguration = sslConfigName
+	s gc.Https=1
+	Q gc
+]]></Implementation>
+</Method>
+
 <Method name="SSLConfig">
+<Description>
+Check or create default ssl config</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>config="geocode-maps.yandex.ru"</FormalSpec>
 <Implementation><![CDATA[
+	/// Quit with namespace restoring
+	#define QUIT s $namespace = ns Q sc
+	
 	s ns = $namespace,  $namespace = "%SYS"
-	if ##class(Security.SSLConfigs).Exists( config ){
-		s $namespace = ns Q 1	
-	}
+	s sc = ##class(Security.SSLConfigs).Exists( config ) if sc $$$QUIT
 	
 	s config("CAFile")=""
 	s config("CAPath")=""
@@ -218,12 +242,18 @@ Scan across all forum topic pages</Description>
 	s config("PrivateKeyFile")=""
 	s config("PrivateKeyPassword")=""
 	s config("PrivateKeyType")=2
-	s config("Protocols")=28
+	s config("Protocols")=7
 	s config("Type")=0
 	s config("VerifyDepth")=9
 	s config("VerifyPeer")=0
- 	s sc = ##class(Security.SSLConfigs).Create( config, .config )
- 	s $namespace = ns Q sc
+	
+ 	s sc = ##class(Security.SSLConfigs).Create( config, .config ) 
+ 	if 'sc $$$QUIT
+ 	s ssl = ##class(Security.SSLConfigs).%OpenId( config, ,.sc )
+ 	if 'sc $$$QUIT
+ 	s sc = ssl.Activate()
+ 	
+ 	$$$QUIT
 ]]></Implementation>
 </Method>
 
