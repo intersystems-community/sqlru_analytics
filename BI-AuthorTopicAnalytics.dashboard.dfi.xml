@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Document name="BI-AuthorTopicAnalytics.dashboard.DFI">
+<dashboard xmlns="http://www.intersystems.com/deepsee/library" name="AuthorTopicAnalytics" folderName="BI" title="Аналитика по авторам" description="Dasboard of analytics by technology of topic, avalible: 1.drilldown by doble-click (on cell with technologies) or by selecting (by clicking on row) and clicking on button with arrow; 2.switching between graphical and tabular representation of the data; 3.filters applies to all widgets: 3.1.number of rows; 3.2.by technology; 3.3.by year of last update; -by month and year of last update" keywords="" owner="" shared="true" public="true" locked="false" resource="" timeCreated="2015-09-04T21:57:42.634Z" createdBy="UnknownUser" category="" bookCover="" scheme="" worklistCount="0" snapTo="true" snapGrid="true" gridRows="10" gridCols="10" canResize="true" canModify="true" showTitleBar="true" companyName="" companyLogo="" companyStyle="">
+  <widget name="Count" type="pivot" subtype="columnChart" subtypeClass="barChart" title="Количество топиков" dataSource="BI/AuthorTopicAnalyticsCount.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="4" rowSpanL="10" showToolbar="true" theme="" dataColorList="">
+    <control name="" action="setRowCount" target="*" targetProperty="" location="widget" type="auto" controlClass="" label="First" title="" value="10" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Tech].[H1].[Technology]" location="widget" type="auto" controlClass="" label="Technology" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Updated].[H1].[Year]" location="widget" type="auto" controlClass="" label="Year" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Updated].[H1].[Month]" location="widget" type="auto" controlClass="" label="Month" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <property name="analyzer">1</property>
+    <property name="chartToggle">chart</property>
+    <property name="drillDown">1</property>
+    <property name="legendPos">none</property>
+    <override name="barChart">{legendVisible:'false',maxLabelLen:20,valueLabelsVisible:true,xAxis:{_type:'axis'},yAxisList:[{majorGridLines:false,_type:'axis'}],chartPivot:true,_type:'barChart'}</override>
+    <override name="legend">{hidden:true,legendLabels:'Answers',legendPosition:'right',_type:'chartLegend'}</override>
+  </widget>
+  <widget name="Answers" type="pivot" subtype="columnChart" subtypeClass="barChart" title="Количество ответов" dataSource="BI/AuthorTopicAnalyticsAnswers.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="4" colSpanL="3" rowSpanL="5" showToolbar="true" theme="" dataColorList="">
+    <property name="analyzer">1</property>
+    <property name="chartToggle">chart</property>
+    <property name="drillDown">1</property>
+    <property name="legendPos">none</property>
+    <override name="barChart">{legendVisible:'false',seriesColorsOverride:'rgb(210,156,80)',valueLabelsVisible:true,xAxis:{_type:'axis'},yAxisList:[{majorGridLines:false,_type:'axis'}],chartPivot:true,_type:'barChart'}</override>
+    <override name="legend">{hidden:true,legendLabels:'Answers',legendPosition:'right',_type:'chartLegend'}</override>
+  </widget>
+  <widget name="AVGAnswers" type="pivot" subtype="columnChart" subtypeClass="barChart" title="Среднее количество ответов" dataSource="BI/AuthorTopicAnalyticsAVGAnswers.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="5" homeColL="4" colSpanL="3" rowSpanL="5" showToolbar="true" theme="" dataColorList="">
+    <property name="analyzer">1</property>
+    <property name="chartToggle">chart</property>
+    <property name="drillDown">1</property>
+    <property name="legendPos">none</property>
+    <override name="barChart">{legendVisible:'false',seriesColorsOverride:'rgb(210,156,80)',valueLabelFormat:'#,##.#',valueLabelsVisible:true,xAxis:{_type:'axis'},yAxisList:[{majorGridLines:false,_type:'axis'}],chartPivot:true,_type:'barChart'}</override>
+    <override name="legend">{hidden:true,legendLabels:'Answers',legendPosition:'right',_type:'chartLegend'}</override>
+  </widget>
+  <widget name="Views" type="pivot" subtype="columnChart" subtypeClass="barChart" title="Количество просмотров" dataSource="BI/AuthorTopicAnalyticsViews.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="7" colSpanL="3" rowSpanL="5" showToolbar="true" theme="" dataColorList="">
+    <property name="analyzer">1</property>
+    <property name="chartToggle">chart</property>
+    <property name="drillDown">1</property>
+    <property name="legendPos">none</property>
+    <override name="barChart">{legendVisible:'false',seriesColorsOverride:'rgb(230,199,145)',valueLabelsVisible:true,xAxis:{_type:'axis'},yAxisList:[{majorGridLines:false,_type:'axis'}],chartPivot:true,_type:'barChart'}</override>
+    <override name="legend">{hidden:true,legendLabels:'Answers',legendPosition:'right',_type:'chartLegend'}</override>
+  </widget>
+  <widget name="AVGViews" type="pivot" subtype="columnChart" subtypeClass="barChart" title="Среднее количество просмотров" dataSource="BI/AuthorTopicAnalyticsAVGViews.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="5" homeColL="7" colSpanL="3" rowSpanL="5" showToolbar="true" theme="" dataColorList="">
+    <property name="analyzer">1</property>
+    <property name="chartToggle">chart</property>
+    <property name="drillDown">1</property>
+    <property name="legendPos">none</property>
+    <override name="barChart">{legendVisible:'false',seriesColorsOverride:'rgb(230,199,145)',valueLabelFormat:'#,##.#',valueLabelsVisible:true,xAxis:{_type:'axis'},yAxisList:[{majorGridLines:false,_type:'axis'}],chartPivot:true,_type:'barChart'}</override>
+    <override name="legend">{hidden:true,legendLabels:'Answers',legendPosition:'right',_type:'chartLegend'}</override>
+  </widget>
+</dashboard>
+</Document></Export>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Document name="Posts.dashboard.DFI">
+<dashboard xmlns="http://www.intersystems.com/deepsee/library" name="Posts" folderName="" title="Посты" description="" keywords="" owner="" shared="true" public="true" locked="false" resource="" timeCreated="2015-09-03T06:30:46.989Z" createdBy="mobile" category="" bookCover="" scheme="" worklistCount="2" snapTo="true" snapGrid="true" gridRows="10" gridCols="10" canResize="true" canModify="true" showTitleBar="true" companyName="" companyLogo="" companyStyle="">
+  <widget name="Виджет1" type="meter" subtype="speedometer" subtypeClass="" title="Всего постов" dataSource="Posts/PostCount.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="4" rowSpanL="4" showToolbar="true" theme="" dataColorList="">
+    <control name="" action="applyFilter" target="*" targetProperty="[Posted].[H1].[Year]" location="widget" type="auto" controlClass="" label="Year" title="" value="&amp;[NOW]" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Tech].[H1].[Theme]" location="widget" type="auto" controlClass="" label="Технология" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <control name="" action="applyFilter" target="*" targetProperty="[Author].[H1].[AuthorExtId]" location="widget" type="auto" controlClass="" label="Автор" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen=""></control>
+    <dataProperty name="" label="$auto" width="" align="" subtype="speedometer" style="" display="value" format="" showAs="value" valueColumn="false" summary="" summaryValue="" dataValue="количество" targetValue="" thresholdLower="" thresholdUpper="" rangeLower="" rangeUpper="" baseValue="" override="{height:242,width:242,_type:&apos;speedometer&apos;}"></dataProperty>
+  </widget>
+  <widget name="Виджет2" type="pivot" subtype="columnChart" subtypeClass="barChart" title="По годам" dataSource="Posts/PostsByYear.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="4" colSpanL="4" rowSpanL="4" showToolbar="true" theme="" dataColorList="">
+  </widget>
+  <widget name="Виджет3" type="pivot" subtype="columnChartStacked" subtypeClass="barChart" title="По месяцам" dataSource="Posts/ByMonths.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="4" homeColL="0" colSpanL="4" rowSpanL="4" showToolbar="true" theme="" dataColorList="">
+  </widget>
+  <widget name="Виджет4" type="pivot" subtype="timeChart" subtypeClass="comboChart" title="" dataSource="Posts/DayByDay.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="4" rowSpanL="4" showToolbar="true" theme="" dataColorList="">
+  </widget>
+</dashboard>
+</Document></Export>
