@@ -99,7 +99,8 @@ If handler return 0, parsing will be interrupted]]></Description>
 	#; If property "Updated" don't changed, than there is nothing to change
 	s updated = ##class(Topic).UpdatedGetStored( topicId )
 	if updated = $$$g("Updated") {
-		w "1"
+		s sc = topic.%Save()
+		w sc
 		Q 1 
 	}
 	
