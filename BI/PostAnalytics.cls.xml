@@ -1,50 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for UNIX (SUSE Linux Enterprise Server for x86-64) 2015.3 (Build 211U)" ts="2015-09-10 09:40:20">
 <Class name="BI.PostAnalytics">
 <Description>
 </Description>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>%DeepSee.CubeDefinition</Super>
+<TimeChanged>63802,53157.775114</TimeChanged>
 <TimeCreated>63796,39311.697296</TimeCreated>
 <DependsOn>Forum.Post</DependsOn>
-
-<Parameter name="DOMAIN">
-</Parameter>
 
 <XData name="Cube">
 <Description>
 Cube definition from Architect.</Description>
 <XMLNamespace>http://www.intersystems.com/deepsee</XMLNamespace>
 <Data><![CDATA[
-<cube xmlns="http://www.intersystems.com/deepsee" name="SQLRUCube" displayName="SQLRU" disabled="false" abstract="false" sourceClass="Forum.Post" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0">
-  <dimension name="Posted" displayName="Дата поста" disabled="false" hasAll="false" allCaption="All Posted" allDisplayName="Posted" sourceExpression="$zdh($p(%source.Posted,&quot; &quot;),3)" type="time" iKnowType="entity" hidden="false" showHierarchies="default">
-    <hierarchy name="H1" disabled="false">
-      <level name="Year" disabled="false" timeFunction="Year" list="false" useDisplayValue="true" sort="asc" useAsFilter="true">
-      </level>
-      <level name="Month" disabled="false" timeFunction="MonthYear" list="false" useDisplayValue="true" useAsFilter="true">
-      </level>
-      <level name="Day" disabled="false" timeFunction="DayMonthYear" list="false" useDisplayValue="true" useAsFilter="true">
-      </level>
-    </hierarchy>
-    <hierarchy name="H2" disabled="false">
-      <level name="MonthNum" displayName="Месяц" disabled="false" timeFunction="MonthNumber" list="false" useDisplayValue="true" useAsFilter="true">
-      </level>
-    </hierarchy>
-  </dimension>
+<cube xmlns="http://www.intersystems.com/deepsee" name="SQLRUCube" displayName="SQLRU" disabled="false" abstract="false" sourceClass="Forum.Post" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0" disableListingGroups="false">
   <dimension name="Tech" displayName="Технология" disabled="false" hasAll="false" allCaption="All Text" allDisplayName="Text" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
-      <level sourceExpression="%cube.GetTech(%source.Text)" name="Theme" displayName="Технология" disabled="false" list="true" listDelimiter="," useDisplayValue="true" useAsFilter="true">
+      <level name="Theme" displayName="Технология" disabled="false" sourceExpression="%cube.GetTech(%source.Text)" list="true" listDelimiter="," useDisplayValue="true" useAsFilter="true">
       </level>
     </hierarchy>
   </dimension>
-  <dimension name="Author" displayName="Автор" disabled="false" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
-    <hierarchy name="H1" disabled="false">
-      <level sourceProperty="AuthorExtId" name="AuthorExtId" disabled="false" list="false" nullReplacement="Аноним" useDisplayValue="true" useAsFilter="true">
-        <property sourceProperty="Author" name="Author" disabled="false" hidden="false" isName="true" isDescription="false" isReference="false" useDisplayValue="false"></property>
-      </level>
-    </hierarchy>
+  <dimension name="Author" disabled="false" sharesFrom="TopicAnalytics" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" hidden="false" showHierarchies="default">
   </dimension>
-  <listing name="New_listing1" disabled="false" listingType="table" fieldList="Author,Posted,ExtId,Text,Topic-&gt;Name,Topic-&gt;Updated,Topic-&gt;Views"></listing>
+  <dimension name="Posted" disabled="false" sharesFrom="TopicAnalytics" hasAll="false" allCaption="All Posted" allDisplayName="Posted" type="data" hidden="false" showHierarchies="default">
+  </dimension>
+  <listing name="New_listing1" disabled="false" listingType="table" fieldList="Author,Posted,ExtId,Text,Link,Topic-&gt;Name,Topic-&gt;Updated,Topic-&gt;Views">
+  </listing>
 </cube>
 ]]></Data>
 </XData>
@@ -67,5 +49,7 @@ Cube definition from Architect.</Description>
 	q res
 ]]></Implementation>
 </Method>
+
+<Parameter name="DOMAIN"/>
 </Class>
 </Export>

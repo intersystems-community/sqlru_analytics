@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for UNIX (SUSE Linux Enterprise Server for x86-64) 2015.3 (Build 211U)" ts="2015-09-10 09:39:54">
 <Class name="BI.TopicAnalytics">
 <Description>
 </Description>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>%DeepSee.CubeDefinition</Super>
+<TimeChanged>63802,54605.073331</TimeChanged>
 <TimeCreated>63788,74950.849462</TimeCreated>
 <DependsOn>Forum.Topic</DependsOn>
-
-<Parameter name="DOMAIN"/>
 
 <XData name="Cube">
 <Description>
 Cube definition from Architect.</Description>
 <XMLNamespace>http://www.intersystems.com/deepsee</XMLNamespace>
 <Data><![CDATA[
-<cube xmlns="http://www.intersystems.com/deepsee" name="TopicAnalytics" displayName="TopicAnalytics" disabled="false" abstract="false" sourceClass="Forum.Topic" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0">
+<cube xmlns="http://www.intersystems.com/deepsee" name="TopicAnalytics" displayName="TopicAnalytics" disabled="false" abstract="false" sourceClass="Forum.Topic" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0" disableListingGroups="false">
   <dimension name="Tech" disabled="false" hasAll="false" allCaption="All Name" allDisplayName="Name" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
-      <level sourceExpression="%cube.TopicNameToTechnology(%source.Name)" name="Technology" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
+      <level name="Technology" disabled="false" sourceExpression="%cube.TopicNameToTechnology(%source.Name)" list="false" useDisplayValue="true" useAsFilter="true">
       </level>
     </hierarchy>
   </dimension>
   <dimension name="Author" disabled="false" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
-      <level sourceProperty="Author" name="Author" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
+      <level name="Author" disabled="false" sourceProperty="Author" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+    <hierarchy name="H2" disabled="false">
+      <level name="ExtId" disabled="false" sourceProperty="AuthorId.ExtId" list="false" useDisplayValue="true" useAsFilter="true">
+        <property name="Name" disabled="false" sourceProperty="AuthorId.Name" hidden="false" isName="true" isDescription="false" isReference="false" useDisplayValue="false">
+          <additionalDescription>undefined</additionalDescription>
+        </property>
+        <property name="Longitude" disabled="false" sourceProperty="AuthorId.Longitude" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+        <property name="Latitude" disabled="false" sourceProperty="AuthorId.Latitude" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+        <property name="Location" disabled="false" sourceProperty="AuthorId.Location" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
       </level>
     </hierarchy>
   </dimension>
-  <dimension name="Updated" disabled="false" hasAll="false" allCaption="All Updated" allDisplayName="Updated" sourceProperty="Updated" type="time" hidden="false" showHierarchies="default">
+  <dimension name="Updated" disabled="false" hasAll="false" allCaption="All Updated" allDisplayName="Updated" sourceProperty="Updated" type="time" calendar="gregorian" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
       <level name="Year" disabled="false" timeFunction="Year" list="false" useDisplayValue="true" useAsFilter="true">
       </level>
@@ -38,15 +50,42 @@ Cube definition from Architect.</Description>
   </dimension>
   <dimension name="Topic" disabled="false" hasAll="false" allCaption="All Name1" allDisplayName="Name1" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
-      <level sourceProperty="Name" name="Topic" disabled="false" list="false" useDisplayValue="true" useAsFilter="true">
+      <level name="Topic" disabled="false" sourceProperty="Name" list="false" useDisplayValue="true" useAsFilter="true">
       </level>
     </hierarchy>
   </dimension>
-  <measure sourceProperty="Answers" name="Answers" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
-  <measure sourceProperty="Views" name="Views" disabled="false" aggregate="SUM" type="number" hidden="false" searchable="false"></measure>
-  <calculatedMember name="AVGAnswers" disabled="false" dimension="Measures" valueExpression="[Measures].[Answers]/[Measures].[%Count]" hidden="false"></calculatedMember>
-  <calculatedMember name="AVGViews" disabled="false" dimension="Measures" valueExpression="[Measures].[Views]/[Measures].[%Count]" hidden="false"></calculatedMember>
-  <listing name="Listing" disabled="false" listingType="table" fieldList="Author,Name"></listing>
+  <dimension name="Posted" disabled="false" hasAll="false" allCaption="All Posted" allDisplayName="Posted" sourceProperty="Posted" type="time" calendar="gregorian" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Year" displayName="Год" disabled="false" timeFunction="Year" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+      <level name="Month" displayName="Месяц" disabled="false" timeFunction="MonthYear" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+      <level name="Day" displayName="День" disabled="false" timeFunction="DayMonthYear" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+    </hierarchy>
+    <hierarchy name="H2" disabled="false">
+      <level name="MonthNum" displayName="Месяц" disabled="false" timeFunction="MonthNumber" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+      <additionalDescription>undefined</additionalDescription>
+    </hierarchy>
+  </dimension>
+  <measure name="Answers" disabled="false" sourceProperty="Answers" aggregate="SUM" type="number" hidden="false" searchable="false">
+  </measure>
+  <measure name="Views" disabled="false" sourceProperty="Views" aggregate="SUM" type="number" hidden="false" searchable="false">
+  </measure>
+  <calculatedMember name="AVGAnswers" disabled="false" dimension="Measures" valueExpression="[Measures].[Answers]/[Measures].[%Count]" hidden="false">
+  </calculatedMember>
+  <calculatedMember name="AVGViews" disabled="false" dimension="Measures" valueExpression="[Measures].[Views]/[Measures].[%Count]" hidden="false">
+  </calculatedMember>
+  <listing name="Listing" disabled="false" listingType="table" fieldList="Author,Name,Link,Posted">
+  </listing>
+  <listing name="New_listing1" disabled="false" listingType="table" fieldList="Name,Posted,Views,AuthorId-&gt;Name,AuthorId-&gt;Location,AuthorId-&gt;Latitude,AuthorId-&gt;Longitude">
+    <additionalDescription>undefined</additionalDescription>
+  </listing>
 </cube>
 ]]></Data>
 </XData>
@@ -73,5 +112,7 @@ determine technology areas</Description>
     )
 ]]></Implementation>
 </Method>
+
+<Parameter name="DOMAIN"/>
 </Class>
 </Export>
