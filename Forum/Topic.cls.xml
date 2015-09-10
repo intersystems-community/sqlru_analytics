@@ -67,7 +67,7 @@ that is unique for every topics</Description>
 <CodeMode>expression</CodeMode>
 <FormalSpec>extId</FormalSpec>
 <ReturnType>%String</ReturnType>
-<Implementation><![CDATA[$S(extId'="":"www.sql.ru/forum/"_extId_"/",1:"")
+<Implementation><![CDATA[$S(extId'="":"http://www.sql.ru/forum/"_extId_"/",1:"")
 ]]></Implementation>
 </Method>
 

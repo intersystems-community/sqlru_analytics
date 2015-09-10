@@ -20,7 +20,7 @@ url</Description>
 <ClassMethod>1</ClassMethod>
 <CodeMode>expression</CodeMode>
 <FormalSpec>name</FormalSpec>
-<Implementation><![CDATA[$S(name'="":"www.sql.ru/forum/"_name,1:"")
+<Implementation><![CDATA[$S(name'="":"http://www.sql.ru/forum/"_name,1:"")
 ]]></Implementation>
 </Method>
 

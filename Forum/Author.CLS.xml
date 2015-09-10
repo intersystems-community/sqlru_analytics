@@ -45,6 +45,23 @@ user AlViPos  Мордовия г. Саранск ОАО &quot;Станкост�
 <Type>%String</Type>
 </Property>
 
+<Property name="Link">
+<Description>
+url</Description>
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Author).GetLink({ExtId})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extid</FormalSpec>
+<Implementation><![CDATA[$S(extid'="":"http://www.sql.ru/"_##class(Forum.AuthorPage).Url(extid), 1:"")
+]]></Implementation>
+</Method>
+
 <Method name="Insert">
 <ClassMethod>1</ClassMethod>
 <FormalSpec><![CDATA[&data]]></FormalSpec>
