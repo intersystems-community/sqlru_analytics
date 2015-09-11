@@ -6,7 +6,7 @@
     <control name="" action="applyFilter" target="*" targetProperty="[Posted].[H1].[Year]" location="dashboard" type="auto" controlClass="" label="Год" title="" value="&amp;[NOW]" text="" readOnly="false" valueList="" displayList="" activeWhen="">
       <valueRequired>false</valueRequired>
     </control>
-    <control name="" action="applyFilter" target="*" targetProperty="[Author].[H2].[ExtId]" location="dashboard" type="auto" controlClass="" label="Автор" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen="">
+    <control name="" action="applyFilter" target="*" targetProperty="[Author].[H1].[AuthorExtId]" location="dashboard" type="auto" controlClass="" label="Автор" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen="">
       <valueRequired>false</valueRequired>
     </control>
     <control name="" action="applyFilter" target="*" targetProperty="[Tech].[H1].[Theme]" location="dashboard" type="auto" controlClass="" label="Технология" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen="">
@@ -14,8 +14,6 @@
     </control>
   </widget>
   <widget name="Виджет2" type="pivot" subtype="pivot" subtypeClass="lineChart" title="Посты всех авторов" dataSource="Authors/All Authors.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="4" colSpanL="6" rowSpanL="10" showToolbar="true" showToolbarBottomBorder="true" showToolbarOnlyWhenMaximized="false" colorToolbar="#F0F0F0" opacityToolbar="1" backgroundColor="#F0F0F0" opacity="1" theme="" dataColorList="">
-  </widget>
-  <widget name="Виджет3" type="pivot" subtype="comboChart" subtypeClass="comboChart" title="" dataSource="Authors/Authors and Topics.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="4" rowSpanL="4" showToolbar="true" showToolbarBottomBorder="true" showToolbarOnlyWhenMaximized="false" colorToolbar="#F0F0F0" opacityToolbar="1" backgroundColor="#F0F0F0" opacity="1" theme="" dataColorList="">
   </widget>
 </dashboard>
 </Document></Export>
