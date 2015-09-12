@@ -11,7 +11,7 @@
 <Implementation><![CDATA[
 	s sc=##class(Forum.TopicsLoader).Load(forum)
 	if $$$ISERR(sc) q sc
-	s sc=##class(%DeepSee.Utils).%BuildCube("SQLRUCube")
+	s sc=##class(%DeepSee.Utils).%BuildCube("PostAnalytics")
 	if $$$ISERR(sc) q sc
 	s sc=##class(%DeepSee.Utils).%BuildCube("TopicAnalytics")
 	q sc
@@ -26,7 +26,7 @@
 		
 	s sc=##class(Forum.TopicsUpdater).Update(forum)
 	if $$$ISERR(sc) q sc
-	s sc=##class(%DeepSee.Utils).%BuildCube("SQLRUCube")
+	s sc=##class(%DeepSee.Utils).%BuildCube("PostAnalytics")
 	if $$$ISERR(sc) q sc
 	s sc=##class(%DeepSee.Utils).%BuildCube("TopicAnalytics")
 	q sc
