@@ -6,7 +6,7 @@
 <ProcedureBlock>1</ProcedureBlock>
 <Super>%DeepSee.CubeDefinition</Super>
 <TimeCreated>63796,39311.697296</TimeCreated>
-<DependsOn>BI.TopicAnalytics</DependsOn>
+<DependsOn>Forum.Post,BI.TopicAnalytics</DependsOn>
 
 <XData name="Cube">
 <Description>
