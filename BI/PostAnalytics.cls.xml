@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for UNIX (SUSE Linux Enterprise Server for x86-64) 2015.3 (Build 211U)" ts="2015-09-10 09:40:20">
+<Export generator="Cache" version="25">
 <Class name="BI.PostAnalytics">
 <Description>
 </Description>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>%DeepSee.CubeDefinition</Super>
-<TimeChanged>63802,53157.775114</TimeChanged>
 <TimeCreated>63796,39311.697296</TimeCreated>
-<DependsOn>Forum.Post</DependsOn>
+<DependsOn>BI.TopicAnalytics</DependsOn>
 
 <XData name="Cube">
 <Description>
