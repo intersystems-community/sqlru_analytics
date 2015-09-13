@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for UNIX (SUSE Linux Enterprise Server for x86-64) 2015.3 (Build 211U)" ts="2015-09-10 09:39:54">
+<Export generator="Cache" version="25">
 <Class name="BI.TopicAnalytics">
 <Description>
 </Description>
 <ProcedureBlock>1</ProcedureBlock>
 <Super>%DeepSee.CubeDefinition</Super>
-<TimeChanged>63802,54605.073331</TimeChanged>
 <TimeCreated>63788,74950.849462</TimeCreated>
 <DependsOn>Forum.Topic</DependsOn>
 
@@ -50,7 +49,7 @@ Cube definition from Architect.</Description>
   </dimension>
   <dimension name="Topic" disabled="false" hasAll="false" allCaption="All Name1" allDisplayName="Name1" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
-      <level name="Topic" disabled="false" sourceProperty="Name" list="false" useDisplayValue="true" useAsFilter="true">
+      <level name="Topic" displayName="Тема" disabled="false" sourceProperty="Name" list="false" useDisplayValue="true" useAsFilter="true">
       </level>
     </hierarchy>
   </dimension>
@@ -73,9 +72,9 @@ Cube definition from Architect.</Description>
       <additionalDescription>undefined</additionalDescription>
     </hierarchy>
   </dimension>
-  <measure name="Answers" disabled="false" sourceProperty="Answers" aggregate="SUM" type="number" hidden="false" searchable="false">
+  <measure name="Answers" displayName="Ответы" disabled="false" sourceProperty="Answers" aggregate="SUM" type="number" hidden="false" searchable="false">
   </measure>
-  <measure name="Views" disabled="false" sourceProperty="Views" aggregate="SUM" type="number" hidden="false" searchable="false">
+  <measure name="Views" displayName="Просмотры" disabled="false" sourceProperty="Views" aggregate="SUM" type="number" hidden="false" searchable="false">
   </measure>
   <calculatedMember name="AVGAnswers" disabled="false" dimension="Measures" valueExpression="[Measures].[Answers]/[Measures].[%Count]" hidden="false">
   </calculatedMember>
@@ -113,6 +112,19 @@ determine technology areas</Description>
 ]]></Implementation>
 </Method>
 
-<Parameter name="DOMAIN"/>
+<Method name="GetName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	s author=##class(Forum.Post).%OpenId(id)
+	if '$IsObject(author) q ""
+	q author.Author
+]]></Implementation>
+</Method>
+
+<Parameter name="DOMAIN">
+</Parameter>
 </Class>
 </Export>

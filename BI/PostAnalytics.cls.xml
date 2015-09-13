@@ -20,11 +20,29 @@ Cube definition from Architect.</Description>
       </level>
     </hierarchy>
   </dimension>
-  <dimension name="Author" disabled="false" sharesFrom="TopicAnalytics" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" hidden="false" showHierarchies="default">
-  </dimension>
   <dimension name="Posted" disabled="false" sharesFrom="TopicAnalytics" hasAll="false" allCaption="All Posted" allDisplayName="Posted" type="data" hidden="false" showHierarchies="default">
   </dimension>
-  <listing name="New_listing1" disabled="false" listingType="table" fieldList="Author,Posted,ExtId,Text,Link,Topic-&gt;Name,Topic-&gt;Updated,Topic-&gt;Views">
+  <dimension name="Author" disabled="false" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" displayName="Все авторы" disabled="false">
+      <level name="Author" disabled="false" sourceProperty="Author" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+    <hierarchy name="H2" displayName="Зарегистрированные авторы" disabled="false">
+      <level name="ExtId" displayName="Автор" disabled="false" sourceProperty="AuthorId.ExtId" list="false" useDisplayValue="true" useAsFilter="true">
+        <property name="Name" displayName="Автор" disabled="false" sourceProperty="AuthorId.Name" hidden="false" isName="true" isDescription="false" isReference="false" useDisplayValue="false">
+          <additionalDescription>undefined</additionalDescription>
+        </property>
+        <property name="Location" disabled="false" sourceProperty="AuthorId.Location" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+        <property name="Latitude" disabled="false" sourceProperty="AuthorId.Latitude" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+        <property name="Longitude" disabled="false" sourceProperty="AuthorId.Longitude" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+      </level>
+    </hierarchy>
+  </dimension>
+  <listing name="New_listing1" disabled="false" listingType="table" fieldList="Text,Link,Author,Posted,Topic-&gt;Name">
+    <additionalDescription>undefined</additionalDescription>
   </listing>
 </cube>
 ]]></Data>
@@ -49,6 +67,19 @@ Cube definition from Architect.</Description>
 ]]></Implementation>
 </Method>
 
-<Parameter name="DOMAIN"/>
+<Method name="GetName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	s author=##class(Forum.Post).%OpenId(id)
+	if '$IsObject(author) q ""
+	q author.Author
+]]></Implementation>
+</Method>
+
+<Parameter name="DOMAIN">
+</Parameter>
 </Class>
 </Export>
