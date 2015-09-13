@@ -6,7 +6,7 @@
     <control name="" action="applyFilter" target="*" targetProperty="[Posted].[H1].[Year]" location="dashboard" type="auto" controlClass="" label="Год" title="" value="&amp;[NOW]" text="" readOnly="false" valueList="" displayList="" activeWhen="">
       <valueRequired>false</valueRequired>
     </control>
-    <control name="" action="applyFilter" target="*" targetProperty="[Author].[H2].[ExtId]" location="dashboard" type="auto" controlClass="" label="Автор" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen="">
+    <control name="" action="applyFilter" target="*" targetProperty="[Author].[H1].[Author]" location="dashboard" type="auto" controlClass="" label="Автор" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen="">
       <valueRequired>false</valueRequired>
     </control>
     <control name="" action="applyFilter" target="*" targetProperty="[Tech].[H1].[Theme]" location="dashboard" type="auto" controlClass="" label="Технология" title="" value="" text="" readOnly="false" valueList="" displayList="" activeWhen="">
