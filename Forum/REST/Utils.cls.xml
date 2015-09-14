@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.REST.Utils">
+<Description>
+Класс для реализации REST-интерфейса</Description>
+<Super>%RegisteredObject</Super>
+<TimeCreated>63798,45517.564563</TimeCreated>
+
+<Parameter name="postCountOnPage">
+<Type>Integer</Type>
+<Default>25</Default>
+</Parameter>
+
+<Parameter name="topicCountOnPage">
+<Type>Integer</Type>
+<Default>50</Default>
+</Parameter>
+
+<Method name="GetTopicList">
+<Description>
+Запрос всех тем</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set sql = "SELECT * FROM Forum.Topic ORDER BY ID"
+    try {        
+        do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="GetTopic">
+<Description>
+Запрос одной темы форума</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicID:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set sql = "SELECT * FROM Forum.Topic where ID = "_topicID
+    try {        
+        do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="GetPostList">
+<Description>
+Запрос всех возможных постов</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set sql = "SELECT * FROM Forum.Post"
+    try {        
+        do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="GetPost">
+<Description>
+Запрос одной поста по id</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>postID:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set sql = "SELECT * FROM Forum.Post where ID = "_postID
+    try {        
+        do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicPostList">
+<Description>
+Запрос всех постов темы</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicID:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set sql = "SELECT * FROM Forum.Post where Topic = "_topicID
+    try {        
+        do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="AddTopic">
+<Description>
+Создание новой темы</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st = $$$OK
+	
+	try{   	
+		set newTopic = ##class(Forum.Topic).%New()
+      	
+      	set newTopic.Name = %request.Content.Name
+      	set newTopic.Author =%request.Content.Author
+		set newTopic.Type = %request.Content.Type
+		set newTopic.Answers = 1
+		set newTopic.Views = 0
+		set newTopic.Posted = $ZDATETIME($HOROLOG,3,1,)
+		set newTopic.Updated = $ZDATETIME($HOROLOG,3,1,)
+		set newTopic.ExtId = 0
+      	set newTopic.Forum = ##class(Forum.Forum).%OpenId(1)
+		
+		$$$THROWONERROR(st, newTopic.%Save())
+		
+		set newPost = ##class(Forum.Post).%New()
+		s newPost.Author=%request.Content.Author
+		s newPost.ExtId=0
+		s newPost.Posted=$ZDATETIME($HOROLOG,3,1,)
+		s newPost.Type=%request.Content.Type
+		s newPost.Topic=newTopic
+		s newPost.Text=%request.Content.Message
+		
+		$$$THROWONERROR(st, newPost.%Save())
+		s num=##class(%ZEN.proxyObject).%New()
+		s num.id=newTopic.%Id()
+		return num.%ToJSON()
+	}
+	catch (ex) {
+		set st = ex.AsStatus()
+	}
+
+	quit st
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicPageCount">
+<Description>
+Запрос количества страниц тем</Description>
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+	&sql(DECLARE TopMaxID CURSOR FOR 
+	SELECT COUNT(ID) FROM Forum.Topic) 
+	&sql(OPEN TopMaxID)
+	for  
+	{	
+		&sql(FETCH TopMaxID INTO :counttop) 
+		quit:(SQLCODE '= 0)
+		set st=counttop\..#topicCountOnPage+1
+	}
+	
+	&sql(CLOSE TopMaxID)
+    set count = ##class(%ZEN.proxyObject).%New()
+	set count.topicCount=st
+    return count.%ToJSON()
+]]></Implementation>
+</Method>
+
+<Method name="GetPostPageCount">
+<Description>
+Запрос количества сообщений в теме</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicID:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+	&sql(DECLARE PostMaxID CURSOR FOR SELECT COUNT(ID) FROM Forum.Post WHERE Topic=:topicID) 
+	&sql(OPEN PostMaxID)
+	for  
+	{	
+		&sql(FETCH PostMaxID INTO :countpost) 
+		quit:(SQLCODE '= 0)
+		set st=countpost\..#postCountOnPage+1
+	}
+	
+	&sql(CLOSE PostMaxID)
+	set count = ##class(%ZEN.proxyObject).%New()
+	set count.postCount=st
+    return count.%ToJSON()
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicsByPage">
+<Description>
+Запрос одной порции тем</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>page:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set countMiss=..#topicCountOnPage*(page-1)
+    set id=0
+    &sql(DECLARE IdPartMax CURSOR FOR SELECT TOP :countMiss ID FROM Forum.Topic ORDER BY ID)	
+		
+	&sql(OPEN IdPartMax)
+	for  
+	{	
+		&sql(FETCH IdPartMax INTO :idMax) 
+		quit:(SQLCODE '= 0)
+		set id=idMax
+	}
+		
+	&sql(CLOSE IdPartMax)
+	set sql = "SELECT TOP "_..#topicCountOnPage_" * FROM Forum.Topic WHERE ID > "_id_" ORDER BY ID"
+	try {        
+    	do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="GetPostByPage">
+<Description>
+Запрос одной порции сообщений из темы topicid</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicid:%String,page:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    set st = $$$OK
+    set countMiss=..#postCountOnPage*(page-1)
+    set id=0
+    &sql(DECLARE IdPostPartMax CURSOR FOR SELECT TOP :countMiss ID FROM Forum.Post WHERE Topic = :topicid ORDER BY ID)	
+		
+	&sql(OPEN IdPostPartMax)
+	for  
+	{	
+		&sql(FETCH IdPostPartMax INTO :idMax) 
+		quit:(SQLCODE '= 0)
+		set id=idMax
+	}
+		
+	&sql(CLOSE IdPostPartMax)
+	
+    set sql = "SELECT TOP "_..#postCountOnPage_" * FROM Forum.Post WHERE Topic = "_topicid_" AND ID > "_id_" ORDER BY ID"
+    try {        
+        do ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(,sql)
+    } catch ex {
+        set st = ex.AsStatus()
+    }
+    return st
+]]></Implementation>
+</Method>
+
+<Method name="GenerateRandomPosts">
+<Description>
+Создает случайные посты под авторством Random</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>idTopic:%Integer,countPost:%Integer,text:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set st= $$$OK
+	
+	if (idTopic="")
+	{
+		&sql(DECLARE TopMax CURSOR FOR 
+		SELECT MAX(ID)
+		FROM Forum.Topic)	
+		
+		&sql(OPEN TopMax)
+		for  
+		{	
+			&sql(FETCH TopMax INTO :id) 
+			quit:(SQLCODE '= 0)
+			set topic =	##class(Forum.Topic).%OpenId(id)
+		}
+		
+		&sql(CLOSE TopMax)
+		
+	}else
+	{
+		try {        
+			set topic =	##class(Forum.Topic).%OpenId(idTopic)
+		} catch ex {
+			set st = ex.AsStatus()
+		}
+	}
+	
+	if (countPost="")
+	{
+		s countPost=1
+	}
+	
+	try{
+		for i=1:1:countPost
+		{
+			s newPost=##class(Forum.Post).%New()
+			s newPost.Author="Random"
+			s newPost.ExtId=0
+			s newPost.Posted=$ZDATETIME($HOROLOG,3,1,)
+			s newPost.Type="message"
+			s newPost.Topic=topic
+			if (text="")
+			{
+				s newPost.Text="SampleText_"_i
+			}else
+			{
+				s newPost.Text=text
+			}
+			$$$THROWONERROR(st, newPost.%Save())
+			w !, "New post created in Topic "_topic.%Id()
+			w !, "--ID: "_newPost.%Id()
+			w !, "--Author: "_newPost.Author
+			w !, "--Message: "_newPost.Text
+			w !, "--Posted: "_newPost.Posted
+		}
+	}catch (ex) {
+		set st = ex.AsStatus()
+	}
+	
+	q st
+]]></Implementation>
+</Method>
+</Class>
+</Export>

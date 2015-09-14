@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="forum/partials/addtopic.csp" application="/csp/user/" default="1"><![CDATA[
+<div class="row-fluid" ng-controller="AddTopicCtrl">
+	<div class="container-fluid" >
+		<form ng-submit="page.submit()">			
+			<div class="form-group">
+				<label for="inpAuth">Автор:</label>
+				<input ng-model="page.topic.Author" type="text" class="form-control" id="inpAuth" placeholder="Имя или псевдоним автора...">
+			</div>
+			<div class="form-group">
+				<label for="inpTheme">Тема:</label>
+				<input ng-model="page.topic.Name" type="text" class="form-control" id="inpTheme" placeholder="Название темы...">
+			</div>
+			<div class="form-group">
+				<label for="inpMessage">Сообщение:</label>
+				<textarea ng-model="page.topic.Message" class="form-control" id="inpMessage" placeholder="Тело сообщения..."></textarea>
+			</div>
+			<div class="form-group">
+				<label>Тип:</label>
+				<p>
+				<label class="radio-inline" title="Сообщение">
+					<input ng-model="page.topic.Type" type="radio" name="radType" id="radMes" value="message" checked><span class="fa fa-envelope"></span>
+				</label>
+				<label class="radio-inline" title="Вопрос">
+					<input ng-model="page.topic.Type" type="radio" name="radType" id="radQue" value="question"><span class="fa fa-question-circle"></span>
+				</label>
+				<label class="radio-inline" title="Радость">
+					<input ng-model="page.topic.Type" type="radio" name="radType" id="radHap" value="happy"><span class="fa fa-smile-o"></span>
+				</label>
+				<label class="radio-inline" title="Недовольство">
+					<input ng-model="page.topic.Type" type="radio" name="radType" id="radCry" value="cry"><span class="fa fa-frown-o"></span>
+				</label>
+				<label class="radio-inline" title="Обратите внимание">
+					<input ng-model="page.topic.Type" type="radio" name="radType" id="radExc" value="exclamation"><span class="fa fa-exclamation"></span>
+				</label>
+				</p>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<button type="submit" class="btn btn-success">Опубликовать</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+]]></CSP>
+</Export>

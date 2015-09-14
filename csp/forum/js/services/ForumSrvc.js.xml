@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="forum/js/services/ForumSrvc.js" application="/csp/user/" default="1"><![CDATA[
+'use strict';
+
+function ForumSrvc(RESTSrvc) {    
+  return {
+    
+    getTopicAuth: 
+      function(id, baseAuthToken) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topic/' + id,headers: {'Authorization' : baseAuthToken} });
+      },
+      
+    getTopic: 
+      function(id) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topic/' + id});
+      },
+    
+    getAllTopic: 
+      function() {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topic'});
+      },
+    
+    getAllTopicAuth: 
+      function(baseAuthToken) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topic', headers: {'Authorization' : baseAuthToken} });
+      },
+      
+    getTopicPosts: 
+      function(id) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topic/'+id+'/post'});
+      },
+    
+    addTopic: 
+      function(topic) {
+        return RESTSrvc.getPromise( {method: 'POST', url: RESTWebApp.appName + '/topic', data: topic});
+      },
+      
+    getPostsOnPage: 
+      function(id,page) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topic/'+id+'/post/'+page});
+      },
+      
+    getTopicOnPage: 
+      function(page) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topics/'+page});
+      },
+      
+    getCountTopicOnPage: 
+      function() {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/topicpage'});
+      },
+        
+    getCountPostOnPage: 
+      function(id) {
+        return RESTSrvc.getPromise( {method: 'GET', url: RESTWebApp.appName + '/postpage/'+id});
+      }
+  }
+};
+
+ForumSrvc.$inject = ['RESTSrvc'];
+servicesModule.factory('ForumSrvc', ForumSrvc);
+]]></CSP>
+</Export>
