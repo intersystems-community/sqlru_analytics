@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.PostsLoader">
+<Description>
+Initial post loader</Description>
+<Super>Forum.PostsPage</Super>
+<TimeCreated>63782,48915.323809</TimeCreated>
+
+<Method name="Load">
+<Description><![CDATA[
+Load posts of topic with ExtId <var>topic</var>
+<var>data</var> - key-value array
+<var>data("topic")</var> - topicId by sql.ru
+<var>data("pages")</var> = "a" - all - if we can load all pages for one time
+, or number of pages of posts of topic]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Q ..Scan(.data)
+]]></Implementation>
+</Method>
+
+<Property name="firstPost">
+<Description>
+current row of topics table</Description>
+<Type>%Integer</Type>
+<Private>1</Private>
+</Property>
+
+<Method name="Scan">
+<Description>
+scan across all forum posts pages</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#define g(%prop) $g(data(%prop))
+	
+	s topic = $$$g("topic") ;topicid from sql.ru
+	s pages = $$$g("pages") ;pages - pages count (number) or "a" - all, convention from sql.ru
+	
+	s i = 1 s:pages="a" i = "a" ;current page with posts
+	s page = ..GetPage( topic, i, .sc ) Q:'sc sc
+	
+	#; first post in topic contain date of topic creation
+	s page.firstPost = 1
+	
+	s sc = page.Parse() Q:'sc sc
+	
+	#; Load and parse pages from 1 to pages
+	#;"a" - all posts of topic - convention from sql.ru
+	if pages = "a" Q sc  
+	
+	#; if pages is numeric	
+	for { s i = i + 1  Q:i>pages
+		
+		s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
+		s sc = page.Parse() Q:'sc
+	}
+	
+			
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="OnPost">
+<Description><![CDATA[
+Event handler 
+<var>data</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
+	s data("Topic") = topicId ;set parent
+	
+	k author s author("Name") = data("Author")
+	s author("ExtId") = $g(data("Author","ExtId"))
+	s sc = ##class(Forum.Author).GetOrSet(.author) Q:'sc sc 
+	s data("AuthorId") = author
+
+	s sc = ##class(Post).Insert( .data ) Q:'sc sc
+	w "." 
+	if ..firstPost { ;first post's date is the date of topic's creation
+		
+		s sc = ##class(Topic).SetPosted(topicId, data("Posted") )
+		Q:'sc $$$ERROR($$$GeneralError," update topic.posted error")
+		s ..firstPost = 0
+		
+	}
+	
+	Q sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>

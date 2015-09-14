@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Topic">
+<Description>
+One question or theme on the forum</Description>
+<Super>%Persistent</Super>
+<TimeCreated>63770,69487.272655</TimeCreated>
+
+<Parameter name="DOMAIN">
+<Default>Forum.Topic</Default>
+</Parameter>
+
+<Property name="Forum">
+<Type>Forum.Forum</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Topics</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+<OnDelete>cascade</OnDelete>
+</Property>
+
+<Index name="ForumIndex">
+<Properties>Forum</Properties>
+</Index>
+
+<Property name="Type">
+<Description>
+type of topic; like messege, cry, question e.t.c.</Description>
+<Type>%String</Type>
+</Property>
+
+<Property name="Name">
+<Description>
+the name of the topic</Description>
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="150"/>
+</Property>
+
+<Index name="Name">
+<Properties>Name</Properties>
+</Index>
+
+<Property name="ExtId">
+<Description>
+Id of topic that uses on sql.ru</Description>
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="ExtId">
+<Description>
+that is unique for every topics</Description>
+<Properties>ExtId</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Property name="Link">
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Topic).GetLink({ExtId}) </SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extId</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[$S(extId'="":"http://www.sql.ru/forum/"_extId_"/",1:"")
+]]></Implementation>
+</Method>
+
+<Property name="Author">
+<Description>
+topic starter</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="Author">
+<Properties>Author</Properties>
+</Index>
+
+<Property name="AuthorExtId">
+<Type>%String</Type>
+</Property>
+
+<Property name="AuthorId">
+<Type>Forum.Author</Type>
+</Property>
+
+<Property name="Posts">
+<Type>Forum.Post</Type>
+<Cardinality>many</Cardinality>
+<Inverse>Topic</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Property name="Answers">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="Views">
+<Description>
+views of topic</Description>
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Posted">
+<Description>
+Date and time of topic create</Description>
+<Type>%TimeStamp</Type>
+</Property>
+
+<Method name="SetPosted">
+<Description>
+Update topic date by first post date</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id,posted:%TimeStamp</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql( Update Forum.Topic Set Posted = :posted Where id = :id )
+	Q ( SQLCODE = 0 )
+]]></Implementation>
+</Method>
+
+<Property name="Updated">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="Updated">
+<Properties>Updated</Properties>
+</Index>
+
+<Property name="Pages">
+<Description>
+Pages of posts in topic</Description>
+<Type>%String</Type>
+<Internal>1</Internal>
+</Property>
+
+<Method name="Insert">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data=""]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql(
+		Insert Into Forum.Topic (Forum, Type, Name, ExtId, Author, AuthorExtId, AuthorId, Answers, Views, Updated, Pages)
+		Values (
+			:data("Forum"), :data("Type"), :data("Name")
+			, :data("ExtId"), :data("Author"), :data("Author","ExtId"), :data("AuthorId")
+			, :data("Answers"), :data("Views"), :data("Updated")
+			, :data("PagesAmount")
+		)
+	)
+	if SQLCODE=0 {
+		s data = %ROWID Q 1	
+	}
+	
+	#; sqlru has repeated topic on every Page - special type of topic
+	#; in this case, we must generate special error 
+	if (SQLCODE = -119) Q $$$ERROR(5808)	
+	
+	Q $$$ERROR(,$system.SQL.SQLCODE(SQLCODE))
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.TopicD</DataLocation>
+<DefaultData>TopicDefaultData</DefaultData>
+<IdLocation>^Forum.TopicD</IdLocation>
+<IndexLocation>^Forum.TopicI</IndexLocation>
+<StreamLocation>^Forum.TopicS</StreamLocation>
+<Data name="TopicDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Forum</Value>
+</Value>
+<Value name="3">
+<Value>Type</Value>
+</Value>
+<Value name="4">
+<Value>Name</Value>
+</Value>
+<Value name="5">
+<Value>ExtId</Value>
+</Value>
+<Value name="6">
+<Value>Author</Value>
+</Value>
+<Value name="7">
+<Value>AuthorExtId</Value>
+</Value>
+<Value name="8">
+<Value>Answers</Value>
+</Value>
+<Value name="9">
+<Value>Views</Value>
+</Value>
+<Value name="10">
+<Value>Updated</Value>
+</Value>
+<Value name="11">
+<Value>Posted</Value>
+</Value>
+<Value name="12">
+<Value>Link</Value>
+</Value>
+<Value name="13">
+<Value>AuthorId</Value>
+</Value>
+<Value name="14">
+<Value>Pages</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

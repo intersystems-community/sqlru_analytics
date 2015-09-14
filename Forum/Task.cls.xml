@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Task">
+<Super>%RegisteredObject</Super>
+<TimeCreated>63799,56049.630425</TimeCreated>
+
+<Method name="LoadAll">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s sc=##class(Forum.TopicsLoader).Load(forum)
+	if $$$ISERR(sc) q sc
+	s sc=##class(%DeepSee.Utils).%BuildCube("PostAnalytics")
+	if $$$ISERR(sc) q sc
+	s sc=##class(%DeepSee.Utils).%BuildCube("TopicAnalytics")
+	q sc
+]]></Implementation>
+</Method>
+
+<Method name="UpdateAll">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>forum="cache"</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+		
+	s sc=##class(Forum.TopicsUpdater).Update(forum)
+	if $$$ISERR(sc) q sc
+	s sc=##class(%DeepSee.Utils).%BuildCube("PostAnalytics")
+	if $$$ISERR(sc) q sc
+	s sc=##class(%DeepSee.Utils).%BuildCube("TopicAnalytics")
+	q sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Forum">
+<Description>
+Forums at www.sql.ru/forum/. 
+For example: www.sql.ru/forum/cache</Description>
+<Super>%Persistent</Super>
+<TimeCreated>63770,69486.949772</TimeCreated>
+
+<Property name="Link">
+<Description>
+url</Description>
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Forum).GetLink({Name})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>name</FormalSpec>
+<Implementation><![CDATA[$S(name'="":"http://www.sql.ru/forum/"_name,1:"")
+]]></Implementation>
+</Method>
+
+<Property name="Name">
+<Description>
+Forum name. For example: cache, oracle, mysql, etc.  </Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="Name">
+<Properties>Name</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Property name="Topics">
+<Description>
+forum topics collection</Description>
+<Type>Forum.Topic</Type>
+<Cardinality>many</Cardinality>
+<Inverse>Forum</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Method name="%OnNew">
+<FormalSpec>name</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<ServerOnly>1</ServerOnly>
+<Implementation><![CDATA[
+	s ..Name = $g(name)
+	Quit $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Insert">
+<Description>
+inline sql is more quicker than OOP</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql(
+		Insert Into Forum.Forum (Name) Values ( :data("Name") )
+	)
+	if SQLCODE=0 {
+		s data=%ROWID Q 1
+	}
+	Q $$$ERROR(,$system.SQL.SQLCODE( SQLCODE ))
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.ForumD</DataLocation>
+<DefaultData>ForumDefaultData</DefaultData>
+<IdLocation>^Forum.ForumD</IdLocation>
+<IndexLocation>^Forum.ForumI</IndexLocation>
+<StreamLocation>^Forum.ForumS</StreamLocation>
+<Data name="ForumDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>Link</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

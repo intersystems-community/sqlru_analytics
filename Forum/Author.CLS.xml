@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Author">
+<Description>
+Author of Post</Description>
+<Super>%Persistent</Super>
+<TimeCreated>63798,77483.317654</TimeCreated>
+
+<Property name="Name">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="Name">
+<Properties>Name</Properties>
+</Index>
+
+<Property name="ExtId">
+<Type>%String</Type>
+</Property>
+
+<Index name="ExtId">
+<Properties>ExtId</Properties>
+</Index>
+
+<Property name="Location">
+<Description><![CDATA[
+Author From
+user AlViPos  Мордовия г. Саранск ОАО &quot;Станкостроитель&quot;]]></Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="255"/>
+<Parameter name="TRUNCATE" value="1"/>
+</Property>
+
+<Index name="Location">
+<Data>Latitude,Longitude</Data>
+<Properties>Location:SQLUPPER</Properties>
+</Index>
+
+<Property name="Latitude">
+<Type>%String</Type>
+</Property>
+
+<Property name="Longitude">
+<Type>%String</Type>
+</Property>
+
+<Property name="Link">
+<Description>
+url</Description>
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Author).GetLink({ExtId})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extid</FormalSpec>
+<Implementation><![CDATA[$S(extid'="":"http://www.sql.ru/"_##class(Forum.AuthorPage).Url(extid), 1:"")
+]]></Implementation>
+</Method>
+
+<Method name="Insert">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql( Insert Into Forum.Author 
+		( Name, ExtId ) 
+	Values (
+		:data("Name"), :data("ExtId")
+	))
+	
+	if SQLCODE=0 s data = %ROWID Q 1
+	Q $$$ERROR(,$system.SQL.SQLCODE(SQLCODE))
+]]></Implementation>
+</Method>
+
+<Method name="Get">
+<Description>
+Return author id </Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name,extId=""</FormalSpec>
+<Implementation><![CDATA[
+	#; at first, search by external id
+	if $g(extId)'="" s exist = ..ExtIdExists( extId, .id ) Q:exist id
+	#; 
+	s exist = ..NameExists( name, .id ) Q:exist id
+	Q ""
+]]></Implementation>
+</Method>
+
+<Method name="GetOrSet">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&author]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s name = $g(author("Name")), extId = $g(author("ExtId"))
+	s id = ..Get( name, extId ) 
+	if id'="" s author=id Q 1
+	
+	s sc = ..Insert( .author )
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="SetLocation">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id,location,latitude,longitude</FormalSpec>
+<Implementation><![CDATA[
+	&sql( Update Author 
+		Set Location = :location, Latitude = :latitude, Longitude = :longitude
+		Where Id =:id 
+	)
+	Q:SQLCODE=0 1
+	Q $$$ERROR($$$GeneralError,$system.SQL.SQLCODE(SQLCODE))
+]]></Implementation>
+</Method>
+
+<Method name="LocationCache">
+<Description>
+Return known coordinates by name  
+Test: ..LocationCache("Новосибирск") = "82.920430 55.030199"</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>location</FormalSpec>
+<Implementation><![CDATA[
+	s sql = "Select Top 1 Latitude, Longitude From Forum.Author "
+		_"Where ( Latitude Is Not Null And Longitude Is Not Null ) And Location = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,location)
+	if rs.%Next() Q rs.Latitude _ " " _ rs.Longitude
+	Q ""
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.AuthorD</DataLocation>
+<DefaultData>AuthorDefaultData</DefaultData>
+<IdLocation>^Forum.AuthorD</IdLocation>
+<IndexLocation>^Forum.AuthorI</IndexLocation>
+<StreamLocation>^Forum.AuthorS</StreamLocation>
+<Data name="AuthorDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>ExtId</Value>
+</Value>
+<Value name="4">
+<Value>Location</Value>
+</Value>
+<Value name="5">
+<Value>Geolocation</Value>
+</Value>
+<Value name="6">
+<Value>Latitude</Value>
+</Value>
+<Value name="7">
+<Value>Longitude</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

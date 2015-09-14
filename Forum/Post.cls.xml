@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.Post">
+<Super>%Persistent</Super>
+<TimeCreated>63763,57010.038856</TimeCreated>
+
+<Property name="Topic">
+<Description>
+post related to </Description>
+<Type>Forum.Topic</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Posts</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+<OnDelete>cascade</OnDelete>
+</Property>
+
+<Index name="TopicIndex">
+<Properties>Topic</Properties>
+</Index>
+
+<Property name="ExtId">
+<Description>
+Id of post that uses on sql.ru, that is unique for every post</Description>
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="ExtId">
+<Properties>ExtId</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Property name="Author">
+<Description>
+account of post author</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="Author">
+<Properties>Author</Properties>
+</Index>
+
+<Property name="AuthorExtId">
+<Type>%String</Type>
+</Property>
+
+<Property name="AuthorId">
+<Type>Forum.Author</Type>
+</Property>
+
+<Property name="Posted">
+<Type>%TimeStamp</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Text">
+<Description>
+text of post in string, if length more than 32676 then it truncate</Description>
+<Type>%String</Type>
+<Parameter name="MAXLEN" value="255"/>
+<Parameter name="TRUNCATE" value="1"/>
+</Property>
+
+<Property name="TextStream">
+<Description>
+text of post in stream</Description>
+<Type>%Stream.FileCharacter</Type>
+</Property>
+
+<Property name="Type">
+<Description>
+type of post; like messege, cry, question e.t.c.</Description>
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Link">
+<Type>%String</Type>
+<Calculated>1</Calculated>
+<SqlComputeCode> s {*} = ##class(Forum.Post).GetLink({ExtId})</SqlComputeCode>
+<SqlComputed>1</SqlComputed>
+</Property>
+
+<Method name="GetLink">
+<ClassMethod>1</ClassMethod>
+<CodeMode>expression</CodeMode>
+<FormalSpec>extId</FormalSpec>
+<Implementation><![CDATA[$S(extId'="":"http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg="_extId,1:"")
+]]></Implementation>
+</Method>
+
+<Method name="Insert">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data=""]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&sql(
+		Insert Into Forum.Post (Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, TextStream, Text, Type)
+		Values (
+			:data("Topic"), :data("ExtId")
+			, :data("Author"), :data("Author","ExtId"), :data("AuthorId")
+			, :data("Posted"), :data("Text")
+			, :data("Text"), :data("Type")
+		)
+	)
+	if SQLCODE=0 {
+		s data = %ROWID Q 1	
+	}	
+	Q $$$ERROR($$$GeneralError,$system.SQL.SQLCODE(SQLCODE))
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^Forum.PostD</DataLocation>
+<DefaultData>PostDefaultData</DefaultData>
+<IdLocation>^Forum.PostD</IdLocation>
+<IndexLocation>^Forum.PostI</IndexLocation>
+<StreamLocation>^Forum.PostS</StreamLocation>
+<Data name="PostDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Topic</Value>
+</Value>
+<Value name="3">
+<Value>ExtId</Value>
+</Value>
+<Value name="4">
+<Value>Author</Value>
+</Value>
+<Value name="5">
+<Value>AuthorExtId</Value>
+</Value>
+<Value name="6">
+<Value>Posted</Value>
+</Value>
+<Value name="7">
+<Value>Text</Value>
+</Value>
+<Value name="8">
+<Value>Type</Value>
+</Value>
+<Value name="9">
+<Value>TextStream</Value>
+</Value>
+<Value name="10">
+<Value>Link</Value>
+</Value>
+<Value name="11">
+<Value>AuthorId</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

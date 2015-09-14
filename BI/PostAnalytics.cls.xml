@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="BI.PostAnalytics">
+<Description>
+</Description>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>%DeepSee.CubeDefinition</Super>
+<TimeCreated>63796,39311.697296</TimeCreated>
+<DependsOn>Forum.Post,BI.TopicAnalytics</DependsOn>
+
+<XData name="Cube">
+<Description>
+Cube definition from Architect.</Description>
+<XMLNamespace>http://www.intersystems.com/deepsee</XMLNamespace>
+<Data><![CDATA[
+<cube xmlns="http://www.intersystems.com/deepsee" name="PostAnalytics" displayName="PostAnalytics" disabled="false" abstract="false" sourceClass="Forum.Post" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0" disableListingGroups="false">
+  <dimension name="Tech" displayName="Технология" disabled="false" hasAll="false" allCaption="All Text" allDisplayName="Text" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Theme" displayName="Технология" disabled="false" sourceExpression="%cube.GetTech(%source.Text)" list="true" listDelimiter="," useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="Posted" disabled="false" sharesFrom="TopicAnalytics" hasAll="false" allCaption="All Posted" allDisplayName="Posted" type="data" hidden="false" showHierarchies="default">
+  </dimension>
+  <dimension name="Author" disabled="false" hasAll="false" allCaption="All Author" allDisplayName="Author" type="data" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" displayName="Все авторы" disabled="false">
+      <level name="Author" disabled="false" sourceProperty="Author" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+    <hierarchy name="H2" displayName="Зарегистрированные авторы" disabled="false">
+      <level name="ExtId" displayName="Автор" disabled="false" sourceProperty="AuthorId.ExtId" list="false" useDisplayValue="true" useAsFilter="true">
+        <property name="Name" displayName="Автор" disabled="false" sourceProperty="AuthorId.Name" hidden="false" isName="true" isDescription="false" isReference="false" useDisplayValue="false">
+          <additionalDescription>undefined</additionalDescription>
+        </property>
+        <property name="Location" disabled="false" sourceProperty="AuthorId.Location" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+        <property name="Latitude" disabled="false" sourceProperty="AuthorId.Latitude" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+        <property name="Longitude" disabled="false" sourceProperty="AuthorId.Longitude" hidden="false" isName="false" isDescription="false" isReference="false" useDisplayValue="false">
+        </property>
+      </level>
+    </hierarchy>
+  </dimension>
+  <listing name="New_listing1" disabled="false" listingType="table" fieldList="Text,Link,Author,Posted,Topic-&gt;Name">
+    <additionalDescription>undefined</additionalDescription>
+  </listing>
+</cube>
+]]></Data>
+</XData>
+
+<Method name="GetTech">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>text:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	s text=$zconvert(text,"l")	
+	s res=""
+#define addtech(%tstr,%tech) if $F(text,%tstr) s $p(res,",",$I(i))=%tech w res,!
+	
+	$$$addtech("cach","Cache")
+	$$$addtech("ensemble","Ensemble")
+	$$$addtech("iknow","iKnow")
+	$$$addtech("deepsee","DeepSee")
+	$$$addtech("gt.m","GT.M")
+	if res="" s res="Другое"
+	q res
+]]></Implementation>
+</Method>
+
+<Method name="GetName">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>id:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	s author=##class(Forum.Post).%OpenId(id)
+	if '$IsObject(author) q ""
+	q author.Author
+]]></Implementation>
+</Method>
+
+<Parameter name="DOMAIN">
+</Parameter>
+</Class>
+</Export>

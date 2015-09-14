@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.PostsUpdater">
+<Description>
+Initial post updater
+Called from TopicsUpdater</Description>
+<Super>Forum.PostsPage</Super>
+<TimeCreated>63785,86397.663962</TimeCreated>
+
+<Method name="Update">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Q ..Scan(.data)
+]]></Implementation>
+</Method>
+
+<Method name="Scan">
+<Description>
+scan across all forum posts pages
+NOTE: if then if then if then - something wrong</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#define g(%prop) $g(data(%prop))
+	
+	s topic = $$$g("topic") ;ExtId of topic
+	s lastPageNum = $$$g("pages") ; it's or "a"(if we can load all pages), or number of last page of topics
+	s oldPostsAmount = $$$g("from")
+	s postsAmount = $$$g("to")
+	
+	if +lastPageNum = 0 { ;lastPageNum = "a"
+	
+		s page = ..GetPage( topic, lastPageNum, .sc ) Q:'sc
+		s sc = page.Parse( oldPostsAmount) Q:'sc sc
+		
+	} else {
+		
+		s MAX = 25 ;Max number of posts on one page
+		s startPage = ( oldPostsAmount \ MAX ) + 1 
+		s oldPostsOnStartPage = oldPostsAmount#MAX
+		
+		if lastPageNum = startPage {
+			
+			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
+			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
+			
+		} else {
+			
+			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
+			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
+			
+			for pageNum = startPage:1:lastPageNum {
+				
+				s sc = page.Get( , pageNum ) Q:'sc
+				s sc = page.Parse() Q:'sc
+				
+			}
+
+		}			
+		
+		}
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="OnPost">
+<Description><![CDATA[
+Event handler 
+<var>data</var> - key-value array 
+If handler return 0, parsing will be interrupted]]></Description>
+<FormalSpec><![CDATA[&data]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
+	s data("Topic") = topicId ;add link to parent
+
+	s sc = ##class(Post).Insert( .data ) 
+	Q sc
+]]></Implementation>
+</Method>
+</Class>
+</Export>
