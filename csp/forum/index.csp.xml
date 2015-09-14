@@ -19,7 +19,7 @@
   </head>
   
   	<script language="javascript">
-		var RESTWebApp = {appName: 'http://37.139.17.101:57772/csp/restforum'};
+		var RESTWebApp = {appName: '/csp/restforum'};
 	</script>
 
   	<body ng-app="app" ng-controller="MainCtrl">
