@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="forum/index.csp" application="/csp/user/" default="1"><![CDATA[
+<!doctype html>
+
+<html>
+  <head>
+	  	<title>Форум SQL.ru</title>
+	    
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	    
+	    <!-- CSS Initialization -->
+	    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+	    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+	    <link rel="stylesheet" type="text/css" href="css/custom.css">
+  </head>
+  
+  	<script language="javascript">
+		var RESTWebApp = {appName: 'http://37.139.17.101:57772/csp/restforum'};
+	</script>
+
+  	<body ng-app="app" ng-controller="MainCtrl">
+		<nav class="navbar navbar-custom navbar-fixed-top bg-primary">
+
+			<div class="container-fluid">      
+				<div class="navbar-header"> 
+					<a class="navbar-brand" href="#/topics"><i class="fa fa-database"></i> SQL.ru / Cache {{specTheme}}</a>
+				</div>
+
+				<div class="navbar-left">
+					<!--Секция нав бара выровненная по левому краю-->
+				</div>
+
+
+				<div class="navbar-right">
+					<!--Секция нав бара выровненная по правому краю-->
+				</div>
+			</div>
+		</nav>
+		
+      	<div ng-view></div>
+  	</body>
+  	
+	<script language="javascript" src="libs/angular.min.js"></script>
+	<script language="javascript" src="libs/angular-route.min.js"></script>
+	<script language="javascript" src="libs/angular-cookies.min.js"></script>
+	<script data-require="ui-bootstrap@*" data-semver="0.12.1" src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.1.min.js"></script>
+	<!--script language="javascript" src="libs/ui-bootstrap-custom-tpls-0.12.0.min.js"></script>-->
+	<script language="javascript" src="libs/base64.js"></script>
+
+	<script language="javascript" src="js/app.js"></script>
+
+	<script language="javascript" src="js/services/RESTSrvc.js"></script>
+	<script language="javascript" src="js/services/SessionSrvc.js"></script>
+	<script language="javascript" src="js/services/UtilSrvc.js"></script>
+	<script language="javascript" src="js/services/ForumSrvc.js"></script>
+	<script language="javascript" src="js/controllers/MainCtrl.js"></script>
+	<script language="javascript" src="js/controllers/AllTopicCtrl.js"></script>
+	<script language="javascript" src="js/controllers/TopicCtrl.js"></script>
+	<script language="javascript" src="js/controllers/AddTopicCtrl.js"></script>
+	<script language="javascript" src="js/controllers/AddPostCtrl.js"></script>
+
+	<script language="javascript" src="libs/jquery-1.11.2.min.js"></script>  
+	<script language="javascript" src="libs/bootstrap.min.js"></script>
+</html>
+]]></CSP>
+</Export>

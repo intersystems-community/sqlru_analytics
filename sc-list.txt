@@ -1,0 +1,3 @@
+<cspapp>/forum
+Forum.REST.inc
+Forum.REST.pkg

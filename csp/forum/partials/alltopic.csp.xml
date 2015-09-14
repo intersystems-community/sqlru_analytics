@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="forum/partials/alltopic.csp" application="/csp/user/" default="1"><![CDATA[
+
+<div class="row-fluid" ng-controller="AllTopicCtrl">
+	<div class="row-fluid">
+		<div class="col-md-6">
+			<pagination 
+				ng-model="currentPage"
+				total-items="todos.length"
+				max-size="maxSize"
+				items-per-page="itemsPerPage"  
+				boundary-links="true"
+				ng-change="pageChenged(currentPage)"
+				previous-text="&lsaquo;" 
+				next-text="&rsaquo;" 
+				first-text="&laquo;" 
+				last-text="&raquo;"
+				>
+			</pagination>
+		</div>
+		<div class="col-md-6 text-right">
+			<button type="button" class="btn btn-primary" ng-click="page.addTopic();">Добавить тему <i class="fa fa-plus"></i></button>
+		</div>
+	</div>
+	<div class="span4">
+		<table class="table table-hover" >
+		    <thead>
+		        <tr>
+		            <th ng-repeat="column in page.grid.columns">
+		                <span ng-bind="column.name"></span>
+		            </th>
+		        </tr>
+		    </thead>
+		    <tbody>
+			<tr ng-repeat="item in page.grid.items" ng-click="page.openTopic(utils.getPropertyValue(item, 'ID'));" style="cursor: pointer; *cursor: hand;">
+				<td align="center">
+					<i ng-class="page.imgFilter(utils.getPropertyValue(item, 'Type'))"></i>
+				</td>
+				<td>
+					<span ng-bind="utils.getPropertyValue(item, 'Name')"></span>
+				</td>
+				<td>
+					<span ng-bind="utils.getPropertyValue(item, 'Author')"></span>
+				</td>
+				<td>
+					<span ng-bind="utils.getPropertyValue(item, 'Answers')"></span>
+				</td>			  
+				<td>
+					<span ng-bind="utils.getPropertyValue(item, 'Views')"></span>
+				</td>
+				<td>
+					<span ng-bind="utils.getPropertyValue(item, 'Updated')"></span>
+				</td>
+			</tr>
+			<tbody>
+		</table>
+	</div>
+</div>
+
+]]></CSP>
+</Export>

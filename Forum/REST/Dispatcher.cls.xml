@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="Forum.REST.Dispatcher">
+<Description>
+Класс обработчик REST запросов к форуму</Description>
+<Super>Forum.REST.AbstractREST</Super>
+<TimeCreated>63797,28041.231951</TimeCreated>
+
+<XData name="UrlMap">
+<Data><![CDATA[
+<Routes>
+	<!-- Test method-->
+	<Route Url="/test" Method="GET" Call="Test"/>
+	
+	<Route Url="/logout" Method="GET" Call="Logout"/>
+
+	<!--Получение всех тем-->
+	<Route Url="/topic" Method="GET" Call="GetTopicList"/>
+	
+	<!--Получение конкретной темы по ID-->
+	<Route Url="/topic/:topicid" Method="GET" Call="GetTopic"/>
+	
+	<!--Запрос всех сообщений-->
+	<Route Url="/post" Method="GET" Call="GetPostList"/>
+	
+	<!--Запрос конкретного сообщения по ID-->
+	<Route Url="/post/:postid" Method="GET" Call="GetPost"/>
+	
+	<!--Запрос всех сообщений в теме-->
+	<Route Url="/topic/:topicid/post" Method="GET" Call="GetTopicPostList"/>
+	
+	<!--Запись новой темы-->
+	<Route Url="/topic" Method="POST" Call="AddTopic"/>
+	
+	<!--Запись нового сообщения в теме-->
+	<Route Url="/topic/:topicid/post" Method="POST" Call="AddTopicPost"/>
+	
+	<!--Запрос одной порции тем-->
+	<Route Url="/topics/:page" Method="GET" Call="GetTopicsByPage"/>
+	
+	<!--Запрос одной порции сообщений из темы topicid-->
+	<Route Url="/topic/:topicid/post/:page" Method="GET" Call="GetPostByPage"/>
+	
+	<!--Запрос количества страниц тем-->
+	<Route Url="/topicpage" Method="GET" Call="GetTopicPageCount"/>
+	
+	<!--Запрос количества страниц сообщений в теме-->
+	<Route Url="/postpage/:topicid" Method="GET" Call="GetPostPageCount"/>
+	
+</Routes>
+]]></Data>
+</XData>
+
+<Method name="Test">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+    write "{""Status"": ""OK""}"
+    return $$$OK
+]]></Implementation>
+</Method>
+
+<Method name="Logout">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	#dim %session As %CSP.Session
+	set st = %session.Logout(1)
+	set %session.EndSession = 1
+	return st
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicList">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	return ##class(Forum.REST.Utils).GetTopicList()
+]]></Implementation>
+</Method>
+
+<Method name="GetTopic">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicid:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetTopic(topicid)
+]]></Implementation>
+</Method>
+
+<Method name="GetPostList">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetPostList()
+]]></Implementation>
+</Method>
+
+<Method name="GetPost">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>postid:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetPost(postid)
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicPostList">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicid:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetTopicPostList(topicid)
+]]></Implementation>
+</Method>
+
+<Method name="AddTopic">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).AddTopic()
+]]></Implementation>
+</Method>
+
+<Method name="AddTopicPost">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicid:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	return $$$OK
+    //return ##class(Forum.REST.Utils).AddTopicPost(topicid)
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicsByPage">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>page:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	return ##class(Forum.REST.Utils).GetTopicsByPage(page)
+]]></Implementation>
+</Method>
+
+<Method name="GetPostByPage">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicid:%String,page:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetPostByPage(topicid,page)
+]]></Implementation>
+</Method>
+
+<Method name="GetTopicPageCount">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetTopicPageCount()
+]]></Implementation>
+</Method>
+
+<Method name="GetPostPageCount">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>topicid:%String</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[    return ##class(Forum.REST.Utils).GetPostPageCount(topicid)
+]]></Implementation>
+</Method>
+</Class>
+</Export>

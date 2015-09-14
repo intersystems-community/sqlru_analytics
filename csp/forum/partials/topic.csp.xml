@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<CSP name="forum/partials/topic.csp" application="/csp/user/" default="1"><![CDATA[
+<div class="row-fluid">
+	<div class="col-md-6">
+		<b ng-bind="page.topic.Name"></b>
+	</div>
+	<div class="col-md-6 text-right">
+		<button type="button" class="btn btn-primary">Добавить ответ <i class="fa fa-plus"></i></button>
+	</div>
+</div>
+<div class="col-md-6">
+	<pagination 
+		ng-model="currentPage"
+		total-items="todos.length"
+		max-size="maxSize"
+		items-per-page="itemsPerPage"  
+		boundary-links="true"
+		ng-change="pageChenged(currentPage)"
+		previous-text="&lsaquo;" 
+		next-text="&rsaquo;" 
+		first-text="&laquo;" 
+		last-text="&raquo;"
+		>
+	</pagination>
+</div>
+<br/>
+<div class="row-fluid">
+	<div class="span4">	
+		<table class="table table-hover table-striped">
+		    <thead>
+		        <tr>
+		            <th ng-repeat="column in page.grid.columns" ng-click="sort(column.property, isUp)">
+		                <span ng-bind="column.name"></span>
+		                <i ng-class="sortIcon" ng-show="column.property==predicate"></i>   
+		            </th>
+		        </tr>
+		    </thead>
+			<tr ng-repeat="item in page.grid.items" >
+ 				<td ng-bind="$index + 1"></td>
+				<td align="center" width="60px">
+					<img src="imgs/undefuser.png" width="64" height="64" class="img-thumbnail"/>
+					<br/>
+					<a href="#"><span ng-bind="utils.getPropertyValue(item, 'Author')"></span></a>
+				</td>
+				<td>
+					<span ng-bind-html="sce.trustAsHtml(utils.getPropertyValue(item, 'Text'))"></span>
+				</td>
+				<td>
+					<span ng-bind="utils.getPropertyValue(item, 'Posted')"></span>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+]]></CSP>
+</Export>
