@@ -95,12 +95,21 @@ If handler return 0, parsing will be interrupted]]></Description>
 	s topic = ##class(Topic).%OpenId(topicId)
 	#; Update Views
 	s topic.Views = $$$g("Views")
+	if ..PropertyParse '= "All"{
+		s sc = topic.%Save()
+		w sc
+		Q 1
+	}
+	
 	
 	#; If property "Updated" don't changed, than there is nothing to change
 	s updated = ##class(Topic).UpdatedGetStored( topicId )
+	s mark = $$$g("Mark")
 	if updated = $$$g("Updated") {
 		s sc = topic.%Save()
 		w sc
+		;For next case: "marked" topic can haven't new posts but next not "marked" topic can have new post
+		s:mark="" ..PropertyParse = "Vies,ExtId"
 		Q 1 
 	}
 	
