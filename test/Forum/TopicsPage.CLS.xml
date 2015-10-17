@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="Forum.Tests.TopicsPage">
+<Class name="test.Forum.TopicsPage">
 <Super>%UnitTest.TestCase</Super>
 <TimeCreated>63824,73260.687253</TimeCreated>
 
