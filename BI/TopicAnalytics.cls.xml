@@ -45,6 +45,12 @@ Cube definition from Architect.</Description>
       </level>
       <level name="Month" disabled="false" timeFunction="MonthYear" list="false" useDisplayValue="true" useAsFilter="true">
       </level>
+      <level name="Week" displayName="Неделя" disabled="false" timeFunction="WeekYear" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+      <level name="Day" displayName="День" disabled="false" timeFunction="DayMonthYear" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
     </hierarchy>
   </dimension>
   <dimension name="Topic" disabled="false" hasAll="false" allCaption="All Name1" allDisplayName="Name1" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
@@ -59,6 +65,9 @@ Cube definition from Architect.</Description>
         <additionalDescription>undefined</additionalDescription>
       </level>
       <level name="Month" displayName="Месяц" disabled="false" timeFunction="MonthYear" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+      <level name="Week" disabled="false" timeFunction="WeekYear" list="false" useDisplayValue="true" useAsFilter="true">
         <additionalDescription>undefined</additionalDescription>
       </level>
       <level name="Day" displayName="День" disabled="false" timeFunction="DayMonthYear" list="false" useDisplayValue="true" useAsFilter="true">

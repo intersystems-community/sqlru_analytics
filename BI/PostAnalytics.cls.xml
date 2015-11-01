@@ -13,10 +13,15 @@
 Cube definition from Architect.</Description>
 <XMLNamespace>http://www.intersystems.com/deepsee</XMLNamespace>
 <Data><![CDATA[
-<cube xmlns="http://www.intersystems.com/deepsee" name="PostAnalytics" displayName="PostAnalytics" disabled="false" abstract="false" sourceClass="Forum.Post" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0" disableListingGroups="false">
+<cube xmlns="http://www.intersystems.com/deepsee" name="PostAnalytics" displayName="PostAnalytics" disabled="false" abstract="false" sourceClass="Forum.Post" countMeasureName="%COUNT" countMeasureCaption="Посты" bucketSize="8" bitmapChunkInMemory="false" precompute="0" disableListingGroups="false">
   <dimension name="Tech" displayName="Технология" disabled="false" hasAll="false" allCaption="All Text" allDisplayName="Text" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
     <hierarchy name="H1" disabled="false">
       <level name="Theme" displayName="Технология" disabled="false" sourceExpression="%cube.GetTech(%source.Text)" list="true" listDelimiter="," useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+    <hierarchy name="H2" disabled="false">
+      <level name="iknow" displayName="iknow темы" disabled="false" sourceExpression="%cube.GetiKnowTopic(%source.%ID)" list="true" listDelimiter="," nullReplacement="Без категории" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
       </level>
     </hierarchy>
   </dimension>
@@ -47,6 +52,16 @@ Cube definition from Architect.</Description>
 </cube>
 ]]></Data>
 </XData>
+
+<Method name="GetiKnowTopic">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>postid:%Integer</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+	
+	q ##class(GS2015.SetSources).GetSets(postid)
+]]></Implementation>
+</Method>
 
 <Method name="GetTech">
 <ClassMethod>1</ClassMethod>
