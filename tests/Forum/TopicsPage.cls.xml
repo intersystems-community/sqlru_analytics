@@ -8,7 +8,7 @@
 <Implementation><![CDATA[
 	if '$d(^HtmlPagesRoot) q
 	
-	s xdataID = "Forum.Tests.TopicsPage||TopicspageWith66Pages"
+	s xdataID = "tests.Forum.TopicsPage||TopicspageWith66Pages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s tStream = compiledXdata.Data
 	
@@ -23,23 +23,16 @@
 	
 	if '$d(^HtmlPagesRoot) q
 	
-	s xdataID = "Forum.Tests.TopicsPage||TopicWithMarkAndAuthorLinkAndWithAPages"
+	s xdataID = "tests.Forum.TopicsPage||TopicWithMarkAndAuthorLinkAndWithAPages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s topic = compiledXdata.Data
     s topicW = topic.Read()
 	
-	s xdataID = "Forum.Tests.TopicsPage||TopicWithoutMarkAndAuthoLlinkAndWith17Pages"
+	s xdataID = "tests.Forum.TopicsPage||TopicWithoutMarkAndAuthoLlinkAndWith17Pages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s topic = compiledXdata.Data
 	s topicWO = topic.Read()
 
-	//s topic = ##class(%Stream.FileCharacter).%New()
-	//s sc = topic.LinkToFile(^HtmlPagesRoot_"\topic.with.mark.and.author-link.and.with.a.pages.html")
-	//s topicW = topic.Read()
-	//s sc = topic.LinkToFile(^HtmlPagesRoot_"\topic.without.mark.and.author-link.and.with.17.pages.html")
-	//s topicWO = topic.Read()
-	//k topic
-	
 	s topicW( "Mark" ) = $$$TP.ParseMark( topicW ) ;"Важно: "
 	s topicWO( "Mark" ) = $$$TP.ParseMark( topicWO ) ;""
 	
