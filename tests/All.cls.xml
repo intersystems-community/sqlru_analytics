@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="tests.All">
+<Abstract>1</Abstract>
+<TimeCreated>63861,7340.037141</TimeCreated>
+
+<Method name="RunAll">
+<Description><![CDATA[
+Class method that will execute all tests
+Input parameters uses to choose mode of executing if this class method
+Parameter - UTRMode - for <global>^UnitTestRoot</global>:
+0 - don't change this global and 1 - change this global]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>UTRMode:%Integer=0</FormalSpec>
+<Implementation><![CDATA[
+	if '$d(^UnitTestRoot)
+	{
+		r #,"Please enter root of Unit Tests derictory",!,"(Where unit test classes to export)",!,^UnitTestRoot
+	}
+	d $system.OBJ.Export("tests.Forum.TopicsPage.xml", ^UnitTestRoot_"\test\"_"tests.Forum.TopicsPage.xml")
+
+    d ##class(%UnitTest.Manager).RunTest("test","/nodelete/noload")
+]]></Implementation>
+</Method>
+</Class>
+</Export>
