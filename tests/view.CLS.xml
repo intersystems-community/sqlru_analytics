@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="tests.view">
+<Description>
+specification ( %UnitTest.TestCase with WebUI)</Description>
+<Super>%UnitTest.TestCase,%CSP.Page</Super>
+<TimeCreated>63857,54605.640768</TimeCreated>
+
+<Method name="OnPage">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	&html<<!DOCTYPE html><html>
+<head>
+<style>
+	div {  color: white; padding:.5em; }
+	div div { padding-left: 4em; }
+	h1,h2,h3,h4 { padding:0; margin:0; }
+	.failed { color: red; }
+	.passed { color: green; }
+</style>>
+	
+	s ^UnitTestRoot = $zu(12,"") ;for compatibility only
+	s classname = $classname()
+	s package = $p(classname,".",*-1) ;for compatibility
+	w "<script type='text/javascript'> window.testunit = { data: "
+	d ##class(tests.man).DebugRunTestCase("", classname, "/display=error" )
+	w "};</script>"
+		
+	&html<<script type='text/javascript'>window.onload = (function windowOnLoad( data ){ 
+	return function drawTestCase(){
+				
+		function setResult($elem, data){
+			var cls = ( data.result ) ?'passed':'failed';
+			$elem.classList.add(cls);	
+		}
+		
+		function setName($elem, name){
+			$elem.querySelector('.name').innerHTML = name;
+		}
+		
+		function drawMethod( $templ, data ){
+			var $meth = $templ.cloneNode( true );
+			setName( $meth, data['name'] );
+			setResult($meth, data );
+			return $meth;
+		}
+		
+		function drawAssert( $templ, data ){
+			var $assert = $templ.cloneNode(true);
+			setName( $assert, data['label']);
+			setResult( $assert, data );	
+			return $assert;
+		}
+		
+		function drawAsserts( $templ, asserts, $meth ){
+			
+		   for (var i=0, adata; adata = asserts[i]; i++){
+			 $assert = drawAssert( $templ, adata );
+			 $meth.appendChild( $assert );
+		   }
+		}
+	
+		var $case = document.body.querySelector('.case');
+		setResult( $case,data );
+		setName( $case, data['case'] );
+		
+		
+		var $methtempl = document.body.querySelector('.method')
+			, methods = data.methods
+			, $assert = document.body.querySelector('.assert')
+		;
+		
+		var $meth;
+		for (var i=0, mdata; mdata = methods[i]; i++){
+			$meth = drawMethod( $methtempl, mdata );
+			if (mdata.asserts) drawAsserts( $assert, mdata.asserts, $meth );
+			$case.appendChild( $meth );
+		}
+		
+		var link = document.querySelector('a');
+		link.setAttribute('href', data.link );
+				
+	};
+		
+ })( window.testunit.data );
+		
+	</script>
+</head>	
+<body>
+	
+ <div class='case'><h2 class='name'></h2></div>
+ <div class='method'><h3 class='name'></h3></div>
+ <div class='assert'><h4 class='name'></h4></div>
+ 
+ <a href="#">Details...</a>
+ 	
+</body>
+
+</html>>
+	Quit $$$OK
+]]></Implementation>
+</Method>
+</Class>
+</Export>
