@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
 <Class name="tests.Forum.TopicsPage">
-<Super>%UnitTest.TestCase</Super>
+<Super>tests.view</Super>
 <TimeCreated>63861,7201.003309</TimeCreated>
 
 <Method name="TestGetPages">
