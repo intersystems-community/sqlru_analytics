@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="tests.All">
+<Class name="test.All">
 <Abstract>1</Abstract>
-<TimeCreated>63861,7340.037141</TimeCreated>
+<Super>%CSP.Page</Super>
+<TimeCreated>63868,62826.68372</TimeCreated>
 
 <Method name="RunAll">
 <Description><![CDATA[
@@ -17,7 +18,7 @@ Parameter - UTRMode - for <global>^UnitTestRoot</global>:
 	{
 		r #,"Please enter root of Unit Tests derictory",!,"(Where unit test classes to export)",!,^UnitTestRoot
 	}
-	d $system.OBJ.Export("tests.Forum.TopicsPage.cls", ^UnitTestRoot_"\test\"_"tests.Forum.TopicsPage.xml")
+	d $system.OBJ.Export("test.Forum.TopicsPage.cls", ^UnitTestRoot_"\test\"_"test.Forum.TopicsPage.xml")
 
     d ##class(%UnitTest.Manager).RunTest("test","/nodelete/noload")
 ]]></Implementation>

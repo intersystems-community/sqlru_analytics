@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="tests.view">
+<Class name="test.view">
 <Description>
 specification ( %UnitTest.TestCase with WebUI)</Description>
 <Super>%UnitTest.TestCase,%CSP.Page</Super>
-<TimeCreated>63857,54605.640768</TimeCreated>
+<TimeCreated>63868,62820.625394</TimeCreated>
 
 <Method name="OnPage">
 <ClassMethod>1</ClassMethod>
@@ -24,7 +24,7 @@ specification ( %UnitTest.TestCase with WebUI)</Description>
 	s classname = $classname()
 	s package = $p(classname,".",*-1) ;for compatibility
 	w "<script type='text/javascript'> window.testunit = { data: "
-	d ##class(tests.man).DebugRunTestCase("", classname, "/display=error" )
+	d ##class(test.man).DebugRunTestCase("", classname, "/display=error" )
 	w "};</script>"
 		
 	&html<<script type='text/javascript'>window.onload = (function windowOnLoad( data ){ 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="tests.man">
+<Class name="test.man">
 <Description><![CDATA[
 copy of %UnitTest.Manager ( $zv Cache 2015.3 )
 with json format output, for example :
@@ -15,7 +15,7 @@ with json format output, for example :
 	link: "http://192.168.105.127:57774/csp/sys/%25UnitTest.Portal.Indices.cls?Index=142&$NAMESPACE=SQLRU"
 }]]></Description>
 <Super>%RegisteredObject</Super>
-<TimeCreated>63857,58862.288417</TimeCreated>
+<TimeCreated>63868,62824.453322</TimeCreated>
 
 <Property name="hasAsserts">
 <Type>%Boolean</Type>

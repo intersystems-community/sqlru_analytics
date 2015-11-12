@@ -1,14 +1,14 @@
 BI-AuthorTopicAnalytics.dashboard.dfi
+BI-AuthorTopicAnalyticsAnswers.pivot.dfi
 BI-AuthorTopicAnalyticsAVGAnswers.pivot.dfi
 BI-AuthorTopicAnalyticsAVGViews.pivot.dfi
-BI-AuthorTopicAnalyticsAnswers.pivot.dfi
 BI-AuthorTopicAnalyticsCount.pivot.dfi
 BI-AuthorTopicAnalyticsViews.pivot.dfi
 BI-TechnologyTopicAnalytics.dashboard.dfi
+BI-TechnologyTopicAnalyticsAnswers.pivot.dfi
 BI-TechnologyTopicAnalyticsAV.pivot.dfi
 BI-TechnologyTopicAnalyticsAVGAnswers.pivot.dfi
 BI-TechnologyTopicAnalyticsAVGViews.pivot.dfi
-BI-TechnologyTopicAnalyticsAnswers.pivot.dfi
 BI-TechnologyTopicAnalyticsCount.pivot.dfi
 BI-TechnologyTopicAnalyticsDrillDown.dashboard.dfi
 BI-TechnologyTopicAnalyticsViews.pivot.dfi
@@ -19,10 +19,10 @@ DeepSee.Authors.All Authors-pivot.dfi
 DeepSee.Authors.Technologies-pivot.dfi
 DeepSee.Authors.Top 20-pivot.dfi
 DeepSee.BI.TechnologyTopicAnalytics.dashboard.dfi
+DeepSee.BI.TechnologyTopicAnalyticsAnswers.pivot.dfi
 DeepSee.BI.TechnologyTopicAnalyticsAV.pivot.dfi
 DeepSee.BI.TechnologyTopicAnalyticsAVGAnswers.pivot.dfi
 DeepSee.BI.TechnologyTopicAnalyticsAVGViews.pivot.dfi
-DeepSee.BI.TechnologyTopicAnalyticsAnswers.pivot.dfi
 DeepSee.BI.TechnologyTopicAnalyticsCount.pivot.dfi
 DeepSee.BI.TechnologyTopicAnalyticsDrillDown.dashboard.dfi
 DeepSee.BI.TechnologyTopicAnalyticsViews.pivot.dfi
@@ -43,11 +43,15 @@ Forum.PostsLoader.cls
 Forum.PostsPage.cls
 Forum.PostsUpdater.cls
 Forum.Task.cls
+Forum.Tests.TopicsPage.cls
 Forum.Topic.cls
 Forum.TopicsLoader.cls
 Forum.TopicsPage.cls
 Forum.TopicsUpdater.cls
 Http.Request.cls
-Forum.Tests.TopicsPage.cls
+test.All.cls
+test.Forum.TopicsPage.cls
+test.man.cls
+test.view.cls
 tests.Forum.pkg
 tests.pkg

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-<Class name="tests.Forum.TopicsPage">
-<Super>tests.view</Super>
-<TimeCreated>63861,7201.003309</TimeCreated>
+<Class name="test.Forum.TopicsPage">
+<Super>test.view</Super>
+<TimeCreated>63868,62817.177374</TimeCreated>
 
 <Method name="TestGetPages">
 <Implementation><![CDATA[
 	if '$d(^HtmlPagesRoot) q
 	
-	s xdataID = "tests.Forum.TopicsPage||TopicspageWith66Pages"
+	s xdataID = "test.Forum.TopicsPage||TopicspageWith66Pages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s tStream = compiledXdata.Data
 	
@@ -23,12 +23,12 @@
 	
 	if '$d(^HtmlPagesRoot) q
 	
-	s xdataID = "tests.Forum.TopicsPage||TopicWithMarkAndAuthorLinkAndWithAPages"
+	s xdataID = "test.Forum.TopicsPage||TopicWithMarkAndAuthorLinkAndWithAPages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s topic = compiledXdata.Data
     s topicW = topic.Read()
 	
-	s xdataID = "tests.Forum.TopicsPage||TopicWithoutMarkAndAuthoLlinkAndWith17Pages"
+	s xdataID = "test.Forum.TopicsPage||TopicWithoutMarkAndAuthoLlinkAndWith17Pages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s topic = compiledXdata.Data
 	s topicWO = topic.Read()
