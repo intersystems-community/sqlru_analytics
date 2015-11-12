@@ -6,8 +6,6 @@
 
 <Method name="TestGetPages">
 <Implementation><![CDATA[
-	if '$d(^HtmlPagesRoot) q
-	
 	s xdataID = "test.Forum.TopicsPage||TopicspageWith66Pages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s tStream = compiledXdata.Data
@@ -20,8 +18,6 @@
 <Method name="TestParseMethods">
 <Implementation><![CDATA[
 	#define TP ##class(Forum.TopicsPage)
-	
-	if '$d(^HtmlPagesRoot) q
 	
 	s xdataID = "test.Forum.TopicsPage||TopicWithMarkAndAuthorLinkAndWithAPages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
