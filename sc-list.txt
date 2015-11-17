@@ -50,6 +50,8 @@ Forum.TopicsPage.cls
 Forum.TopicsUpdater.cls
 Http.Request.cls
 test.All.cls
+test.Forum.Author.cls
+test.Forum.AuthorPage.cls
 test.Forum.TopicsPage.cls
 test.man.cls
 test.view.cls

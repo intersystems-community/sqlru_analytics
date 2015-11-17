@@ -155,7 +155,8 @@
 <Implementation><![CDATA[
 	s data("Name") = "Testing Name"
 	s data("ExtId") = "Testing ExtId"
-	s location = "Test location", locationNotExist = "Test not existing location", latitude = "Test latitude", longitude = "Test longitude"
+	s locationNotExist = "Test not existing location", location = "Test location", 
+		latitude = "Test latitude", longitude = "Test longitude"
 	
 	s status = ##class(Forum.Author).NameExists( data("Name"), .tmpId )
 	if status = 1 {
