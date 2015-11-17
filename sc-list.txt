@@ -39,6 +39,7 @@ test.All.cls
 test.Forum.Author.cls
 test.Forum.AuthorPage.cls
 test.Forum.Forum.cls
+test.Forum.Post.cls
 test.Forum.TopicsPage.cls
 test.man.cls
 test.view.cls

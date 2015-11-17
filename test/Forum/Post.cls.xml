@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.Post">
+<Super>test.view</Super>
+<TimeCreated>63873,84750.563115</TimeCreated>
+
+<Method name="TestGetLink">
+<Implementation><![CDATA[
+	s link = ##class(Forum.Post).GetLink("Test sentence")
+	
+	do $$$AssertEquals(link,"http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=Test sentence","Test for creating link")
+]]></Implementation>
+</Method>
+
+<Method name="TestInsert">
+<Implementation><![CDATA[
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Forum ( Name ) 
+	Values ( :forum("Name") ))
+	if SQLCODE=0 s forum = %ROWID
+	
+	#;Creating topic
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	s status = ##class(Forum.Topic).ExtIdExists( topic("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Topic).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
+	Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+	if SQLCODE=0 s topic = %ROWID
+	
+	#;Creating author
+	
+	s author("Name") = "Testing author's name"
+	
+	s status = ##class(Forum.Author).NameExists( topic("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Author ( Name ) 
+	Values ( :author("Name") ))
+	if SQLCODE=0 s author = %ROWID
+	
+	#;Creating post
+	
+	s post("Topic") = topic, post("ExtId") = 0
+		, post("Author") = "Testing author", post("Author","ExtId") = "Testing external Id of author"
+		, post("AuthorId") = author, post("Posted") = "2001-01-01 04:20:00"
+		, post("Text") = "Testing text", post("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( post("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	s sc = ##class(Forum.Post).Insert( .post )
+	
+	s postObj = ##class(Forum.Post).%OpenId( post )
+	s topicObj = ##class(Forum.Topic).%OpenId(post("Topic"))
+	s authorObj = ##class(Forum.Author).%OpenId(post("AuthorId"))
+	s postObjStream = postObj.TextStream.Read()
+	
+	do $$$AssertEquals(postObj.Topic,topicObj,"Testing Forum's property ""Topic""")
+	do $$$AssertEquals(postObj.ExtId,post("ExtId"),"Testing Forum's property ""ExtId""")
+	do $$$AssertEquals(postObj.Author,post("Author"),"Testing Forum's property ""Author""")
+	do $$$AssertEquals(postObj.AuthorExtId,post("Author","ExtId"),"Testing Forum's property ""AuthorExtId""")
+	do $$$AssertEquals(postObj.AuthorId,authorObj,"Testing Forum's property ""AuthorId""")
+	do $$$AssertEquals(postObj.Posted,post("Posted"),"Testing Forum's property ""Posted""")
+	do $$$AssertEquals(postObj.Text,post("Text"),"Testing Forum's property ""Text""")
+	do $$$AssertEquals(postObjStream,post("Text"),"Testing Forum's property ""TextStream""")
+	do $$$AssertEquals(postObj.Type,post("Type"),"Testing Forum's property ""Type""")
+
+	s st = ##class(Forum.Post).%DeleteId( post )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Topic).%DeleteId( post("Topic") )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Author).%DeleteId( post("AuthorId") )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Forum).%DeleteId( forum )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^test.Forum.PostD</DataLocation>
+<DefaultData>PostDefaultData</DefaultData>
+<IdLocation>^test.Forum.PostD</IdLocation>
+<IndexLocation>^test.Forum.PostI</IndexLocation>
+<StreamLocation>^test.Forum.PostS</StreamLocation>
+<Data name="PostDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>
