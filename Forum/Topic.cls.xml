@@ -116,7 +116,7 @@ Date and time of topic create</Description>
 
 <Method name="SetPosted">
 <Description>
-Update topic date by first post date</Description>
+Update topic date by first post's date</Description>
 <ClassMethod>1</ClassMethod>
 <FormalSpec>id,posted:%TimeStamp</FormalSpec>
 <ReturnType>%Status</ReturnType>
