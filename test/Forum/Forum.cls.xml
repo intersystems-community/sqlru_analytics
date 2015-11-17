@@ -6,9 +6,11 @@
 
 <Method name="TestGetLink">
 <Implementation><![CDATA[
-	s link = ##class(Forum.Forum).GetLink("Test sentence")
+	s extIdEmpty = ##class(Forum.Author).GetLink("")
+	s extIdNotEmpty = ##class(Forum.Forum).GetLink("Test sentence")
 	
-	do $$$AssertEquals(link,"http://www.sql.ru/forum/Test sentence","Test for creating link")
+	do $$$AssertEquals(extIdEmpty,"","Link have to be empty")	
+	do $$$AssertEquals(extIdNotEmpty,"http://www.sql.ru/forum/Test sentence","Link not empty")
 ]]></Implementation>
 </Method>
 

@@ -6,12 +6,11 @@
 
 <Method name="TestGetLink">
 <Implementation><![CDATA[
-	
 	s extIdEmpty = ##class(Forum.Author).GetLink("")
-	s extIdNotEmpty = ##class(Forum.Author).GetLink(12345)
+	s extIdNotEmpty = ##class(Forum.Author).GetLink("Test sentence")
 	
 	do $$$AssertEquals(extIdEmpty,"","Link have to be empty")
-	do $$$AssertEquals(extIdNotEmpty,"http://www.sql.ru/forum/memberinfo.aspx?mid=12345","Link to page of member with id 12345")
+	do $$$AssertEquals(extIdNotEmpty,"http://www.sql.ru/forum/memberinfo.aspx?mid=Test sentence","Link not empty")
 ]]></Implementation>
 </Method>
 

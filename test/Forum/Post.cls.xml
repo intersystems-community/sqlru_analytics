@@ -6,9 +6,11 @@
 
 <Method name="TestGetLink">
 <Implementation><![CDATA[
-	s link = ##class(Forum.Post).GetLink("Test sentence")
+	s extIdEmpty = ##class(Forum.Author).GetLink("")
+	s extIdNotEmpty = ##class(Forum.Post).GetLink("Test sentence")
 	
-	do $$$AssertEquals(link,"http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=Test sentence","Test for creating link")
+	do $$$AssertEquals(extIdEmpty,"","Link have to be empty")
+	do $$$AssertEquals(extIdNotEmpty,"http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=Test sentence","Link not empty")
 ]]></Implementation>
 </Method>
 
@@ -48,7 +50,7 @@
 	
 	s author("Name") = "Testing author's name"
 	
-	s status = ##class(Forum.Author).NameExists( topic("Name"), .tmpId )
+	s status = ##class(Forum.Author).NameExists( author("Name"), .tmpId )
 	if status = 1 {
 		d ##class(Forum.Author).%DeleteId( tmpId )
 		k status, tmpId
@@ -98,19 +100,5 @@
 	do $$$AssertTrue(st,"Delete created object")
 ]]></Implementation>
 </Method>
-
-<Storage name="Default">
-<Type>%Library.CacheStorage</Type>
-<DataLocation>^test.Forum.PostD</DataLocation>
-<DefaultData>PostDefaultData</DefaultData>
-<IdLocation>^test.Forum.PostD</IdLocation>
-<IndexLocation>^test.Forum.PostI</IndexLocation>
-<StreamLocation>^test.Forum.PostS</StreamLocation>
-<Data name="PostDefaultData">
-<Value name="1">
-<Value>%%CLASSNAME</Value>
-</Value>
-</Data>
-</Storage>
 </Class>
 </Export>
