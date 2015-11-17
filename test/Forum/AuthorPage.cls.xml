@@ -67,8 +67,6 @@
 	s url = ##class(Forum.AuthorPage).Url("Test sentence")
 	
 	do $$$AssertEquals(url,"/forum/memberinfo.aspx?mid=Test sentence","Test for creating Url")
-	
-	//"/forum/memberinfo.aspx?mid="_extId
 ]]></Implementation>
 </Method>
 

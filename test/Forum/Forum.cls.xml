@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.Forum">
+<Super>test.view</Super>
+<TimeCreated>63873,82450.376495</TimeCreated>
+
+<Method name="TestGetLink">
+<Implementation><![CDATA[
+	s link = ##class(Forum.Forum).GetLink("Test sentence")
+	
+	do $$$AssertEquals(link,"http://www.sql.ru/forum/Test sentence","Test for creating link")
+]]></Implementation>
+</Method>
+
+<Method name="TestInsert">
+<Implementation><![CDATA[
+	s data("Name") = "Testing Name"
+	
+	s status = ##class(Forum.Forum).NameExists( data("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	s sc = ##class(Forum.Forum).Insert( .data )
+	
+	s forumObj = ##class(Forum.Forum).%OpenId( data )
+	
+	do $$$AssertEquals(forumObj.Name,data("Name"),"Testing Forum's property ""Name""")
+	
+	s st = ##class(Forum.Forum).%DeleteId( data )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+</Class>
+</Export>
