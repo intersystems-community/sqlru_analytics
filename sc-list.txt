@@ -1,3 +1,17 @@
+BI-AuthorTopicAnalytics.dashboard.dfi
+BI-AuthorTopicAnalyticsAnswers.pivot.dfi
+BI-AuthorTopicAnalyticsAVGAnswers.pivot.dfi
+BI-AuthorTopicAnalyticsAVGViews.pivot.dfi
+BI-AuthorTopicAnalyticsCount.pivot.dfi
+BI-AuthorTopicAnalyticsViews.pivot.dfi
+BI-TechnologyTopicAnalytics.dashboard.dfi
+BI-TechnologyTopicAnalyticsAnswers.pivot.dfi
+BI-TechnologyTopicAnalyticsAV.pivot.dfi
+BI-TechnologyTopicAnalyticsAVGAnswers.pivot.dfi
+BI-TechnologyTopicAnalyticsAVGViews.pivot.dfi
+BI-TechnologyTopicAnalyticsCount.pivot.dfi
+BI-TechnologyTopicAnalyticsDrillDown.dashboard.dfi
+BI-TechnologyTopicAnalyticsViews.pivot.dfi
 BI.PostAnalytics.cls
 BI.TopicAnalytics.cls
 DeepSee.Authors-dashboard.dfi
