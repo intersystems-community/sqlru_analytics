@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.Topic">
+<Super>test.view</Super>
+<TimeCreated>63874,3056.910852</TimeCreated>
+
+<Method name="TestGetLink">
+<Implementation><![CDATA[
+	s extIdEmpty = ##class(Forum.Author).GetLink("")
+	s extIdNotEmpty = ##class(Forum.Topic).GetLink("Test sentence")
+	
+	do $$$AssertEquals(extIdEmpty,"","Link have to be empty")
+	do $$$AssertEquals(extIdNotEmpty,"http://www.sql.ru/forum/Test sentence/","Link not empty")
+]]></Implementation>
+</Method>
+
+<Method name="TestSetPosted">
+<Implementation><![CDATA[
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Forum ( Name ) 
+	Values ( :forum("Name") ))
+	if SQLCODE=0 s forum = %ROWID
+	
+	#;Creating topic
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	s status = ##class(Forum.Topic).ExtIdExists( topic("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Topic).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
+	Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+	if SQLCODE=0 s topic = %ROWID
+	
+	s newPosted = "2015-01-01 04:20:00"
+	
+	s sc = ##class(Forum.Topic).SetPosted(topic ,newPosted )
+	
+	s topicObj = ##class(Forum.Topic).%OpenId(topic)
+	
+	do $$$AssertEquals(topicObj.Posted,"2015-01-01 04:20:00","Posted have to change")
+
+	s st = ##class(Forum.Topic).%DeleteId( topic )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Forum).%DeleteId( forum )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+
+<Method name="TestInsert">
+<Implementation><![CDATA[
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Forum ( Name ) 
+	Values ( :forum("Name") ))
+	if SQLCODE=0 s forum = %ROWID
+	
+	#;Creating author
+	
+	s author("Name") = "Testing author's name"
+	
+	s status = ##class(Forum.Author).NameExists( author("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Author ( Name ) 
+	Values ( :author("Name") ))
+	if SQLCODE=0 s author = %ROWID
+	
+	
+	s topic("Forum") = forum, topic("Type") = "Testing type"
+		,topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = author("Name"), topic("Author","ExtId") = 0
+		, topic("AuthorId") = author, topic("Answers") = 152
+		, topic("Views") = 12345, topic("PagesAmount") = "a"
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	s sc = ##class(Forum.Topic).Insert(.topic)
+	
+	s topicObj = ##class(Forum.Topic).%OpenId(topic)
+	s authorObj = ##class(Forum.Author).%OpenId(topic("AuthorId"))
+	s forumObj = ##class(Forum.Forum).%OpenId(topic("Forum"))
+	
+	do $$$AssertEquals(topicObj.Forum,forumObj,"Testing Forum's property ""Forum""")
+	do $$$AssertEquals(topicObj.Type,topic("Type"),"Testing Forum's property ""Type""")
+	do $$$AssertEquals(topicObj.Name,topic("Name"),"Testing Forum's property ""Name""")
+	do $$$AssertEquals(topicObj.ExtId,topic("ExtId"),"Testing Forum's property ""ExtId""")
+	do $$$AssertEquals(topicObj.Author,topic("Author"),"Testing Forum's property ""Author""")
+	do $$$AssertEquals(topicObj.AuthorExtId,topic("Author","ExtId"),"Testing Forum's property ""AuthorExtId""")
+	do $$$AssertEquals(topicObj.AuthorId,authorObj,"Testing Forum's property ""AuthorId""")
+	do $$$AssertEquals(topicObj.Answers,topic("Answers"),"Testing Forum's property ""Answers""")
+	do $$$AssertEquals(topicObj.Views,topic("Views"),"Testing Forum's property ""Views""")
+	do $$$AssertEquals(topicObj.Pages,topic("PagesAmount"),"Testing Forum's property ""Pages""")
+	do $$$AssertEquals(topicObj.Updated,topic("Updated"),"Testing Forum's property ""Updated""")
+	
+	s st = ##class(Forum.Topic).%DeleteId( topic )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Author).%DeleteId( topic("AuthorId") )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Forum).%DeleteId( topic("Forum") )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+</Class>
+</Export>
