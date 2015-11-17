@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
-<Document name="BI-TechnologyTopicAnalyticsDrillDown.dashboard.DFI">
-<dashboard xmlns="http://www.intersystems.com/deepsee/library" name="TechnologyTopicAnalyticsDrillDown" folderName="BI" title="Подробности аналитики по технологиям" description="" keywords="" owner="" shared="true" public="true" locked="false" resource="" timeCreated="2015-09-02T18:41:09.357Z" createdBy="UnknownUser" category="" bookCover="" scheme="" worklistCount="0" snapTo="true" snapGrid="true" gridRows="10" gridCols="10" canResize="true" canModify="true" showTitleBar="true" companyName="" companyLogo="" companyStyle="">
-  <widget name="Details" type="pivot" subtype="pivot" subtypeClass="lineChart" title="Количество ответов и просмотров" dataSource="BI/TechnologyTopicAnalyticsAV.pivot" dataLink="" drillDownDataSource="" width="200" height="200" sidebarContent="" showSidebar="false" sidebarWidth="" maximized="false" homeRowL="0" homeColL="0" colSpanL="10" rowSpanL="10" showToolbar="false" theme="" dataColorList="">
-  </widget>
-</dashboard>
-</Document></Export>
