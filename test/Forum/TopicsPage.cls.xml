@@ -4,6 +4,34 @@
 <Super>test.view</Super>
 <TimeCreated>63868,62817.177374</TimeCreated>
 
+<UDLText name="T">
+<Content><![CDATA[
+/*Method TestGet()
+{
+	
+	if $g(forum)'="" s ..Forum = forum
+	if $g(num)'="" s ..Num = num
+	
+	s sc = ..request.Get( ..Url() ) Q:'sc sc
+		
+	Q 1
+}*/
+]]></Content>
+</UDLText>
+
+<UDLText name="T">
+<Content><![CDATA[
+/*Method TestGetPage()
+{
+	
+	s page = ##class(Forum.TopicsPage).GetPage( "testCache", 12345, .sc )
+	s h = 1
+	do $$$AssertEquals(page.Forum,"testCache","Property ""Forum""")
+	do $$$AssertEquals(page.Num,12345,"Property ""Num""")
+}*/
+]]></Content>
+</UDLText>
+
 <Method name="TestGetPages">
 <Implementation><![CDATA[
 	s xdataID = "test.Forum.TopicsPage||TopicspageWith66Pages"

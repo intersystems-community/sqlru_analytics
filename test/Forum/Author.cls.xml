@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.Author">
+<Super>test.view</Super>
+<TimeCreated>63873,42315.981373</TimeCreated>
+
+<Method name="TestGetLink">
+<Implementation><![CDATA[
+	
+	s extIdEmpty = ##class(Forum.Author).GetLink("")
+	s extIdNotEmpty = ##class(Forum.Author).GetLink(12345)
+	
+	do $$$AssertEquals(extIdEmpty,"","Link have to be empty")
+	do $$$AssertEquals(extIdNotEmpty,"http://www.sql.ru/forum/memberinfo.aspx?mid=12345","Link to page of member with id 12345")
+]]></Implementation>
+</Method>
+
+<Method name="TestInsert">
+<Implementation><![CDATA[
+	
+	s data("Name") = "Testing Name"
+	s data("ExtId") = "Testing ExtId"
+	
+	s status = ##class(Forum.Author).NameExists( data("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	s sc = ##class(Forum.Author).Insert( .data )
+	
+	s authorObj = ##class(Forum.Author).%OpenId( data )
+	
+	do $$$AssertEquals(authorObj.Name,data("Name"),"Testing Author's property ""Name""")
+	do $$$AssertEquals(authorObj.ExtId,data("ExtId"),"Testing Author's property ""ExtId""")
+	
+	s st = ##class(Forum.Author).%DeleteId( data )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+
+<Method name="TestGet">
+<Implementation><![CDATA[
+
+	s fullObjName = "Testing Name of object with name and extId"
+	s fullObjExtId = "Testing ExtId of object with name and extId"
+	
+	s notFullObjName = "Testing Name of object only with name"
+	
+	s status = ##class(Forum.Author).NameExists( fullObjName, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Author).NameExists( notFullObjName, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Author 
+		( Name, ExtId ) 
+	Values ( :fullObjName ,:fullObjExtId ))
+	if SQLCODE=0 s fullObjId("MustBe") = %ROWID
+	
+	&sql( Insert Into Forum.Author 
+		( Name ) 
+	Values ( :notFullObjName ))
+	if SQLCODE=0 s notFullObjId("MustBe") = %ROWID
+	
+	s fullObjId("Is") = ##class(Forum.Author).Get( fullObjName ,fullObjExtId ) 
+	s notFullObjId("Is") = ##class(Forum.Author).Get( notFullObjName ) 
+	s empty = ##class(Forum.Author).Get( "" )
+		
+	do $$$AssertEquals(fullObjId("Is"),fullObjId("MustBe"),"Must get id of object with name and extId")
+	do $$$AssertEquals(notFullObjId("Is"),notFullObjId("MustBe"),"Must get id of object only with name")
+	do $$$AssertEquals(empty,"","Must be empty")
+
+	
+	s statusOfDeleting = ##class(Forum.Author).%DeleteId( fullObjId("MustBe") )
+	do $$$AssertTrue(statusOfDeleting,"Delete created object with name and extId")
+	s statusOfDeleting = ##class(Forum.Author).%DeleteId( notFullObjId("MustBe") )
+	do $$$AssertTrue(statusOfDeleting,"Delete created object only with name")
+]]></Implementation>
+</Method>
+
+<Method name="TestGetOrSet">
+<Implementation><![CDATA[
+	
+	s authorExist("Name") = "TestName of object that exist"
+	s authorExist("ExtId") = "TestExtId of object that exist"
+	
+	s authorWillExist("Name") = "TestName of object that will exist"
+	s authorWillExist("ExtId") = "TestExtId of object that will exist"
+	
+	s status = ##class(Forum.Author).NameExists( authorExist("Name"), .tmpId )
+	if status = 1{
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Author 
+		( Name, ExtId ) 
+	Values ( :authorExist("Name"), :authorExist("ExtId") ))
+	if SQLCODE=0 s authorExistId = %ROWID
+	
+	s sc = ##class(Forum.Author).GetOrSet( .authorExist )
+	s sc = ##class(Forum.Author).GetOrSet( .authorWillExist )
+	
+	s status = ##class(Forum.Author).NameExists( authorWillExist("Name"), .authorWillExistId )
+		
+	do $$$AssertEquals(authorExist,authorExistId,"Must get id of object that was created")
+	do $$$AssertEquals(authorWillExist,authorWillExistId,"Must get id of object that was created in method")
+	
+	s statusOfDeleting = ##class(Forum.Author).%DeleteId( authorExistId )
+	do $$$AssertTrue(statusOfDeleting,"Delete created object that created before method execute")
+	s statusOfDeleting = ##class(Forum.Author).%DeleteId( authorWillExistId )
+	do $$$AssertTrue(statusOfDeleting,"Delete created object that created after method execute")
+]]></Implementation>
+</Method>
+
+<Method name="TestSetLocation">
+<Implementation><![CDATA[
+	s data("Name") = "Testing Name"
+	s data("ExtId") = "Testing ExtId"
+	
+	s status = ##class(Forum.Author).NameExists( data("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Author 
+		( Name, ExtId ) 
+	Values ( :data("Name") ,:data("ExtId") ))
+	if SQLCODE=0 s id = %ROWID
+	
+	s location = "Test location", latitude = "Test latitude", longitude = "Test longitude"
+	
+	s status = ##class(Forum.Author).SetLocation( id, location, latitude, longitude )
+	do $$$AssertTrue(status,"Status of method execute")
+	
+	s author = ##class(Forum.Author).%OpenId( id )
+	
+	do $$$AssertEquals(author.Location,location,"Checking property location of object")
+	do $$$AssertEquals(author.Latitude,latitude,"Checking property latitude of object")
+	do $$$AssertEquals(author.Longitude,longitude,"Checking property longitude of object")
+	
+	s statusOfDeleting = ##class(Forum.Author).%DeleteId( id )
+	do $$$AssertTrue(statusOfDeleting,"Delete created object")
+]]></Implementation>
+</Method>
+
+<Method name="TestLocationCache">
+<Implementation><![CDATA[
+	s data("Name") = "Testing Name"
+	s data("ExtId") = "Testing ExtId"
+	s location = "Test location", locationNotExist = "Test not existing location", latitude = "Test latitude", longitude = "Test longitude"
+	
+	s status = ##class(Forum.Author).NameExists( data("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Author 
+		( Name, ExtId, Location, Latitude, Longitude ) 
+	Values ( :data("Name") ,:data("ExtId") ,:location ,:latitude ,:longitude ))
+	if SQLCODE=0 s id = %ROWID
+	
+	s point = ##class(Forum.Author).LocationCache( location )
+	s pointNotExist = ##class(Forum.Author).LocationCache( locationNotExist )
+	
+	do $$$AssertEquals(point, latitude _ " " _ longitude, "Checking property location of object")
+	do $$$AssertEquals(pointNotExist, "", "Checking not existing location")
+	
+	s statusOfDeleting = ##class(Forum.Author).%DeleteId( id )
+	do $$$AssertTrue(statusOfDeleting,"Delete created object")
+]]></Implementation>
+</Method>
+</Class>
+</Export>

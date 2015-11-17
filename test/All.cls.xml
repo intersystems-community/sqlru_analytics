@@ -19,7 +19,8 @@ Parameter - UTRMode - for <global>^UnitTestRoot</global>:
 		r #,"Please enter root of Unit Tests derictory",!,"(Where unit test classes to export)",!,^UnitTestRoot
 	}
 	d $system.OBJ.Export("test.Forum.TopicsPage.cls", ^UnitTestRoot_"\test\"_"test.Forum.TopicsPage.xml")
-
+	d $system.OBJ.Export("test.Forum.Author.cls", ^UnitTestRoot_"\test\"_"test.Forum.Author.xml")
+	
     d ##class(%UnitTest.Manager).RunTest("test","/nodelete/noload")
 ]]></Implementation>
 </Method>

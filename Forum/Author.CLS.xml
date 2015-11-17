@@ -58,7 +58,7 @@ url</Description>
 <ClassMethod>1</ClassMethod>
 <CodeMode>expression</CodeMode>
 <FormalSpec>extid</FormalSpec>
-<Implementation><![CDATA[$S(extid'="":"http://www.sql.ru/"_##class(Forum.AuthorPage).Url(extid), 1:"")
+<Implementation><![CDATA[$S(extid'="":"http://www.sql.ru"_##class(Forum.AuthorPage).Url(extid), 1:"")
 ]]></Implementation>
 </Method>
 
