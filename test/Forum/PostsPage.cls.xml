@@ -1,0 +1,1157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.PostsPage">
+<Super>test.view</Super>
+<TimeCreated>63874,78325.291091</TimeCreated>
+
+<Method name="TestUrl">
+<Implementation><![CDATA[
+	s postsPageObj = ##class(Forum.PostsPage).%New()
+	s postsPageObj.Topic = "TestTopic"
+	s postsPageObj.Amount = "TestAmount"
+	
+	s url = postsPageObj.Url()
+	
+	do $$$AssertEquals(url,"/forum/TestTopic-TestAmount","Creating url")	
+	
+	k postsPageObj,url
+]]></Implementation>
+</Method>
+
+<Method name="TestGet">
+<Implementation><![CDATA[
+	s page = ##class(Forum.PostsPage).%New()
+	s page.Topic = 54321
+	s page.Amount = "Old Amount"
+	
+	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	
+	s sc = page.Get(12345,"New Amount")
+	
+	do $$$AssertEquals(page.Topic,12345,"Property ""Topic""")
+	do $$$AssertEquals(page.Amount,"New Amount","Property ""Amount""")
+	
+
+	s sc = page.Get(1171352,"a")
+	
+	s strByMethod = page.request.Data.Read(5000)
+	#;
+	k page
+
+	s page = ##class(Forum.PostsPage).%New()
+	
+	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	s page.request.Data = ##class(%Stream.FileCharacter).%New()
+	s sc = page.request.request.Get( "/forum/1171352-a", 0, 1 )
+	s sc = page.request.Data.CopyFrom( page.request.request.HttpResponse.Data )
+	#;	
+	s strByManually = page.request.Data.Read(5000)
+	
+	s rfghdfhgdf = (strByManually=strByMethod)
+	do $$$AssertEquals(strByMethod,strByManually,"Compare srtings of html")	
+	
+	k page,strByManually,strByMethod
+]]></Implementation>
+</Method>
+
+<Method name="TestGetPage">
+<Implementation><![CDATA[
+	s page = ##class(Forum.PostsPage).GetPage( 12345,"Test Amount", .sc )
+
+	do $$$AssertEquals(page.Topic,12345,"Property ""Topic""")
+	do $$$AssertEquals(page.Amount,"Test Amount","Property ""Amount""")
+	
+	k page
+	
+	s pageByMethod = ##class(Forum.PostsPage).GetPage( 1171352, "a", .sc )
+	
+	#;
+	s pageByManually = ##class(Forum.PostsPage).%New(1171352,"a")
+	s pageByManually.request = ##class(Http.Request).%New( "www.sql.ru" )
+	s pageByManually.request.Data = ##class(%Stream.FileCharacter).%New()
+	s sc = pageByManually.request.request.Get( "/forum/1171352-a", 0, 1 )
+	s sc = pageByManually.request.Data.CopyFrom( pageByManually.request.request.HttpResponse.Data )
+	#;
+	
+	s strByMethod = pageByMethod.request.Data.Read(5000)
+	s strByManually = pageByManually.request.Data.Read(5000)
+	
+	do $$$AssertEquals(strByMethod,strByManually,"Compare srtings of html")	
+	
+	k pageByManually,pageByMethod,strByManually,strByMethod
+]]></Implementation>
+</Method>
+
+<Method name="TestParseMethods">
+<Implementation><![CDATA[
+	#define TP ##class(Forum.PostsPage)
+	
+	s xdataID = "test.Forum.PostsPage||PostWithAuthorLink"
+    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    s post = compiledXdata.Data
+    s postW = post.Read()
+	
+	s xdataID = "test.Forum.PostsPage||PostWithoutAuthorLink"
+    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    s post = compiledXdata.Data
+	s postWO = post.Read()
+	
+	//#		ID	Author			AuthorExtId	AuthorId	ExtId		Link																	Posted				Text																										Topic	Type
+    //9		9	Ptn	 						5			18270569	http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=18270569	2015-10-13 08:16:00	eduard93,<br /><br />&gt;Для этого можно использовать методы ##class(%File).SetAttributes(), ##class...	 	1		message
+	//150	150	Шваров Евгений	164999		1			16078161	http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=16078161	2014-05-27 11:52:00	<a href="http://intersystems.ru/inews/" target="_blank">Ежемесячный журнал InterSystems News: архив ...	 	3		message
+	
+	s postW( "ExtId" ) = $$$TP.ParseExtId( postW ) ;16078161
+	s postWO( "ExtId" ) = $$$TP.ParseExtId( postWO ) ;18270569
+	s postW( "Type" ) = $$$TP.ParseType( postW ) ;"message"
+	s postW( "Text" ) = $$$TP.ParseText( postW ) ;<a href="http://intersystems.ru/inews/" target="_blank">Ежемесячный журнал InterSystems News: архив ...
+	s postW( "Posted" ) = $$$TP.ParsePosted( postW ) ;2014-05-27 11:52:00
+	
+	s sc = $$$TP.ParseAuthor( postW, .author ) 
+	m postW( "Author") = author ; postW( "Author" ) = "Шваров Евгений", postW( "Author", "ExtId" ) = 164999 
+	k author
+	s sc = $$$TP.ParseAuthor( postWO, .author ) 
+	m postWO( "Author") = author ; postWO( "Author" ) = "Ptn"
+	k author	
+		
+	do $$$AssertEquals(postW( "ExtId" ),16078161,"Should extract ExtId of post")
+	do $$$AssertEquals(postWO( "ExtId" ),18270569,"Should extract ExtId of post")
+	do $$$AssertEquals(postW( "Type" ),"message","Should extract type of post")
+	do $$$AssertEquals(postW( "Text" ),"<a href=""http://intersystems.ru/inews/"" target=""_blank"">Ежемесячный журнал InterSystems News: архив и подписка.</a>","Should extract name of post")
+	do $$$AssertEquals(postW( "Posted" ),$zdt("63334,42720",3),"Should extract date when post was posted") ;$zdt("63334,42720",3)=2014-05-27 11:52:00
+	do $$$AssertEquals(postW( "Author" ), "Шваров Евгений","Should extract author of post")
+	do $$$AssertEquals(postW( "Author", "ExtId" ), 164999,"Should extract ExtId of author of post")
+	do $$$AssertEquals(postWO( "Author" ), "Ptn","Should extract author of post")
+	do $$$AssertNotTrue($d(postWO( "Author", "ExtId" )),"Shouldn't extract ExtId of author of post")
+]]></Implementation>
+</Method>
+
+<Method name="TestParse">
+<Implementation><![CDATA[
+	s status = ##class(Forum.Post).ExtIdExists( 1, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 2, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 3, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 4, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 5, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+
+	if '##class(Forum.Forum).NameExists( forum("Name") ){
+		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+		if SQLCODE=0 s forum = %ROWID
+		}
+		
+	#;Creating topic
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	if '##class(Forum.Forum).NameExists( topic("Name") ){	
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
+		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+		if SQLCODE=0 s topic = %ROWID
+		}
+	
+	s xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
+    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    s tStream = compiledXdata.Data
+    
+	//Created object is object of class Forum.PostsLoader to able to save object and then check it
+	s page = ##class(Forum.PostsLoader).%New()
+	
+	s page.Topic = topic("ExtId")
+	
+	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	s page.request.Data = ##class(%Stream.FileCharacter).%New()
+	s sc = page.request.Data.CopyFrom( tStream )
+	
+	s sc = page.Parse(2)
+	
+	#;Clining topics and forum
+	#; 1
+	s statusFirst = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
+	do $$$AssertNotTrue(statusFirst,"Nonexistence of the first post object")
+	if statusFirst{
+		s st = ##class(Forum.Post).%DeleteId( .postObjIdFirst )
+		do $$$AssertTrue(st,"Delete created object")
+		}
+	#; 2
+	s statusSecond = ##class(Forum.Post).ExtIdExists(2, .postObjIdSecond)
+	do $$$AssertNotTrue(statusSecond,"Nonexistence of the second post object")
+	if statusSecond{
+		s st = ##class(Forum.Post).%DeleteId( .postObjIdSecond )
+		do $$$AssertTrue(st,"Delete created object")
+		}
+	#; 3
+	s status = ##class(Forum.Post).ExtIdExists(3, .postObjIdThird)
+	do $$$AssertTrue(status,"Existence of the third post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdThird )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 4
+	s status = ##class(Forum.Post).ExtIdExists(4, .postObjIdFourth)
+	do $$$AssertTrue(status,"Existence of the fourth post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdFourth )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 5
+	s status = ##class(Forum.Post).ExtIdExists(5, .postObjIdFifth)
+	do $$$AssertTrue(status,"Existence of the fifth post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
+	do $$$AssertTrue(st,"Delete created object")
+	
+	if $g(topic)'="" {
+		s st = ##class(Forum.Topic).%DeleteId( .topic )
+		do $$$AssertTrue(st,"Delete created topic object")
+		}
+	if $g(forum)'="" {
+		s st = ##class(Forum.Forum).%DeleteId( .forum )
+		do $$$AssertTrue(st,"Delete created forum object")
+		}
+	
+	#;Cleaning authors
+	#; 1
+	s statusFirstAuthor = ##class(Forum.Author).ExtIdExists("FirstExtId", .authorObjIdFirst)
+	do $$$AssertNotTrue(statusFirstAuthor,"Nonexistence of the first author object")
+	if statusFirstAuthor{
+		s st = ##class(Forum.Author).%DeleteId( .authorObjIdFirst )
+		do $$$AssertTrue(st,"Delete created object")
+		}
+	#; 2
+	s statusSecondAuthor = ##class(Forum.Author).ExtIdExists("SecondExtId", .authorObjIdSecond)
+	do $$$AssertNotTrue(statusSecondAuthor,"Nonexistence of the second author object")
+	if statusSecondAuthor{
+		s st = ##class(Forum.Author).%DeleteId( .authorObjIdSecond )
+		do $$$AssertTrue(st,"Delete created object")
+		}
+	#; 3
+	s status = ##class(Forum.Author).ExtIdExists("ThirdExtId", .authorObjIdThird)
+	do $$$AssertTrue(status,"Existence of the third author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdThird )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 4
+	s status = ##class(Forum.Author).ExtIdExists("FourthExtId", .authorObjIdFourth)
+	do $$$AssertTrue(status,"Existence of the fourth author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFourth )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 5
+	s status = ##class(Forum.Author).ExtIdExists("FifthExtId", .authorObjIdFifth)
+	do $$$AssertTrue(status,"Existence of the fifth author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFifth )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+
+<Method name="TestpostBegin">
+<Implementation><![CDATA[
+	#define PostTableBegin "<!--begin threadtable-->"
+	#define PostTableEnd "<!--end threadtable-->"
+	#define PostBegin "<table class=""msgTable"">"
+	
+	s status = ##class(Forum.Post).ExtIdExists( 1, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 2, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 3, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 4, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	s status = ##class(Forum.Post).ExtIdExists( 5, .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+
+	if '##class(Forum.Forum).NameExists( forum("Name") ){
+		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+		if SQLCODE=0 s forum = %ROWID
+		}
+		
+	#;Creating topic
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	if '##class(Forum.Forum).NameExists( topic("Name") ){	
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
+		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+		if SQLCODE=0 s topic = %ROWID
+		}
+	
+	s xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
+    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    s tStream = compiledXdata.Data
+    
+	//Created object is object of class Forum.PostsLoader to able to save object and then check it
+	s page = ##class(Forum.PostsLoader).%New()
+	
+	s page.Topic = topic("ExtId")
+	
+	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	s page.request.Data = ##class(%Stream.FileCharacter).%New()
+	s sc = page.request.Data.CopyFrom( tStream )
+	
+	s page.pos = 0, posForMethod = 0, posOldProp = page.pos
+	
+	s pos = tStream.FindAt( 1, $$$PostTableBegin ) 
+    s pos = pos + $l($$$PostTableBegin)
+    s end = tStream.FindAt( pos, $$$PostTableEnd ) 
+	s pos = tStream.FindAt( pos, $$$PostBegin )
+	
+	#; 1 pos < end Table header(Pre-posts area)
+	
+	s sc = page.postBegin( pos )
+	do $$$AssertNotEquals(page.pos,posOldProp,"1.Property ""pos"" have to change")
+	s pos = pos + $l($$$PostBegin)
+	s pos = tStream.FindAt( pos, $$$PostBegin )
+	s posOldProp = page.pos
+	
+	#; 2 pos < end The first post
+	
+	s sc = page.postBegin( pos )
+	do $$$AssertNotEquals(page.pos,posOldProp,"2.First post.Property ""pos"" have to change")
+	s pos = pos + $l($$$PostBegin)
+	s pos = tStream.FindAt( pos, $$$PostBegin )
+	s posOldProp = page.pos
+	
+	#; 3 pos < end The second post
+	
+	s sc = page.postBegin( pos )
+	do $$$AssertNotEquals(page.pos,posOldProp,"3.Second post.Property ""pos"" have to change")
+	s pos = pos + $l($$$PostBegin)
+	s pos = tStream.FindAt( pos, $$$PostBegin )
+	s posOldProp = page.pos
+	
+	#; 4 pos < end The third post
+	
+	s sc = page.postBegin( pos )
+	do $$$AssertNotEquals(page.pos,posOldProp,"4.Third post.Property ""pos"" have to change")
+	s pos = pos + $l($$$PostBegin)
+	s pos = tStream.FindAt( pos, $$$PostBegin )
+	s posOldProp = page.pos
+	
+	#; 5 pos < end The fourth post
+	
+	s sc = page.postBegin( pos )
+	do $$$AssertNotEquals(page.pos,posOldProp,"5.Fourth post.Property ""pos"" have to change")
+	s pos = pos + $l($$$PostBegin)
+	s pos = tStream.FindAt( pos, $$$PostBegin )
+	s posOldProp = page.pos
+	
+	#; 6 pos > end, page.pos < end The fifth post
+	
+	s sc = page.postBegin( end )
+	do $$$AssertNotEquals(page.pos,posOldProp,"6.Fifth post.Property ""pos"" have to change")
+		
+	#; 7 pos > end, page.pos >end
+	
+	
+	#;Clining topics and forum
+	#; 1
+	s status = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
+	do $$$AssertTrue(status,"Existence of the first post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdFirst )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 2
+	s status = ##class(Forum.Post).ExtIdExists(2, .postObjIdSecond)
+	do $$$AssertTrue(status,"Existence of the second post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdSecond )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 3
+	s status = ##class(Forum.Post).ExtIdExists(3, .postObjIdThird)
+	do $$$AssertTrue(status,"Existence of the third post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdThird )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 4
+	s status = ##class(Forum.Post).ExtIdExists(4, .postObjIdFourth)
+	do $$$AssertTrue(status,"Existence of the fourth post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdFourth )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 5
+	s status = ##class(Forum.Post).ExtIdExists(5, .postObjIdFifth)
+	do $$$AssertTrue(status,"Existence of the fifth post object")
+	s st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
+	do $$$AssertTrue(st,"Delete created object")
+	
+	if $g(topic)'="" {
+		s st = ##class(Forum.Topic).%DeleteId( .topic )
+		do $$$AssertTrue(st,"Delete created topic object")
+		}
+	if $g(forum)'="" {
+		s st = ##class(Forum.Forum).%DeleteId( .forum )
+		do $$$AssertTrue(st,"Delete created forum object")
+		}
+	
+	#;Cleaning authors
+	#; 1
+	s status = ##class(Forum.Author).ExtIdExists("FirstExtId", .authorObjIdFirst)
+	do $$$AssertTrue(status,"Existence of the first author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFirst )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 2
+	s status = ##class(Forum.Author).ExtIdExists("SecondExtId", .authorObjIdSecond)
+	do $$$AssertTrue(status,"Existence of the second author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdSecond )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 3
+	s status = ##class(Forum.Author).ExtIdExists("ThirdExtId", .authorObjIdThird)
+	do $$$AssertTrue(status,"Existence of the third author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdThird )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 4
+	s status = ##class(Forum.Author).ExtIdExists("FourthExtId", .authorObjIdFourth)
+	do $$$AssertTrue(status,"Existence of the fourth author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFourth )
+	do $$$AssertTrue(st,"Delete created object")
+	#; 5
+	s status = ##class(Forum.Author).ExtIdExists("FifthExtId", .authorObjIdFifth)
+	do $$$AssertTrue(status,"Existence of the fifth author object")
+	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFifth )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+
+<XData name="PostWithoutAuthorLink">
+<Data><![CDATA[
+<a name="18270569"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id18270569" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Улучшения, новые фичи в технологиях InterSystems&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       Ptn 
+       
+      <br />
+      <font style="color:#888;">Guest</font> </td>
+
+        <td class="msgBody">
+            eduard93,<br /><br />&gt;Для этого можно использовать методы ##class(%File).SetAttributes(), ##class(%File).SetReadOnly() и ##class(%File).SetWriteable()<br /><br />А можно использовать другие, какая разница какие, я уже решил эту проблему своим личным способом.<br />Но тема то у нас вроде как о доработке новых фич. 
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            13 окт 15, 08:16    [<a onclick="showCopyLinks(this, '18270569')" style="text-decoration:underline; cursor:pointer; position:relative">18270569</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1179314&amp;mid=18270569&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1179314&amp;mid=18270569&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=18270569" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+]]></Data>
+</XData>
+
+<XData name="PostWithAuthorLink">
+<Data><![CDATA[
+<a name="16078161"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id16078161" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Взаимодействие с InterSystems&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       
+       <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
+       Шваров Евгений </a><br />
+      <font style="color:#888;">Member</font><br />
+      <br />
+      <span class="smallInfo">Откуда: <br />
+	Сообщений: 659<br/></span>
+      
+       </td>
+
+        <td class="msgBody">
+            <a href="http://intersystems.ru/inews/" target="_blank">Ежемесячный журнал InterSystems News: архив и подписка.</a> 
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            27 май 14, 11:52    [<a onclick="showCopyLinks(this, '16078161')" style="text-decoration:underline; cursor:pointer; position:relative">16078161</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1003258&amp;mid=16078161&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1003258&amp;mid=16078161&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=16078161" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+]]></Data>
+</XData>
+
+<XData name="PostsPageWith5Posts">
+<Data><![CDATA[
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
+<head>
+  <title>Кодировка в REST / Cach&#233; / Sql.ru</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+  <link title="Sql.ru Forum search" type="application/opensearchdescription+xml"  rel="search" href="http://www.sql.ru/forum/provider.xml"/>
+  <link rel="stylesheet" type="text/css" href="/css/actualforum2.min.css?v=1" media="screen" />
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="/css/ie.css" media="screen" />
+    <![endif]-->
+  <meta name="Description" content="Кодировка в REST / Cach&#233; / Здравствуйте, коллеги.Столкнулись с проблемой при получении данных из REST запроса. Дана JSON строка:
+&#123;&quot;Param&quot;:&quot;русские буквы&quot;&#125;
+
+Из нее необходимо получить объект.&nbsp;&#36;&#36;&#36;THROWONERROR(st,##class(%ZEN.Auxiliary..." /><link rel="canonical" href="http://www.sql.ru/forum/1090794/kodirovka-v-rest"/>
+  <script type="text/javascript">jQuery = false;</script>
+  <!--afhead-->
+<!--  <script type="text/javascript" src="/js/utils.js"></script> -->
+
+  <meta property="og:image" content="http://www.sql.ru/images/logofb.jpg"/>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-265508-1', 'sql.ru');
+  ga('send', 'pageview');
+</script>
+</head>
+
+<body>
+  <div id="page-container">
+    <div id="header">
+      <div class="header-wrap">
+        <div id="title">
+          <a href="/" title="На главную страницу">SQL.ru</a>
+        </div>
+        <!--begin case_isguest-->
+<!--        <div id="login">
+          <form action="{url.login}" method="post">
+            <span class="close" onclick="hideLoginWindow(); return false;">x</span>
+
+            <div class="username">
+              <label for="login-input">Логин:</label> <input type="text" name="login" id=
+              "login-input" />
+            </div>
+
+            <div class="password">
+              <label for="pass-input">Пароль:</label> <input type="password" name="password" id=
+              "pass-input" />
+            </div>
+      
+      <div style="text-align:left;">
+        <label style="width:auto" for="cbremember">Запомнить меня</label>
+        <input type="checkbox" name="cbremember" id="cbremember" checked="checked" />
+      </div>
+
+            <div class="submit">
+              <input type="submit" value="Войти" />
+            </div>
+
+            <div class="links">
+              <a href="{url.register}">Регистрация</a> <a href="{url.remindpass}">Забыли пароль?</a>
+            </div>
+          </form>
+        </div>
+    <span id="login-link" onclick="showLoginWindow(); return false">Вход на сайт</span> -->
+    <!--end case_isguest-->
+    <!--begin case_ismember-->
+<!--    <span id="ismember">
+      <div onclick="document.location='{url.logout}'" id="logout-link"></div>
+      <a href="{url.profile}">{member.nick}</a>
+    </span> -->
+    <!--end case_ismember-->
+<!--        <form action="afsearch.aspx" method="get" id="top-search" name="top-search">
+          <div>
+            <input type="text" name="s" id="search-query" value="поиск" class="inactive"
+            onfocus="tffocus(this)" onblur="tfblur(this)" /> <input type="submit" value="найти" />
+          </div> 
+        </form> 
+-->
+     <ul id="top-menu">
+          <li><a href="/">Главная</a></li>
+
+          <li><a href="/articles">Статьи</a></li>
+
+          <li class="selected"><a href="/forum">Форум</a></li>
+
+          <li><a href="/blogs">Блоги</a></li>
+
+          <li><a href="/books">Книги</a></li>
+
+          <li><a href="/subscribe">Рассылка</a></li>
+
+          <li><a href="/forum/job">Работа</a></li>
+
+          <li><a href="/search">Поиск</a></li>
+
+          <li><a href="/faq">FAQ</a></li>
+        </ul><div id="top-advert"></div>
+      </div>
+    </div>
+
+    <div id="content-wrapper-forum">
+
+  <table class="forummenu">
+    <tr>
+      <td colspan="3">Добро пожаловать в форум, <b>Guest</b>  &gt;&gt;  
+      
+       <!--begin case_isguest-->
+       <a href="http://www.sql.ru/forum/login.aspx?action=login">Войти</a> | <a href="http://www.sql.ru/forum/register.aspx">Регистрация</a> |<!--end case_isguest-->
+       <a href="http://www.sql.ru/forum/actualsearch.aspx?bid=56">Поиск</a> | <a href="http://www.sql.ru/forum/rules.aspx">Правила</a> |
+      
+      </td> <!--  allowtransparency="true" -->
+
+      <td style="text-align:right;"><a style="font : 11px verdana" href="#" onclick=
+      "javascript:void(window.open('http://www.sql.ru/forum/actualutils.aspx?action=favtopic&amp;tid=1090794&amp;h=-1996838249','ActualForum','height=200,width=500,resizable=1,scrollbars=yes,menubar=no,status=yes'));">
+      В избранное</a> | <a style="font : 11px verdana" href="#" onclick=
+      "javascript:void(window.open('http://www.sql.ru/forum/actualutils.aspx?action=subscribe&amp;tid=1090794&amp;h=-1996838249','ActualForum','height=200,width=500,resizable=1,scrollbars=yes,menubar=no,status=yes'));">
+      Подписаться</a></td>
+    </tr>
+
+    <tr style="font:bold 13px; background-color:#fff">
+      <td colspan="2"><a class="forumLink" href="http://www.sql.ru/forum">Все форумы</a> / <a class=
+      "forumLink" href="http://www.sql.ru/forum/cache">Cach&#233;</a></td>
+
+      <td style="text-align:center;"></td>
+
+      <td style="text-align:right"><iframe src="http://www.facebook.com/plugins/like.php?href=http%3a%2f%2fwww.sql.ru%2fforum%2f1090794%2fkodirovka-v-rest&amp;send=false&amp;layout=button_count&amp;width=100&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=115985375135771" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe>
+  <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56"><img class="button_img_new" src="/images/post.gif" alt=
+      "Новый топик" /></a>    <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=0&amp;p=1" rel="nofollow"><img class="button_img_reply" src="/images/reply.gif" alt=
+      "Ответить" /></a></td>
+    </tr>
+  </table>
+
+<!--  <h1 class="topic_subject">
+    Кодировка в REST
+  </h1>
+<div class="smallInfo">Ответов: 15&nbsp;&nbsp;&nbsp;Последнее сообщение: 13 ноя 15, 10:48</div>
+-->
+  
+  <!--afinfo-->
+  
+  <!--begin threadtable-->
+
+
+  
+  <a name="1"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id1" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Кодировка в REST&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       
+       <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=FirstExtId">
+       First </a><br />
+      <font style="color:#888;">Member</font><br />
+      <br />
+      <span class="smallInfo">Откуда: <br />
+  Сообщений: 35<br/></span>
+      
+       </td>
+
+        <td class="msgBody">
+           Test text of the first post
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            23 апр 14, 10:41    [<a onclick="showCopyLinks(this, '1')" style="text-decoration:underline; cursor:pointer; position:relative">1</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=1&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=1&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=1" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+  
+  <a name="2"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id2" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Кодировка в REST&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       
+       <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=SecondExtId">
+       Second </a><br />
+      <font style="color:#888;">Member</font><br />
+      <br />
+      <span class="smallInfo">Откуда: г. Кишинёв, Республика Молдова<br />
+  Сообщений: 2601<br/><a href='http://www.sql.ru/forum/actualutils.aspx?action=goblog&mid=95727'>Блог</a><br/></span>
+      
+       </td>
+
+        <td class="msgBody">
+            Test text of the second post
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            23 апр 14, 11:42    [<a onclick="showCopyLinks(this, '2')" style="text-decoration:underline; cursor:pointer; position:relative">2</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=2&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=2&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=2" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+  
+  <a name="3"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id3" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Кодировка в REST&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       
+       <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=ThirdExtId">
+       Third </a><br />
+      <font style="color:#888;">Member</font><br />
+      <br />
+      <span class="smallInfo">Откуда: Москва<br />
+  Сообщений: 963<br/></span>
+      
+       </td>
+
+        <td class="msgBody">
+            Test text of the third post
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            23 апр 14, 11:58    [<a onclick="showCopyLinks(this, '3')" style="text-decoration:underline; cursor:pointer; position:relative">3</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=3&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=3&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=3" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+  
+  <a name="4"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id4" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Кодировка в REST&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       
+       <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=FourthExtId">
+       Fourth </a><br />
+      <font style="color:#888;">Member</font><br />
+      <br />
+      <span class="smallInfo">Откуда: <br />
+  Сообщений: 35<br/></span>
+      
+       </td>
+
+        <td class="msgBody">
+            Test text of the fourth post
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            23 апр 14, 12:13    [<a onclick="showCopyLinks(this, '4')" style="text-decoration:underline; cursor:pointer; position:relative">4</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=4&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=4&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=4" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+  
+  <a name="5"></a>
+
+  <table class="msgTable">
+    <tr>
+        <td id="id5" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Кодировка в REST&nbsp;
+                
+        </td>
+    </tr>
+    <tr style="vertical-align:top">
+      <td style="width:15%" class="msgBody">
+       
+       <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=FifthExtId">
+       Fifth </a><br />
+      <font style="color:#888;">Member</font><br />
+      <br />
+      <span class="smallInfo">Откуда: <br />
+  Сообщений: 35<br/></span>
+      
+       </td>
+
+        <td class="msgBody">
+            Test text of the fifth post
+
+
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="msgFooter">
+            23 апр 14, 12:17    [<a onclick="showCopyLinks(this, '5')" style="text-decoration:underline; cursor:pointer; position:relative">5</a>] &nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=5&amp;p=1" rel="nofollow">Ответить</a>
+            | <a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=5&amp;p=1&amp;act=quot" rel="nofollow">Цитировать</a> 
+            <a href="http://www.sql.ru/forum/actualutils.aspx?action=notifymod&amp;msg=5" rel="nofollow">
+                Сообщить
+                модератору
+            </a>
+        </td>
+    </tr>
+  </table>
+
+  <!--end threadtable-->
+   
+
+  <table class="forummenu">
+    <tr style="font:bold 13px; background-color:#fff">
+      <td colspan="2"><a class="forumLink" href="http://www.sql.ru/forum">Все форумы</a> / <a class="forumLink" href=
+      "http://www.sql.ru/forum/cache">Cach&#233;</a>
+      </td>
+      <td style="text-align:right"><a href="http://www.sql.ru/forum/actualpost.aspx?bid=56&amp;tid=1090794&amp;mid=0&amp;p=1"><img class="button_img_reply" src="/images/reply.gif" alt=
+      "Ответить" /></a></td>
+    </tr>
+  </table><select id="forumSelector" name="bid" class="flatbutton" onchange="forumSelectorChanged()" > <option class="optiongroup" value="-7">Виртуальные форумы</option><option value="sqlru-3-days"><!--sel40_-->&nbsp;&nbsp;Темы из всех форумов за 3 дня</option><option value="myforums"><!--sel-6_-->&nbsp;&nbsp;Мои избранные форумы</option><option class="optiongroup" value="-1">Использование СУБД</option><option value="microsoft-sql-server"><!--sel1_-->&nbsp;&nbsp;Microsoft SQL Server</option><option value="interbase"><!--sel2_-->&nbsp;&nbsp;Firebird, InterBase</option><option value="oracle"><!--sel3_-->&nbsp;&nbsp;Oracle</option><option value="access"><!--sel4_-->&nbsp;&nbsp;Microsoft Access</option><option value="db2"><!--sel5_-->&nbsp;&nbsp;IBM DB2, WebSphere, IMS, U2, etc</option><option value="mysql"><!--sel6_-->&nbsp;&nbsp;MySQL</option><option value="postgresql"><!--sel7_-->&nbsp;&nbsp;PostgreSQL</option><option value="olap-dwh"><!--sel26_-->&nbsp;&nbsp;OLAP и DWH</option><option value="sybase"><!--sel30_-->&nbsp;&nbsp;Sybase ASA, ASE, IQ</option><option value="informix"><!--sel29_-->&nbsp;&nbsp;Informix</option><option value="db-other"><!--sel23_-->&nbsp;&nbsp;Другие СУБД</option><option value="foxpro"><!--sel37_-->&nbsp;&nbsp;FoxPro, Visual FoxPro</option><option value="cache" selected="selected">&nbsp;&nbsp;Cach&#233;</option><option value="sqlite"><!--sel69_-->&nbsp;&nbsp;SQLite</option><option value="nosql-bigdata"><!--sel73_-->&nbsp;&nbsp;NoSQL, Big Data</option><option class="optiongroup" value="-2">Дискуcсии</option><option value="db-comparison"><!--sel10_-->&nbsp;&nbsp;Сравнение СУБД</option><option value="db-design"><!--sel36_-->&nbsp;&nbsp;Проектирование БД</option><option value="job"><!--sel9_-->&nbsp;&nbsp;Работа</option><option value="erp-crm"><!--sel53_-->&nbsp;&nbsp;ERP и учетные системы</option><option value="systems-architecture"><!--sel58_-->&nbsp;&nbsp;Разработка информационных систем</option><option value="testing-qa"><!--sel52_-->&nbsp;&nbsp;Тестирование и QA</option><option value="reporting"><!--sel57_-->&nbsp;&nbsp;Отчетные системы</option><option value="pt"><!--sel16_-->&nbsp;&nbsp;Просто треп</option><option value="za-rubezhom"><!--sel33_-->&nbsp;&nbsp;Наши за рубежом</option><option value="certification"><!--sel8_-->&nbsp;&nbsp;Сертификация и обучение</option><option value="hardware"><!--sel62_-->&nbsp;&nbsp;Hardware</option><option value="dev-management"><!--sel64_-->&nbsp;&nbsp;Управление процессом разработки ИС</option><option value="legal"><!--sel72_-->&nbsp;&nbsp;Юридические вопросы в ИТ</option><option class="optiongroup" value="-3">Microsoft.NET</option><option value="dotnet"><!--sel34_-->&nbsp;&nbsp;WinForms, .Net Framework</option><option value="asp-net"><!--sel19_-->&nbsp;&nbsp;ASP.NET</option><option value="ado-linq-ef-orm"><!--sel12_-->&nbsp;&nbsp;ADO.NET, LINQ, Entity Framework, NHibernate, DAL, ORM</option><option value="wpf-silverlight"><!--sel35_-->&nbsp;&nbsp;WPF, Silverlight</option><option value="wcf-ws-remoting"><!--sel71_-->&nbsp;&nbsp;WCF, Web Services, Remoting</option><option class="optiongroup" value="-4">Программирование</option><option value="delphi"><!--sel20_-->&nbsp;&nbsp;Delphi</option><option value="cpp"><!--sel21_-->&nbsp;&nbsp;C++</option><option value="visual-basic"><!--sel22_-->&nbsp;&nbsp;Visual Basic</option><option value="programming"><!--sel24_-->&nbsp;&nbsp;Программирование</option><option value="java"><!--sel38_-->&nbsp;&nbsp;Java</option><option value="mobile-dev"><!--sel78_-->&nbsp;&nbsp;Разработка под мобильные платформы</option><option value="powerbuilder"><!--sel39_-->&nbsp;&nbsp;PowerBuilder</option><option value="ms-office"><!--sel46_-->&nbsp;&nbsp;Microsoft Office</option><option value="sharepoint"><!--sel74_-->&nbsp;&nbsp;SharePoint</option><option value="xml"><!--sel59_-->&nbsp;&nbsp;XML, XSL, XPath, XQuery</option><option class="optiongroup" value="-9">Web Технологии</option><option value="php-perl"><!--sel18_-->&nbsp;&nbsp;PHP, Perl, Python</option><option value="html-javascript-css"><!--sel61_-->&nbsp;&nbsp;HTML, JavaScript, VBScript, CSS</option><option class="optiongroup" value="-6">Администрирование ОС</option><option value="windows"><!--sel27_-->&nbsp;&nbsp;Windows</option><option value="linux"><!--sel28_-->&nbsp;&nbsp;Unix-системы</option><option value="other-os"><!--sel41_-->&nbsp;&nbsp;Другие: Mac OS, PalmOS, BeOS, PocketPC</option><option class="optiongroup" value="-5">SQL.RU</option><option value="sqlru"><!--sel11_-->&nbsp;&nbsp;Обсуждение нашего сайта</option><option value="question-answer"><!--sel17_-->&nbsp;&nbsp;Вопрос-Ответ</option><option value="test"><!--sel15_-->&nbsp;&nbsp;Test</option></select><script language="javascript">function forumSelectorChanged()  { if (document.getElementById("forumSelector").value.indexOf("-")==0) return;window.location.href = 'http://www.sql.ru/forum/'+document.getElementById("forumSelector").value; } </script>
+
+  <form>
+    <input type="hidden" name="tt" id="tt" />
+    <script language="Javascript" type="text/javascript">
+
+        var http = null;
+        var nextClicked = false;
+        var af_ForumId = "56";
+        var af_TopicId = "1090794";
+        var af_TopicUserId = "172829";
+        var af_TopicUserName = "phomka";
+
+
+        function HlMsg() {
+
+            if (location.hash.length>1) {
+                var sHash = location.hash.substring(1,location.hash.length);
+                var obj = document.getElementById("id"+sHash);
+                //if (obj!=null) obj.style.backgroundColor=sClr;
+                if (obj!=null) obj.style.backgroundImage = "url('/css/images/top-bg_green.gif')";
+            } }
+        HlMsg();
+
+        document.onkeydown = function(e) { handleKeys(e); };
+        document.onkeyup = function(e) { handleKeysUp(e); };
+        var ctrlDown=false;
+        function handleKeys(e) {
+
+            var evt = (e) ? e : window.event;
+            if (evt.keyCode==17) ctrlDown=true;
+
+            if ((window.AFEditor) && (window.AFEditor.loaded!=undefined) && (window.AFEditor.IsVisible())) return ;// && (window.AFEditor.IsVisible()) return;
+
+            if (evt.keyCode==27)  { var links_mid = document.getElementById('links_mid'); links_mid.style.display="none";}
+            if ((ctrlDown)&&((evt.keyCode==39)||(evt.keyCode==37))) { navigateNextPrev(evt.keyCode);
+                evt.returnValue = false;
+            }
+        }
+        function handleKeysUp(e) {
+            var evt = (e) ? e : window.event;
+            if (evt.keyCode==17) ctrlDown=false;}
+
+        function navigateNextPrev(key) {
+            var lnk="";
+            if (key==37) { lnk="urlForumPrev";}
+            if (key==39) { lnk="urlForumNext";}
+            if (document.getElementById(lnk)!=null) window.location=document.getElementById(lnk).href;
+        }
+
+        function doVote() {
+            var rads = document.getElementsByName("pollOption");
+            var rado = "";
+            for (var i = 0; i < rads.length; i++) {
+                if (rads[i].checked) { rado += ","+rads[i].value;  }
+            }
+            if (rado == "") {
+                document.getElementById("pollMsg").innerHTML = "Пожалуйста укажите вариант опроса.";
+                return;
+            }
+
+            document.getElementById("voteBtn").disabled = true;
+            document.getElementById("voteBtn").value = "подождите...";
+
+            http = getHTTPObject();
+            if (http != null) {
+                http.open("GET", 'http://www.sql.ru/forum/afpoll.aspx?action=vote&tid=1090794&oid=' + rado + '&hash=-1996838249', true);
+                http.onreadystatechange = handleHttpResponseVote;
+                http.send(null);
+            }
+        }
+        function handleHttpResponseVote() {
+            if (http.readyState == 4) {
+                var res = http.responseText;
+                if (res != '-1')
+                    var old = document.getElementById('poll'), div1 = document.createElement('div');
+                div1.innerHTML = res;
+                old.parentNode.replaceChild(div1.firstChild, old);
+            }
+        }
+        function gotoNextFound(msgId, search) {
+            if (nextClicked) return;
+            nextClicked = true;
+            var div = document.getElementById('nextSearch');
+            div.style.backgroundRepeat = 'no-repeat';
+            div.style.backgroundPosition = '4px 50%';
+            div.style.backgroundImage = "url('http://www.sql.ru/forum/actualfile.aspx?id=9065203')";
+            msgId = div.msgId || msgId;
+            http = getHTTPObject();
+            if (http != null) {
+                http.open("GET", 'http://www.sql.ru/forum/actualutils.aspx?action=nextfoundurl&tid=' + getParameter('tid') + '&msg=' + msgId + '&search=' + search + '&url=' + escape(document.location.href), true);
+                http.onreadystatechange = handleNextFound1;
+                http.send(null);
+            }
+        }
+
+        function handleNextFound1() {
+            if (http.readyState == 4) {
+                res = http.responseText;
+                nextClicked = false;
+                var div = document.getElementById('nextSearch');
+                div.style.backgroundImage = 'none';
+                if (res != '-1') {
+                    if (getParameter("pg") == getParameter("pg", res)) {
+                        var ms = res.substring(res.indexOf('#') + 1);
+                        div.msgId = ms;
+                        var td = document.getElementById('id' + ms);
+                        if (!td) { window.location.href = res; return; }
+                        td = td.parentNode.parentNode.rows[1].cells[1];
+                        for (var i = 0; i < 2; ++i) { td.appendChild(div.parentNode.previousSibling); }
+                        td.appendChild(div.parentNode);
+                        //alert(ms);
+                        window.location.hash = ms;
+                        return;
+                    }
+                    //alert("222");
+                    window.location.href = res;
+                } else { alert("Больше сообщений не найдено"); }
+            }
+        }
+
+    </script>
+    <script src="/forum/actualjs.js" type="text/javascript">
+    </script> 
+    <script>
+        function showCopyLinks(el, mid) {
+            var d = document;
+            var links_mid = d.getElementById('links_mid');
+            var urlbb = "[url=http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&tid=1090794&msg="+mid+"]Кодировка в REST[/url]";
+            var url = "http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&tid=1090794&msg="+mid;
+            var msg = "[msg="+mid+"]";
+
+            el.parentNode.appendChild(links_mid);
+            links_mid.setAttribute("style", "top:"+getElementPosition(el)+"px;");
+            links_mid.style.display = "block";
+            var input = links_mid.getElementsByTagName('input');
+            input[0].value = msg;
+            input[1].value = urlbb;
+            input[2].value = url;
+            input[0].select();
+
+        }
+
+        function hideCopyLinks(el) {
+            el.style.display = "none";
+        }
+
+
+        function getElementPosition(elem)
+        {
+
+            var l = 0;
+            var t = 15;
+
+            while (elem)
+            {
+                l += elem.offsetLeft;
+                t += elem.offsetTop;
+                elem = elem.offsetParent;
+            }
+
+            return {"left":l, "top":t};
+        }
+
+
+        function load_lightbox(el) {
+            if(!document.getElementById('lightbox')) {
+                var head= document.getElementsByTagName('head')[0];
+                var script= document.createElement('script');
+                var styles= document.createElement('link');
+
+                styles.type= 'text/css';
+                styles.rel= 'stylesheet';
+                styles.href= "/css/lightbox.css";
+                styles.media= "screen";
+
+                script.type= 'text/javascript';
+                script.src= '/js/lightbox.js';
+
+                window.lbImageShow = el;
+                head.appendChild(script);
+                head.appendChild(styles);
+            }
+        }
+
+        function Cpy(val) {
+            document.getElementById("tt").value = val;
+            if (document.selection) {
+                rng = document.getElementById("tt").createTextRange(); rng.execCommand("Copy");
+            } else {
+                try { netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect"); } catch (e) { }
+                var clipboard = Components.classes["@mozilla.org/widget/clipboard;1"].getService();
+                if (clipboard) {
+                    clipboard = clipboard.QueryInterface(Components.interfaces.nsIClipboard);
+                }
+                var transferable = Components.classes["@mozilla.org/widget/transferable;1"].createInstance();
+                if (transferable) {
+                    transferable = transferable.QueryInterface(Components.interfaces.nsITransferable);
+                }
+                if (clipboard && transferable) {
+                    transferable.addDataFlavor("text/unicode");
+                    var textObj = new Object();
+                    var textObj = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+                    if (textObj) {
+                        textObj.data = document.getElementById("tt").value;
+                        transferable.setTransferData("text/unicode", textObj, textObj.data.length * 2);
+                        var clipid = Components.interfaces.nsIClipboard;
+                        clipboard.setData(transferable, null, clipid.kGlobalClipboard);
+                    }
+                }
+
+            }
+        }
+    </script>
+</form>
+<!--begin case_isguest-->
+<center>
+<br/><br/>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- ads for guests (forum bottom) -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-2802880694650536"
+     data-ad-slot="5556542488"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<!--end case_isguest-->
+<div class="links_mid" id="links_mid">
+    <label onclick="Cpy(document.getElementById('links_e1').value);">Ссылка на сообщение</label><br />
+    <input id="links_e1" onclick="this.select()" /><br />
+    <label onclick="Cpy(document.getElementById('links_e2').value);">Ссылка (включая название темы)</label><br />
+    <input id="links_e2" onclick="this.select()" /><br />
+    <label onclick="Cpy(document.getElementById('links_e3').value);">Ссылка (URL)</label><br />
+    <input id="links_e3" onclick="this.select()" />
+    <div class="hideCopyLinks" onclick="hideCopyLinks(this.parentNode)">x</div>
+</div>
+
+
+      <div id="footer">
+        <div class="copyright">2000-2015 © Alex Sibilev, SQL.ru<br/>
+          <a style="font: 10px Verdana;color:#88C" href="/feedback.aspx">Свяжитесь с нами</a></div>
+        <div class="copyright" style="font: 10px verdana">Generated in 16ms. [1ms]</div>
+        <div class="counters">
+<!-- begin of Rambler's Top100 code 
+<img src="http://counter.rambler.ru/top100.cnt?236431" alt="" width="1" height="1" border="0" />
+<a href="http://top100.rambler.ru/home?id=236431"><img src="http://top100-images.rambler.ru/top100/banner-88x31-rambler-gray2.gif" alt="Rambler's Top100" width="88" height="31" border="0" /></a>
+- end of Top100 logo -->
+                
+<!--          <a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+          <a href="http://jigsaw.w3.org/css-validator/"><img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" height="31" width="88" /></a>
+                    -->
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+        //initScripts();
+      if (window.AF_Begin) { AF_Begin(); }
+    </script>
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter9237463 = new Ya.Metrika({id:9237463, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/9237463" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+  </div> <!--page containter-->
+  </body>
+</html>
+]]></Data>
+</XData>
+</Class>
+</Export>
