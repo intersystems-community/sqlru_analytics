@@ -30,7 +30,7 @@
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s tStream = compiledXdata.Data
     
-	//Crearted object is object of class Forum.TopicsLoader to able to save object and then check it
+	//Created object is object of class Forum.TopicsLoader to able to save object and then check it
 	s page = ##class(Forum.TopicsLoader).%New()
 	s page.Forum = "cache"
 	if '##class(Forum.Forum).NameExists( page.Forum ){
@@ -84,24 +84,21 @@
 	s pos = tStream.FindAt( pos, $$$TopicBegin )
 	s posOldProp = page.pos, rowOldProp = page.row
 	
-	#; 5 pos < end The third topic
+	#; 5 pos > end, page.pos < end The third topic
 	
-	s sc = page.topicBegin( pos )
+	s sc = page.topicBegin( end )
 	do $$$AssertNotEquals(page.pos,posOldProp,"5.Property ""pos"" have to change")
 	do $$$AssertNotEquals(page.row,rowOldProp,"5.Property ""row"" have to change")
-	s pos = pos + $l($$$TopicBegin)
-	s pos = tStream.FindAt( pos, $$$TopicBegin )
-	s posOldProp = page.pos, rowOldProp = page.row
 	
-	#; 6 pos > end
+	#; 6 pos > end, page.pos > end
 	
 	
 	s status = ##class(Forum.Topic).ExtIdExists(1234, .topicObjIdFirst)
-	do $$$AssertTrue(status,"Existing of the first topic object")
+	do $$$AssertTrue(status,"Existence of the first topic object")
 	s status = ##class(Forum.Topic).ExtIdExists(12345, .topicObjIdSecond)
-	do $$$AssertTrue(status,"Existing of the second topic object")
+	do $$$AssertTrue(status,"Existence of the second topic object")
 	s status = ##class(Forum.Topic).ExtIdExists(123456, .topicObjIdThird)
-	do $$$AssertTrue(status,"Existing of the third topic object")
+	do $$$AssertTrue(status,"Existence of the third topic object")
 	
 	s st = ##class(Forum.Topic).%DeleteId( .topicObjIdFirst )
 	do $$$AssertTrue(st,"Delete created object")
@@ -113,8 +110,6 @@
 		s st = ##class(Forum.Forum).%DeleteId( .forumId )
 		do $$$AssertTrue(st,"Delete created object")
 	}
-	
-	s r = 5
 ]]></Implementation>
 </Method>
 
@@ -140,7 +135,7 @@
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s tStream = compiledXdata.Data
     
-	//Crearted object is object of class Forum.TopicsLoader to able to save object and then check it
+	//Created object is object of class Forum.TopicsLoader to able to save object and then check it
 	s page = ##class(Forum.TopicsLoader).%New()
 	s page.Forum = "cache"
 	if '##class(Forum.Forum).NameExists( page.Forum ){
@@ -154,11 +149,11 @@
 	s sc = page.Parse()
 	
 	s status = ##class(Forum.Topic).ExtIdExists(1234, .topicObjIdFirst)
-	do $$$AssertTrue(status,"Existing of the first topic object")
+	do $$$AssertTrue(status,"Existence of the first topic object")
 	s status = ##class(Forum.Topic).ExtIdExists(12345, .topicObjIdSecond)
-	do $$$AssertTrue(status,"Existing of the second topic object")
+	do $$$AssertTrue(status,"Existence of the second topic object")
 	s status = ##class(Forum.Topic).ExtIdExists(123456, .topicObjIdThird)
-	do $$$AssertTrue(status,"Existing of the third topic object")
+	do $$$AssertTrue(status,"Existence of the third topic object")
 	
 	s st = ##class(Forum.Topic).%DeleteId( .topicObjIdFirst )
 	do $$$AssertTrue(st,"Delete created object")
@@ -289,7 +284,7 @@
     s topic = compiledXdata.Data
     s topicW = topic.Read()
 	
-	s xdataID = "test.Forum.TopicsPage||TopicWithoutMarkAndAuthoLlinkAndWith17Pages"
+	s xdataID = "test.Forum.TopicsPage||TopicWithoutMarkAndAuthoLinkAndWith17Pages"
     s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
     s topic = compiledXdata.Data
 	s topicWO = topic.Read()
@@ -653,7 +648,7 @@
 ]]></Data>
 </XData>
 
-<XData name="TopicWithoutMarkAndAuthoLlinkAndWith17Pages">
+<XData name="TopicWithoutMarkAndAuthoLinkAndWith17Pages">
 <Data><![CDATA[
 <tr>
         <td class="icon_cell"><img src="/forum/images/question.gif" alt="" /></td>
