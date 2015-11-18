@@ -67,8 +67,9 @@ To load all pages of posts we adding "-a", that mean "all"</Description>
 </Method>
 
 <Property name="request">
+<Description>
+This property is PRIVATE</Description>
 <Type>Http.Request</Type>
-<Private>1</Private>
 </Property>
 
 <Property name="Html">
@@ -91,9 +92,9 @@ getter</Description>
 
 <Property name="pos">
 <Description>
-current position in content</Description>
+current position in content
+This property is PRIVATE</Description>
 <Type>%Integer</Type>
-<Private>1</Private>
 </Property>
 
 <Method name="Get">
@@ -127,9 +128,9 @@ Return posts page parser</Description>
 <Method name="Parse">
 <Description><![CDATA[
 Move from topic table begin to the end of table
-May miss amount of posts = <var>fromPost</var>]]></Description>
+May miss amount of posts = <var>fromPost</var>
+This method is PRIVATE]]></Description>
 <FormalSpec>fromPost:%Integer=0</FormalSpec>
-<Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
@@ -173,9 +174,9 @@ May miss amount of posts = <var>fromPost</var>]]></Description>
 
 <Method name="postBegin">
 <Description>
-found begin of topic in html content</Description>
+found begin of topic in html content
+This method is PRIVATE</Description>
 <FormalSpec>pos:%Integer</FormalSpec>
-<Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
 	
@@ -189,6 +190,7 @@ found begin of topic in html content</Description>
 	s ..pos = pos
 	
 	/* Example of post content
+	<a name="13898084"></a>
 	<table class="msgTable">
 		<tr>
 			<td id="id13898084" class="messageHeader" colspan="2"><img src="/forum/images/message.gif" alt="">&nbsp;Re: Взаимодействие с InterSystems&nbsp;
@@ -218,7 +220,7 @@ found begin of topic in html content</Description>
 			</td>
 		</tr>
 	</table>
-	<a name="13982348"></a>*/
+	*/
 	
 	s post( "ExtId" ) = ..ParseExtId( postHtml )
 	s post( "Type" ) = ..ParseType( postHtml )
