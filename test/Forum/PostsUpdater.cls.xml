@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.PostsUpdater">
+<Super>test.view</Super>
+<TimeCreated>63875,83579.875958</TimeCreated>
+
+<Method name="TestScan">
+<Implementation><![CDATA[
+	s data("topic") = 349188
+	s data("pages") = 17
+	
+	s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+	if rs.%Next() s data("to") = rs.Amount
+	
+	if data("to")=0{
+		s postsDeleteFrom = data("to")
+		s data("from") = data("to"), data("to") = data("from") + 30
+		s topicFirstExist = ##class(Forum.Topic).ExtIdExists(data("topic"))
+		if 'topicFirstExist {
+			#;Creating forum
+			
+			s forum("Name") = "Testing forum's name"
+
+			if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+				&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+				if SQLCODE=0 s forum = %ROWID
+				}
+			
+			#;Creating topic
+				
+			s topic("Name") = "Testing topic's name"
+			, topic("Author") = "Testing topic's author", topic("Views") = 12345
+			, topic("Updated") = "2001-01-01 04:20:00", topic("Pages") = 17
+			&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+			Values ( :topic("Name") ,:data("topic") ,:forum 
+				,:topic("Author") ,:topic("Views") 
+				,:topic("Updated") ,:topic("Pages") ))
+			if SQLCODE=0 s topic = %ROWID	
+			} 
+		}
+	elseif data("to")<=30{
+		s postsDeleteFrom = data("to")
+		s data("from") = data("to"), data("to") = data("from") + 30
+		}
+	else{
+		s data("from") = data("to") - 30
+		
+		s sql = "Select Top(30) ID From Forum.post Where Topic->ExtId = ? Order By Id Desc"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+		while rs.%Next(){
+			s tmpId = rs.Id
+			d ##class(Forum.Post).%DeleteId(tmpId)
+			}
+		}
+	
+	s status = ##class(Forum.PostsUpdater).Scan(.data)
+	do $$$AssertTrue(status, "Status of method exucution")
+	
+	s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+	if rs.%Next() s postsAmount = rs.Amount
+	
+	if $g(postsDeleteFrom)'=""{
+		do $$$AssertEquals(postsAmount, postsDeleteFrom + 30, "Checking number of added posts")}
+	else {
+		do $$$AssertEquals(postsAmount, data("to"), "Checking number of added posts")}
+		
+	if $g(postsDeleteFrom)'=""{
+		s sql = "Select Top(30) ID From Forum.post Where Topic->ExtId = ? Order By Id Desc"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+		while rs.%Next(){
+			s tmpId = rs.Id
+			d ##class(Forum.Post).%DeleteId()
+			}		
+		}
+	if ($g(postsDeleteFrom)=0)&($g(topicFirstExist)'=1){
+		s status = ##class(Forum.Topic).%DeleteId(topic)
+		do $$$AssertTrue(status, "Delete created topic object")
+		s status = ##class(Forum.Forum).%DeleteId(forum)
+		do $$$AssertTrue(status, "Delete created forum object")
+		}
+]]></Implementation>
+</Method>
+
+<Method name="TestOnPost">
+<Implementation><![CDATA[
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Forum ( Name ) 
+	Values ( :forum("Name") ))
+	if SQLCODE=0 s forum = %ROWID
+	s forumNotExist = 1
+	
+	#;Creating topic
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	s status = ##class(Forum.Topic).ExtIdExists( topic("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Topic).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
+	Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+	if SQLCODE=0 s topic = %ROWID
+	s topicNotExist = 1
+	
+	#;Creating post
+	
+	s post("ExtId") = 0	, post("Author") = "Testing author"
+		, post("Author","ExtId") = "Testing external Id of author"
+		, post("Posted") = "2001-01-01 04:20:00"
+		, post("Text") = "Testing text", post("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( post("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		} 
+	s postObj = ##class(Forum.PostsLoader).%New()
+	s postObj.Topic = topic("ExtId")
+	
+	s status = postObj.OnPost(.post)
+	do $$$AssertTrue(status,"Status of method exucution")
+	
+	s status = ##class(Forum.Post).%ExistsId(post)
+	do $$$AssertTrue(status,"Existence of test post")
+	s status = ##class(Forum.Post).%DeleteId(post)
+	do $$$AssertTrue(status,"Delete test post")
+	
+	s status = ##class(Forum.Author).%ExistsId(post("AuthorId"))
+	do $$$AssertTrue(status,"Existence of test author")
+	s status = ##class(Forum.Author).%DeleteId(post("AuthorId"))
+	do $$$AssertTrue(status,"Delete test author")
+	
+	if topicNotExist{
+		s status = ##class(Forum.Topic).%DeleteId(topic)
+		do $$$AssertTrue(status,"Delete test topic")
+		}	
+	
+	if forumNotExist{
+		s status = ##class(Forum.Forum).%DeleteId(forum)
+		do $$$AssertTrue(status,"Delete test fotum")
+		}
+]]></Implementation>
+</Method>
+</Class>
+</Export>
