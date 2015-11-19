@@ -22,9 +22,9 @@ Load posts of topic with ExtId <var>topic</var>
 
 <Property name="firstPost">
 <Description>
-current row of topics table</Description>
+current row of topics table
+This property is PRIVATE</Description>
 <Type>%Integer</Type>
-<Private>1</Private>
 </Property>
 
 <Method name="Scan">

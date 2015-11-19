@@ -162,7 +162,7 @@
 	
 	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
 		, topic("Author") = "Testing topic's author", topic("Views") = 12345
-		, topic("Updated") = "2001-01-01 04:20:00"
+		, topic("Updated") = "2001-01-01 04:20:00", topic("Posted") = "2000-01-01 04:20:00"
 	
 	s status = ##class(Forum.Topic).ExtIdExists( topic("ExtId"), .tmpId )
 	if status = 1 {
@@ -170,8 +170,9 @@
 		k status, tmpId
 		}
 		
-	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
-	Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Posted ) 
+	Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") 
+		,:topic("Views") ,:topic("Updated") ,:topic("Posted") ))
 	if SQLCODE=0 s topic = %ROWID
 	s topicNotExist = 1
 	
@@ -179,7 +180,7 @@
 	
 	s post("ExtId") = 0	, post("Author") = "Testing author"
 		, post("Author","ExtId") = "Testing external Id of author"
-		, post("Posted") = "2001-01-01 04:20:00"
+		, post("Posted") = "2000-07-01 04:20:00"
 		, post("Text") = "Testing text", post("Type") = "Testing type"
 	
 	s status = ##class(Forum.Post).ExtIdExists( post("ExtId"), .tmpId )
@@ -189,9 +190,14 @@
 		} 
 	s postObj = ##class(Forum.PostsLoader).%New()
 	s postObj.Topic = topic("ExtId")
+	s postObj.firstPost = 1
 	
 	s status = postObj.OnPost(.post)
 	do $$$AssertTrue(status,"Status of method exucution")
+	
+	s topicObj = ##class(Forum.Topic).%OpenId(topic)
+	do $$$AssertNotEquals(topicObj.Posted,topic("Posted"),"Property ""Posted"" of topic changed")
+	do $$$AssertEquals(topicObj.Posted,post("Posted"),"Property ""Posted"" of topic equals property ""Posted"" of post")				
 	
 	s status = ##class(Forum.Post).%ExistsId(post)
 	do $$$AssertTrue(status,"Existence of test post")

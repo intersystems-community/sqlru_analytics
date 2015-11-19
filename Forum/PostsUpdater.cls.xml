@@ -51,7 +51,7 @@ NOTE: if then if then if then - something wrong</Description>
 			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
 			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
 			
-			for pageNum = startPage:1:lastPageNum {
+			for pageNum = (startPage+1):1:lastPageNum {
 				
 				s sc = page.Get( , pageNum ) Q:'sc
 				s sc = page.Parse() Q:'sc
@@ -76,7 +76,13 @@ If handler return 0, parsing will be interrupted]]></Description>
 	Q:'##class(Topic).ExtIdExists( ..Topic, .topicId ) 0
 	s data("Topic") = topicId ;add link to parent
 
-	s sc = ##class(Post).Insert( .data ) 
+	k author s author("Name") = data("Author")
+	s author("ExtId") = $g(data("Author","ExtId"))
+	s sc = ##class(Forum.Author).GetOrSet(.author) Q:'sc sc 
+	s data("AuthorId") = author
+
+	s sc = ##class(Post).Insert( .data )
+	w "." 
 	Q sc
 ]]></Implementation>
 </Method>
