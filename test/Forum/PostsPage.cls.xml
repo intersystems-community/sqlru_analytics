@@ -157,9 +157,10 @@
 	
 	s forum("Name") = "Testing forum's name"
 
-	if '##class(Forum.Forum).NameExists( forum("Name") ){
+	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
 		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
 		if SQLCODE=0 s forum = %ROWID
+		s forumNotExist = 1
 		}
 		
 	#;Creating topic
@@ -168,10 +169,11 @@
 		, topic("Author") = "Testing topic's author", topic("Views") = 12345
 		, topic("Updated") = "2001-01-01 04:20:00"
 	
-	if '##class(Forum.Forum).NameExists( topic("Name") ){	
+	if '##class(Forum.Topic).NameExists( topic("Name"), .topic ){	
 		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
 		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
 		if SQLCODE=0 s topic = %ROWID
+		s topicNotExist = 1
 		}
 	
 	s xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
@@ -220,11 +222,11 @@
 	s st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
 	do $$$AssertTrue(st,"Delete created object")
 	
-	if $g(topic)'="" {
+	if $g(topicNotExist)'="" {
 		s st = ##class(Forum.Topic).%DeleteId( .topic )
 		do $$$AssertTrue(st,"Delete created topic object")
 		}
-	if $g(forum)'="" {
+	if $g(forumNotExist)'="" {
 		s st = ##class(Forum.Forum).%DeleteId( .forum )
 		do $$$AssertTrue(st,"Delete created forum object")
 		}
@@ -298,9 +300,10 @@
 	
 	s forum("Name") = "Testing forum's name"
 
-	if '##class(Forum.Forum).NameExists( forum("Name") ){
+	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
 		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
 		if SQLCODE=0 s forum = %ROWID
+		s forumNotExist = 1
 		}
 		
 	#;Creating topic
@@ -309,10 +312,11 @@
 		, topic("Author") = "Testing topic's author", topic("Views") = 12345
 		, topic("Updated") = "2001-01-01 04:20:00"
 	
-	if '##class(Forum.Forum).NameExists( topic("Name") ){	
+	if '##class(Forum.Topic).NameExists( topic("Name"), .topic ){	
 		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
 		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
 		if SQLCODE=0 s topic = %ROWID
+		s topicNotExist = 1
 		}
 	
 	s xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
@@ -410,11 +414,11 @@
 	s st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
 	do $$$AssertTrue(st,"Delete created object")
 	
-	if $g(topic)'="" {
+	if $g(topicNotExist)'="" {
 		s st = ##class(Forum.Topic).%DeleteId( .topic )
 		do $$$AssertTrue(st,"Delete created topic object")
 		}
-	if $g(forum)'="" {
+	if $g(forumNotExist)'="" {
 		s st = ##class(Forum.Forum).%DeleteId( .forum )
 		do $$$AssertTrue(st,"Delete created forum object")
 		}

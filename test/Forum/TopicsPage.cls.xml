@@ -33,9 +33,10 @@
 	//Created object is object of class Forum.TopicsLoader to able to save object and then check it
 	s page = ##class(Forum.TopicsLoader).%New()
 	s page.Forum = "cache"
-	if '##class(Forum.Forum).NameExists( page.Forum ){
+	if '##class(Forum.Forum).NameExists( page.Forum, .forumId ){
 		&sql( Insert Into Forum.Forum (Name) Values ( :page.Forum ))
 		if SQLCODE=0 s forumId=%ROWID Q 1
+		s forumNotExist = 1
 	}
 	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
 	s page.request.Data = ##class(%Stream.FileCharacter).%New()
@@ -106,7 +107,7 @@
 	do $$$AssertTrue(st,"Delete created object")
 	s st = ##class(Forum.Topic).%DeleteId( .topicObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
-	if $g(forumId)'="" {
+	if $g(forumNotExist)'="" {
 		s st = ##class(Forum.Forum).%DeleteId( .forumId )
 		do $$$AssertTrue(st,"Delete created object")
 	}
@@ -138,9 +139,10 @@
 	//Created object is object of class Forum.TopicsLoader to able to save object and then check it
 	s page = ##class(Forum.TopicsLoader).%New()
 	s page.Forum = "cache"
-	if '##class(Forum.Forum).NameExists( page.Forum ){
+	if '##class(Forum.Forum).NameExists( page.Forum, .forumId ){
 		&sql( Insert Into Forum.Forum (Name) Values ( :page.Forum ))
 		if SQLCODE=0 s forumId=%ROWID Q 1
+		s forumNotExist = 1
 	}
 	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
 	s page.request.Data = ##class(%Stream.FileCharacter).%New()
@@ -161,7 +163,7 @@
 	do $$$AssertTrue(st,"Delete created object")
 	s st = ##class(Forum.Topic).%DeleteId( .topicObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
-	if $g(forumId)'="" {
+	if $g(forumNotExist)'="" {
 		s st = ##class(Forum.Forum).%DeleteId( .forumId )
 		do $$$AssertTrue(st,"Delete created object")
 	}

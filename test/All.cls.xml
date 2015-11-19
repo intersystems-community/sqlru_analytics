@@ -22,6 +22,7 @@ Parameter - UTRMode - for <global>^UnitTestRoot</global>:
 	d $system.OBJ.Export("test.Forum.AuthorPage.cls", ^UnitTestRoot_"\test\"_"test.Forum.AuthorPage.xml")
 	d $system.OBJ.Export("test.Forum.Forum.cls", ^UnitTestRoot_"\test\"_"test.Forum.Forum.xml")
 	d $system.OBJ.Export("test.Forum.Post.cls", ^UnitTestRoot_"\test\"_"test.Forum.Post.xml")
+	d $system.OBJ.Export("test.Forum.PostsLoader.cls", ^UnitTestRoot_"\test\"_"test.Forum.PostsLoader.xml")
 	d $system.OBJ.Export("test.Forum.PostsPage.cls", ^UnitTestRoot_"\test\"_"test.Forum.PostsPage.xml")
 	d $system.OBJ.Export("test.Forum.Topic.cls", ^UnitTestRoot_"\test\"_"test.Forum.Topic.xml")
 	d $system.OBJ.Export("test.Forum.TopicsPage.cls", ^UnitTestRoot_"\test\"_"test.Forum.TopicsPage.xml")
