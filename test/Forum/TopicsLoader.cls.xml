@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.TopicsLoader">
+<Super>test.view</Super>
+<TimeCreated>63877,12.206236</TimeCreated>
+
+<Method name="TestOnTopic">
+<Implementation><![CDATA[
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	s topic("Type") = "Testing type",topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Answers") = 152, topic("Views") = 12345, topic("PagesAmount") = "a"
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	s topicObj = ##class(Forum.TopicsLoader).%New()
+	s topicObj.Forum = forum("Name")
+	
+	s status = topicObj.OnTopic(.topic)
+	do $$$AssertNotTrue(status,"Nonexistence of forum object")
+	
+	#;Creating forum
+	
+		
+	&sql( Insert Into Forum.Forum ( Name ) 
+	Values ( :forum("Name") ))
+	if SQLCODE=0 s forum = %ROWID
+	
+	#;Creating author
+	
+	s author("Name") = "Testing author's name"
+	
+	s status = ##class(Forum.Author).NameExists( author("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Author ( Name ) 
+	Values ( :author("Name") ))
+	if SQLCODE=0 s author = %ROWID
+	
+	s topic("Author") = author("Name")
+	
+	s status = topicObj.OnTopic(.topic)
+	do $$$AssertTrue(status,"Status of method executing")
+
+	
+	s topicObj = ##class(Forum.Topic).%OpenId(topic)
+	s authorObj = ##class(Forum.Author).%OpenId(author)
+	s forumObj = ##class(Forum.Forum).%OpenId(forum)
+	
+	do $$$AssertEquals(topicObj.Forum,forumObj,"Testing Topic's property ""Forum""")
+	do $$$AssertEquals(topicObj.Type,topic("Type"),"Testing Topic's property ""Type""")
+	do $$$AssertEquals(topicObj.Name,topic("Name"),"Testing Topic's property ""Name""")
+	do $$$AssertEquals(topicObj.ExtId,topic("ExtId"),"Testing Topic's property ""ExtId""")
+	do $$$AssertEquals(topicObj.Author,topic("Author"),"Testing Topic's property ""Author""")
+	do $$$AssertEquals(topicObj.AuthorId,authorObj,"Testing Topic's property ""AuthorId""")
+	do $$$AssertEquals(topicObj.Answers,topic("Answers"),"Testing Topic's property ""Answers""")
+	do $$$AssertEquals(topicObj.Views,topic("Views"),"Testing Topic's property ""Views""")
+	do $$$AssertEquals(topicObj.Pages,topic("PagesAmount"),"Testing Topic's property ""Pages""")
+	do $$$AssertEquals(topicObj.Updated,topic("Updated"),"Testing Topic's property ""Updated""")
+	
+	s st = ##class(Forum.Topic).%DeleteId( topic )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Author).%DeleteId( author )
+	do $$$AssertTrue(st,"Delete created object")
+	s st = ##class(Forum.Forum).%DeleteId( forum )
+	do $$$AssertTrue(st,"Delete created object")
+]]></Implementation>
+</Method>
+
+<Method name="TestDeleteTopics">
+<Implementation><![CDATA[
+	#;Creating forum
+				
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+		if SQLCODE=0 s forum = %ROWID
+		}
+
+	#;Creating topics
+	#;1	
+	s topicFirst("Name") = "Testing first topic's name", topicFirst("ExtId") = 1
+	, topicFirst("Author") = "Testing first topic's author", topicFirst("Views") = 12345
+	, topicFirst("Updated") = "2001-01-01 04:20:00", topicFirst("Pages") = "a"
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+	Values ( :topicFirst("Name") ,:topicFirst("ExtId") ,:forum ,:topicFirst("Author")
+	 ,:topicFirst("Views") ,:topicFirst("Updated") ,:topicFirst("Pages") ))
+	if SQLCODE=0 s topicFirst = %ROWID
+	
+	#;2		
+	s topicSecond("Name") = "Testing second topic's name", topicSecond("ExtId") = 2
+	, topicSecond("Author") = "Testing second topic's author", topicSecond("Views") = 12345
+	, topicSecond("Updated") = "2002-01-01 04:20:00", topicSecond("Pages") = "a"
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+	Values ( :topicSecond("Name") ,:topicSecond("ExtId") ,:forum ,:topicSecond("Author")
+	 ,:topicSecond("Views") ,:topicSecond("Updated") ,:topicSecond("Pages") ))
+	if SQLCODE=0 s topicSecond = %ROWID
+	
+	#;3		
+	s topicThird("Name") = "Testing third topic's name", topicThird("ExtId") = 3
+	, topicThird("Author") = "Testing third topic's author", topicThird("Views") = 12345
+	, topicThird("Updated") = "2003-01-01 04:20:00", topicThird("Pages") = "a"
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+	Values ( :topicThird("Name") ,:topicThird("ExtId") ,:forum ,:topicThird("Author")
+	 ,:topicThird("Views") ,:topicThird("Updated") ,:topicThird("Pages") ))
+	if SQLCODE=0 s topicThird = %ROWID
+	
+	#;4		
+	s topicFourth("Name") = "Testing fourth topic's name", topicFourth("ExtId") = 4
+	, topicFourth("Author") = "Testing fourth topic's author", topicFourth("Views") = 12345
+	, topicFourth("Updated") = "2004-01-01 04:20:00", topicFourth("Pages") = "a"
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+	Values ( :topicFourth("Name") ,:topicFourth("ExtId") ,:forum ,:topicFourth("Author")
+	 ,:topicFourth("Views") ,:topicFourth("Updated") ,:topicFourth("Pages") ))
+	if SQLCODE=0 s topicFourth = %ROWID
+	
+	#;5		
+	s topicFifth("Name") = "Testing fifth topic's name", topicFifth("ExtId") = 5
+	, topicFifth("Author") = "Testing fifth topic's author", topicFifth("Views") = 12345
+	, topicFifth("Updated") = "2005-01-01 04:20:00", topicFifth("Pages") = "a"
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+	Values ( :topicFifth("Name") ,:topicFifth("ExtId") ,:forum ,:topicFifth("Author")
+	 ,:topicFifth("Views") ,:topicFifth("Updated") ,:topicFifth("Pages") ))
+	if SQLCODE=0 s topicFifth = %ROWID
+	
+	s status = ##class(Forum.Forum).NameExists(forum("Name"))
+	do $$$AssertTrue(status,"Existence of forum object")
+	s status = ##class(Forum.Topic).NameExists(topicFirst("Name"))
+	do $$$AssertTrue(status,"Existence of first topic object")
+	s status = ##class(Forum.Topic).NameExists(topicSecond("Name"))
+	do $$$AssertTrue(status,"Existence of second topic object")
+	s status = ##class(Forum.Topic).NameExists(topicThird("Name"))
+	do $$$AssertTrue(status,"Existence of third topic object")
+	s status = ##class(Forum.Topic).NameExists(topicFourth("Name"))
+	do $$$AssertTrue(status,"Existence of fourth topic object")
+	s status = ##class(Forum.Topic).NameExists(topicFifth("Name"))
+	do $$$AssertTrue(status,"Existence of fifth topic object")
+	
+	s status = ##class(Forum.TopicsLoader).DeleteTopics(forum)
+	do $$$AssertTrue(status,"Status of method executing")
+	
+	s status = ##class(Forum.Topic).NameExists(topicFirst("Name"))
+	do $$$AssertNotTrue(status,"Nonexistence of first topic object")
+	s status = ##class(Forum.Topic).NameExists(topicSecond("Name"))
+	do $$$AssertNotTrue(status,"Nonexistence of second topic object")
+	s status = ##class(Forum.Topic).NameExists(topicThird("Name"))
+	do $$$AssertNotTrue(status,"Nonexistence of third topic object")
+	s status = ##class(Forum.Topic).NameExists(topicFourth("Name"))
+	do $$$AssertNotTrue(status,"Nonexistence of fourth topic object")
+	s status = ##class(Forum.Topic).NameExists(topicFifth("Name"))
+	do $$$AssertNotTrue(status,"Nonexistence of fifth topic object")
+
+	s status = ##class(Forum.Forum).%DeleteId(forum)
+	do $$$AssertTrue(status,"Nonexistence of forum object")
+]]></Implementation>
+</Method>
+
+<Method name="TestDeletePosts">
+<Implementation><![CDATA[
+	#;Creating forum
+	
+	s forum("Name") = "Testing forum's name"
+	
+	s status = ##class(Forum.Forum).NameExists( forum("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Forum).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Forum ( Name ) 
+	Values ( :forum("Name") ))
+	if SQLCODE=0 s forum = %ROWID
+	
+	#;Creating topic
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00"
+	
+	s status = ##class(Forum.Topic).ExtIdExists( topic("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Topic).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
+	Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
+	if SQLCODE=0 s topic = %ROWID
+	
+	#;Creating author
+	
+	s author("Name") = "Testing author's name"
+	
+	s status = ##class(Forum.Author).NameExists( author("Name"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Author).%DeleteId( tmpId )
+		k status, tmpId
+		}
+		
+	&sql( Insert Into Forum.Author ( Name ) 
+	Values ( :author("Name") ))
+	if SQLCODE=0 s author = %ROWID
+	
+	#;Creating posts
+	#;1
+	s postFirst("Topic") = topic, postFirst("ExtId") = 1
+		, postFirst("Author") = "Testing author", postFirst("Author","ExtId") = "Testing external Id of author"
+		, postFirst("AuthorId") = author, postFirst("Posted") = "2001-01-01 04:20:00"
+		, postFirst("Text") = "Testing text", postFirst("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( postFirst("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Post ( Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, Text, Type ) 
+	Values ( :postFirst("Topic"), :postFirst("ExtId")
+			, :postFirst("Author"), :postFirst("Author","ExtId"), :postFirst("AuthorId")
+			, :postFirst("Posted"), :postFirst("Text"), :postFirst("Type") ))
+	if SQLCODE=0 s postFirst = %ROWID
+		
+	#;2
+	s postSecond("Topic") = topic, postSecond("ExtId") = 2
+		, postSecond("Author") = "Testing author", postSecond("Author","ExtId") = "Testing external Id of author"
+		, postSecond("AuthorId") = author, postSecond("Posted") = "2001-01-01 04:20:00"
+		, postSecond("Text") = "Testing text", postSecond("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( postSecond("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+
+	&sql( Insert Into Forum.Post ( Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, Text, Type ) 
+	Values ( :postSecond("Topic"), :postSecond("ExtId")
+			, :postSecond("Author"), :postSecond("Author","ExtId"), :postSecond("AuthorId")
+			, :postSecond("Posted"), :postSecond("Text"), :postSecond("Type") ))
+	if SQLCODE=0 s postSecond = %ROWID
+			
+	#;3
+	s postThird("Topic") = topic, postThird("ExtId") = 3
+		, postThird("Author") = "Testing author", postThird("Author","ExtId") = "Testing external Id of author"
+		, postThird("AuthorId") = author, postThird("Posted") = "2001-01-01 04:20:00"
+		, postThird("Text") = "Testing text", postThird("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( postThird("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Post ( Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, Text, Type ) 
+	Values ( :postThird("Topic"), :postThird("ExtId")
+			, :postThird("Author"), :postThird("Author","ExtId"), :postThird("AuthorId")
+			, :postThird("Posted"), :postThird("Text"), :postThird("Type") ))
+	if SQLCODE=0 s postThird = %ROWID
+		
+	#;4
+	s postFourth("Topic") = topic, postFourth("ExtId") = 4
+		, postFourth("Author") = "Testing author", postFourth("Author","ExtId") = "Testing external Id of author"
+		, postFourth("AuthorId") = author, postFourth("Posted") = "2001-01-01 04:20:00"
+		, postFourth("Text") = "Testing text", postFourth("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( postFourth("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Post ( Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, Text, Type ) 
+	Values ( :postFourth("Topic"), :postFourth("ExtId")
+			, :postFourth("Author"), :postFourth("Author","ExtId"), :postFourth("AuthorId")
+			, :postFourth("Posted"), :postFourth("Text"), :postFourth("Type") ))
+	if SQLCODE=0 s postFourth = %ROWID
+		
+	#;5
+	s postFifth("Topic") = topic, postFifth("ExtId") = 5
+		, postFifth("Author") = "Testing author", postFifth("Author","ExtId") = "Testing external Id of author"
+		, postFifth("AuthorId") = author, postFifth("Posted") = "2001-01-01 04:20:00"
+		, postFifth("Text") = "Testing text", postFifth("Type") = "Testing type"
+	
+	s status = ##class(Forum.Post).ExtIdExists( postFifth("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Post).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	&sql( Insert Into Forum.Post ( Topic, ExtId, Author, AuthorExtId, AuthorId, Posted, Text, Type ) 
+	Values ( :postFifth("Topic"), :postFifth("ExtId")
+			, :postFifth("Author"), :postFifth("Author","ExtId"), :postFifth("AuthorId")
+			, :postFifth("Posted"), :postFifth("Text"), :postFifth("Type") ))
+	if SQLCODE=0 s postFifth = %ROWID
+		
+	s status = ##class(Forum.Forum).NameExists(forum("Name"))
+	do $$$AssertTrue(status,"Existence of forum object")
+	s status = ##class(Forum.Topic).NameExists(topic("Name"))
+	do $$$AssertTrue(status,"Existence of topic object")
+	s status = ##class(Forum.Author).NameExists(author("Name"))
+	do $$$AssertTrue(status,"Existence of author object")
+	s status = ##class(Forum.Post).ExtIdExists(postFirst("ExtId"))
+	do $$$AssertTrue(status,"Existence of first post object")
+	s status = ##class(Forum.Post).ExtIdExists(postSecond("ExtId"))
+	do $$$AssertTrue(status,"Existence of second post object")
+	s status = ##class(Forum.Post).ExtIdExists(postThird("ExtId"))
+	do $$$AssertTrue(status,"Existence of third post object")
+	s status = ##class(Forum.Post).ExtIdExists(postFourth("ExtId"))
+	do $$$AssertTrue(status,"Existence of fourth post object")
+	s status = ##class(Forum.Post).ExtIdExists(postFifth("ExtId"))
+	do $$$AssertTrue(status,"Existence of fifth post object")
+	
+	s status = ##class(Forum.TopicsLoader).DeletePosts(forum)
+	do $$$AssertTrue(status,"Status of method executing")
+	
+	s status = ##class(Forum.Topic).ExtIdExists(postFirst("ExtId"))
+	do $$$AssertNotTrue(status,"Nonexistence of first post object")
+	s status = ##class(Forum.Topic).ExtIdExists(postSecond("ExtId"))
+	do $$$AssertNotTrue(status,"Nonexistence of second post object")
+	s status = ##class(Forum.Topic).ExtIdExists(postThird("ExtId"))
+	do $$$AssertNotTrue(status,"Nonexistence of third post object")
+	s status = ##class(Forum.Topic).ExtIdExists(postFourth("ExtId"))
+	do $$$AssertNotTrue(status,"Nonexistence of fourth post object")
+	s status = ##class(Forum.Topic).ExtIdExists(postFifth("ExtId"))
+	do $$$AssertNotTrue(status,"Nonexistence of fifth post object")
+	
+	s status = ##class(Forum.Author).%DeleteId(author)
+	do $$$AssertTrue(status,"Nonexistence of author object")
+	s status = ##class(Forum.Topic).%DeleteId(topic)
+	do $$$AssertTrue(status,"Nonexistence of topic object")
+	s status = ##class(Forum.Forum).%DeleteId(forum)
+	do $$$AssertTrue(status,"Nonexistence of forum object")
+]]></Implementation>
+</Method>
+</Class>
+</Export>

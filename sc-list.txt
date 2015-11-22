@@ -58,6 +58,7 @@ test.Forum.PostsLoader.cls
 test.Forum.PostsPage.cls
 test.Forum.PostsUpdater.cls
 test.Forum.Topic.cls
+test.Forum.TopicsLoader.cls
 test.Forum.TopicsPage.cls
 test.man.cls
 test.view.cls
