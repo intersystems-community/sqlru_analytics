@@ -3,8 +3,8 @@
 <Class name="Forum.TopicsPage">
 <Description>
 Page sql.ru/forum/ with topics table
-Example of page structure see in  test/page.html
-This class is ABSTRACT</Description>
+Example of page structure see in  test/page.html</Description>
+<Abstract>1</Abstract>
 <Super>%RegisteredObject</Super>
 <TimeCreated>63776,58912.816024</TimeCreated>
 
@@ -74,9 +74,9 @@ Build url path for current page</Description>
 
 <Property name="request">
 <Description>
-wrapper for %Net.HttpRequest
-This property is PRIVATE</Description>
+wrapper for %Net.HttpRequest</Description>
 <Type>Http.Request</Type>
+<Private>1</Private>
 </Property>
 
 <Property name="Html">
@@ -99,16 +99,16 @@ getter</Description>
 
 <Property name="pos">
 <Description>
-current position in content
-This property is PRIVATE</Description>
+current position in content</Description>
 <Type>%Integer</Type>
+<Private>1</Private>
 </Property>
 
 <Property name="row">
 <Description>
-current row of topics table
-This property is PRIVATE</Description>
+current row of topics table</Description>
 <Type>%Integer</Type>
+<Private>1</Private>
 </Property>
 
 <Method name="Get">
@@ -174,8 +174,8 @@ Pages count from this page</Description>
 
 <Method name="Parse">
 <Description>
-Move from topic table begin to the end of table
-This method is PRIVATE</Description>
+Move from topic table begin to the end of table</Description>
+<Private>1</Private>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
@@ -212,9 +212,9 @@ This method is PRIVATE</Description>
 
 <Method name="topicBegin">
 <Description>
-found begin of topic in html content
-This method is PRIVATE</Description>
+found begin of topic in html content</Description>
 <FormalSpec>pos:%Integer</FormalSpec>
+<Private>1</Private>
 <ReturnType>%Boolean</ReturnType>
 <Implementation><![CDATA[
 	

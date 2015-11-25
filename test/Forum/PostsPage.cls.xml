@@ -4,6 +4,52 @@
 <Super>test.view</Super>
 <TimeCreated>63874,78325.291091</TimeCreated>
 
+<Method name="PropertiesChange">
+<ClassMethod>1</ClassMethod>
+<FormalSpec>onWhat:%Integer</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s cPostsPage = ##class(%Dictionary.ClassDefinition).%OpenId( "Forum.PostsPage" )
+	s cPostsPage.Abstract = onWhat
+	s status = cPostsPage.%Save()
+	
+	s pFRequest = ##class(%Dictionary.PropertyDefinition).%OpenId( "Forum.PostsPage||request" )
+	s pFRequest.Private = onWhat
+	s status = pFRequest.%Save()
+
+	s pPos = ##class(%Dictionary.PropertyDefinition).%OpenId( "Forum.PostsPage||pos" )
+	s pPos.Private = onWhat
+	s status = pPos.%Save()
+	
+	s mParse = ##class(%Dictionary.MethodDefinition).%OpenId( "Forum.PostsPage||Parse" )
+	s mParse.Private = onWhat
+	s status = mParse.%Save()
+	
+	s mPostBegin = ##class(%Dictionary.MethodDefinition).%OpenId( "Forum.PostsPage||postBegin" )
+	s mPostBegin.Private = onWhat
+	s status = mPostBegin.%Save()
+	s status = $system.OBJ.Compile( "Forum.PostsPage",,.err )
+
+	s pHRequest = ##class(%Dictionary.PropertyDefinition).%OpenId( "Http.Request||request" )
+	s pHRequest.Private = onWhat
+	s status = pHRequest.%Save()
+	s status = $system.OBJ.Compile( "Http.Request",,.err )
+	Q status
+]]></Implementation>
+</Method>
+
+<Method name="OnBeforeAllTests">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Q ##class(test.Forum.PostsPage).PropertiesChange(0)
+]]></Implementation>
+</Method>
+
+<Method name="OnAfterAllTests">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Q ##class(test.Forum.PostsPage).PropertiesChange(1)
+]]></Implementation>
+</Method>
+
 <Method name="TestUrl">
 <Implementation><![CDATA[
 	s postsPageObj = ##class(Forum.PostsPage).%New()

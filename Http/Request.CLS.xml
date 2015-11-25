@@ -12,9 +12,8 @@ in v2015.2 property .HttpResponse.Data has type %Stream.FileCharacterGzip
 <TimeCreated>63798,63618.58211</TimeCreated>
 
 <Property name="request">
-<Description>
-This property is PRIVATE</Description>
 <Type>%Net.HttpRequest</Type>
+<Private>1</Private>
 </Property>
 
 <Property name="Data">
