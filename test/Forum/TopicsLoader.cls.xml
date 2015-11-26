@@ -86,6 +86,7 @@
 			s tmpId = rs.Id
 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
 		}
+	}
 	
 	s sc = ##class(Forum.TopicsLoader).LoadPosts(forum("Name"))
 	
@@ -156,7 +157,6 @@
 		s status = ##class(Forum.Forum).%DeleteId(forum)
 		do $$$AssertTrue(status,"Nonexistence of created forum object")
 		}
-	}
 ]]></Implementation>
 </Method>
 
