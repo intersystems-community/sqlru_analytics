@@ -4,6 +4,162 @@
 <Super>test.view</Super>
 <TimeCreated>63877,12.206236</TimeCreated>
 
+<Method name="TestLoadPosts">
+<Implementation><![CDATA[
+	//#1
+	//If there was not the topic
+	//Find Id of last authors that was before load of posts = authorsLastId
+	//Create forum and topic with only required test properties and topic("ExtId")
+	//Load all posts
+	//Delete forum, topic, posts
+	//Remove authors Id greater than authorsLastId
+	//#2
+	//If there was the topic with external id = topic("ExtId")
+	//First create forum with only required test properties and change id of forum in topic's property "Forum"
+	//Find all posts of topic with external id = topic("ExtId")
+	//Find how many there were posts = postsAmount and then delete all posts of this topic
+	//Load all posts
+	//After posts load, remove all but the first postsAmount
+	//Change topic's property "Forum" and delete created test forum
+	
+	s topic("ExtId") = 1184176 //Page of this topic "http://www.sql.ru/forum/1184176/"
+	
+	#;1
+	if '##class(Forum.Topic).ExtIdExists( topic("ExtId"), .topic ){	
+	
+		s sql = "Select Count(Id) As Amount From Forum.Author"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql)
+		if rs.%Next() s authorsAmount = rs.Amount
+		if authorsAmount>0 {		
+			s sql = "Select Top ? Id From Forum.Author Order By Id Desc"
+			s rs = ##class(%SQL.Statement).%ExecDirect(,sql,1)
+			if rs.%Next() s authorsLastId = rs.Id
+			}
+		else{
+			s authorsLastId = 0
+			}
+		
+		#;Creating forum
+				
+		s forum("Name") = "Testing forum's name"
+
+		if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+			&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+			if SQLCODE=0 s forum = %ROWID
+			}
+	
+		#;Creating topic
+					
+		s topic("Name") = "Testing topic's name"
+		, topic("Author") = "Testing topic's author", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00", topic("Pages") = "a"
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
+		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ,:topic("Pages") ))
+		if SQLCODE=0 s topic = %ROWID
+		}
+	#;2
+	else{
+		#;Creating forum
+				
+		s forum("Name") = "Testing forum's name"
+
+		if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+			&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+			if SQLCODE=0 s forum = %ROWID
+			}
+		
+		s sql = "Select Forum From Forum.Topic Where ExtId = ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		if rs.%Next() s forumIdWas = rs.Forum
+		
+		&sql( Update Forum.Topic Set Forum = :forum	Where ExtId =:topic("ExtId"))
+						
+		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		if rs.%Next() s postsAmount = rs.Amount
+		
+		#;Delete all posts of topic
+
+		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		while rs.%Next(){
+			s tmpId = rs.Id
+			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+		}
+	
+	s sc = ##class(Forum.TopicsLoader).LoadPosts(forum("Name"))
+	
+	
+	s status = ##class(Forum.Post).ExtIdExists(18390235, .postId)
+	do $$$AssertTrue(status,"Existence of post with ExtId = 18390235")
+	s status = ##class(Forum.Post).ExtIdExists(18390500, .postId)
+	do $$$AssertTrue(status,"Existence of post with ExtId = 18390500")
+	s status = ##class(Forum.Post).ExtIdExists(18406989, .postId)
+	do $$$AssertTrue(status,"Existence of post with ExtId = 18406989")
+	s status = ##class(Forum.Post).ExtIdExists(18409879, .postId)
+	do $$$AssertTrue(status,"Existence of post with ExtId = 18409879")
+	s status = ##class(Forum.Post).ExtIdExists(18390235, .postId)
+	do $$$AssertTrue(status,"Existence of post with ExtId = 18390235")
+	
+	if $g(authorsLastId)'=""{
+		#;Delete posts
+		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		while rs.%Next(){
+			s tmpId = rs.Id
+			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+		}
+		#;Check posts nonexistence
+		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		if rs.%Next() s amount = rs.Amount
+		do $$$AssertEquals(amount,0,"Nonexistence of posts")
+		
+		s status = ##class(Forum.Topic).%DeleteId(topic)
+		do $$$AssertTrue(status,"Nonexistence of created topic object")
+		
+		s status = ##class(Forum.Forum).%DeleteId(forum)
+		do $$$AssertTrue(status,"Nonexistence of created forum object")
+		
+		#;Delete new authors
+		s sql = "Select Id From Forum.Author Where Id > ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
+		while rs.%Next(){
+			s tmpId = rs.Id
+			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+		}
+		#;Check new authors nonexistence
+		s sql = "Select Count(Id) As Amount From Forum.Author Where Id > ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
+		if rs.%Next() s amount = rs.Amount
+		do $$$AssertEquals(amount,0,"Nonexistence of new authors")
+		}
+	else{
+		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? "
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		s num = 0
+		while rs.%Next(){
+			s tmpId = rs.Id
+			if num<postsAmount {
+				s num = num + 1
+				Continue
+				}  
+			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+			}
+		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
+		if rs.%Next() s amount = rs.Amount
+		do $$$AssertEquals(amount,postsAmount,"Nonexistence of new posts")				
+		
+		&sql( Update Forum.Topic Set Forum = :forumIdWas Where ExtId =:topic("ExtId"))
+	
+		s status = ##class(Forum.Forum).%DeleteId(forum)
+		do $$$AssertTrue(status,"Nonexistence of created forum object")
+		}
+	}
+]]></Implementation>
+</Method>
+
 <Method name="TestOnTopic">
 <Implementation><![CDATA[
 	s forum("Name") = "Testing forum's name"
