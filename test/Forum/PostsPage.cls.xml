@@ -237,7 +237,7 @@
 	
 	s sc = page.Parse(2)
 	
-	#;Clining topics and forum
+	#;Cleaning topics and forum
 	#; 1
 	s statusFirst = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
 	do $$$AssertNotTrue(statusFirst,"Nonexistence of the first post object")
