@@ -93,6 +93,7 @@
 		while rs.%Next(){
 			s tmpId = rs.Id
 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+			}
 		}
 	
 	s dataForMethod("topic") = topic("ExtId")
@@ -137,7 +138,7 @@
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
 		while rs.%Next(){
 			s tmpId = rs.Id
-			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+			s sc = ##class(Forum.Author).%DeleteId(tmpId)
 		}
 		#;Check new authors nonexistence
 		s sql = "Select Count(Id) As Amount From Forum.Author Where Id > ? "
@@ -162,7 +163,6 @@
 		if rs.%Next() s amount = rs.Amount
 		do $$$AssertEquals(amount,postsAmount,"Nonexistence of new posts")				
 		}
-	}
 ]]></Implementation>
 </Method>
 

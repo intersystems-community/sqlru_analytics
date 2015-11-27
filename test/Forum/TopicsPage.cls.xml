@@ -85,7 +85,7 @@
 	s page.Forum = "cache"
 	if '##class(Forum.Forum).NameExists( page.Forum, .forumId ){
 		&sql( Insert Into Forum.Forum (Name) Values ( :page.Forum ))
-		if SQLCODE=0 s forumId=%ROWID Q 1
+		if SQLCODE=0 s forumId=%ROWID
 		s forumNotExist = 1
 	}
 	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
@@ -157,10 +157,15 @@
 	do $$$AssertTrue(st,"Delete created object")
 	s st = ##class(Forum.Topic).%DeleteId( .topicObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
-	if $g(forumNotExist)'="" {
+	if $g(forumNotExist)=1 {
 		s st = ##class(Forum.Forum).%DeleteId( .forumId )
-		do $$$AssertTrue(st,"Delete created object")
+		do $$$AssertTrue(st,"Delete created forum object")
 	}
+	
+	s status = ##class(Forum.Author).ExtIdExists(0, .author)
+	do $$$AssertTrue(status,"Existence of author object")	
+	s status = ##class(Forum.Author).%DeleteId( .author )
+	do $$$AssertTrue(status,"Delete created object")
 ]]></Implementation>
 </Method>
 
@@ -191,7 +196,7 @@
 	s page.Forum = "cache"
 	if '##class(Forum.Forum).NameExists( page.Forum, .forumId ){
 		&sql( Insert Into Forum.Forum (Name) Values ( :page.Forum ))
-		if SQLCODE=0 s forumId=%ROWID Q 1
+		if SQLCODE=0 s forumId=%ROWID 
 		s forumNotExist = 1
 	}
 	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
@@ -213,7 +218,7 @@
 	do $$$AssertTrue(st,"Delete created object")
 	s st = ##class(Forum.Topic).%DeleteId( .topicObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
-	if $g(forumNotExist)'="" {
+	if $g(forumNotExist)=1 {
 		s st = ##class(Forum.Forum).%DeleteId( .forumId )
 		do $$$AssertTrue(st,"Delete created object")
 	}
@@ -569,8 +574,8 @@
          </td>
 
         <td class="altCol">
-         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
-         Шваров Евгений </a> </td>
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=0">
+         Test author </a> </td>
 
         <td style="text-align:center">50</td>
 
@@ -590,8 +595,8 @@
          </td>
 
         <td class="altCol">
-         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
-         Шваров Евгений </a> </td>
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=0">
+         Test author </a> </td>
 
         <td style="text-align:center">92</td>
 
@@ -610,8 +615,8 @@
          </td>
 
         <td class="altCol">
-         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=164999">
-         Шваров Евгений </a> </td>
+         <a href="http://www.sql.ru/forum/memberinfo.aspx?mid=0">
+         Test author </a> </td>
 
         <td style="text-align:center">12</td>
 

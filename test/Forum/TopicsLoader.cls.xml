@@ -37,7 +37,7 @@
 	
 	#;Creating topic
 				
-	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+	s topic("Name") = "Testing topic's name"
 		, topic("ExtId") = 227003, topic("Views") = 12345
 		, topic("Updated") = "2001-01-01 04:20:00", topic("Pages") = "a"
 	&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, AuthorExtId, AuthorId, Views, Updated, Pages ) 
@@ -317,7 +317,7 @@
  		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
  		while rs.%Next(){
  			s tmpId = rs.Id
- 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+ 			s sc = ##class(Forum.Author).%DeleteId(tmpId)
  		}
  		#;Check new authors nonexistence
  		s sql = "Select Count(Id) As Amount From Forum.Author Where Id > ? "
