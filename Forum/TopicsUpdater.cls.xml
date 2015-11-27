@@ -43,7 +43,7 @@ Scan across all forum topic pages</Description>
 	
 	s page = ..GetPage( forum, i, .sc ) Q:'sc
 	s count = page.Pages() ; get pages count
-	s sc = page.Parse() Q:'sc
+	s sc = page.Parse() Q:'sc sc
 	
 	for {
 		
