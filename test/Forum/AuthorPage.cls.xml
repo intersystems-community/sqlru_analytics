@@ -38,7 +38,7 @@
 	do $$$AssertEquals(regAuthor("ExtId"),227003,"Checking external Id of registered author")
 	s unregAuthor("ExtId") = $g(unregAuthor("ExtId"))
 	do $$$AssertEquals(unregAuthor("ExtId"),"","Checking external Id of unregistered author")
-	do $$$AssertEquals(regAuthor("Location"),"Test location","Checking location of registered author")
+	do $$$AssertEquals(regAuthor("Location"),"Vladivostok","Checking location of registered author")
 	s unregAuthor("Location") = $g(unregAuthor("Location"))
 	do $$$AssertEquals(unregAuthor("Location"),"","Checking location of unregistered author")
 

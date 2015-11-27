@@ -13,7 +13,7 @@ Entry point</Description>
 <FormalSpec>forum="cache"</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	/*s sc = 1
+	s sc = 1
 
 	if ##class(Forum).NameExists( forum, .forumId ) {
 		
@@ -33,7 +33,7 @@ Entry point</Description>
 		Q:'sc sc
 		
 	}
-	*/
+	
 	w !,"Load Topics... "
 	s sc = ..Scan( forum ) 
 	if 'sc w sc Q sc
