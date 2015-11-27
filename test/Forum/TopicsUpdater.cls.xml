@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.Forum.TopicsUpdater">
+<Super>test.view</Super>
+<TimeCreated>63883,11375.166575</TimeCreated>
+
+<Method name="TestOnTopic">
+<Implementation><![CDATA[
+	s sql = "Select Count(Id) As Amount From Forum.Author"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql)
+	if rs.%Next() s authorsAmount = rs.Amount
+	if authorsAmount>0 {		
+		s sql = "Select Top ? Id From Forum.Author Order By Id Desc"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql,1)
+		if rs.%Next() s authorsLastId = rs.Id
+		}
+	else{
+		s authorsLastId = 0
+		}
+	
+	s topic("ExtId") = 2
+	s status = ##class(Forum.Topic).ExtIdExists( topic("ExtId"), .tmpId )
+	if status = 1 {
+		d ##class(Forum.Topic).%DeleteId( tmpId )
+		k status, tmpId
+		}
+	
+	s sql = "Select Count Id From Forum.Post Where Topic->ExtId = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,topic("ExtId"))
+	while rs.%Next() {
+		d ##class(Forum.Post).%DeleteId( rs.Id )
+		}	
+	
+	#;Creating forum
+			
+	s forum("Name") = "Testing forum's name"
+
+	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+		if SQLCODE=0 s forum = %ROWID
+		}
+		
+	#;Creating author
+	
+	s author("Name") = "ДиД."
+	
+	&sql( Insert Into Forum.Author ( Name ) Values ( :author("Name") ))
+	if SQLCODE=0 s author = %ROWID
+	
+
+	#;Creating topic
+				
+	s topic("Name") = "Testing topic's name", topic("Views") = 12345
+		, topic("Updated") = "2001-01-01 04:20:00", topic("PagesAmount") = "a"
+		, topic("Type") = "Testing type", topic("Author") = author("Name")
+		, topic("AuthorId") = author, topic("Answers") = 3 
+	
+	s obj = ##class(Forum.TopicsUpdater).%New()
+	s obj.Forum = forum("Name")
+	
+	
+	s status = ##class(Forum.Topic).ExtIdExists(topic("ExtId"))
+	do $$$AssertNotTrue(status,"Nonexistence of created topic")
+
+	s status = obj.OnTopic(.topic)
+	do $$$AssertTrue(status,"Status of method execution")
+
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 2, topic("Views") = 12345
+		, topic("Updated") = "2002-01-01 04:20:00", topic("PagesAmount") = "a"
+		, topic("Type") = "Testing type", topic("Author") = author("Name")
+		, topic("AuthorId") = author, topic("Answers") = 3 
+	
+	s status = ##class(Forum.Topic).ExtIdExists(topic("ExtId"))
+	do $$$AssertTrue(status,"Existence of created topic")
+	
+	s status = ##class(Forum.Post).ExtIdExists(9)
+	do $$$AssertTrue(status,"Existence of post of created topic")
+	
+
+	s sql = "Select Top 1 Id From Forum.Post Where Topic->ExtId = ? Order By Id Desc"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,topic("ExtId"))
+	if rs.%Next() s status = ##class(Forum.Post).%DeleteId(rs.Id)
+	
+	s topicObj = ##class(Forum.Topic).ExtIdOpen(topic("ExtId"))
+	s oldAnswers = topicObj.Answers, topicObj.Answers = oldAnswers-1
+	s status = topicObj.%Save()
+	
+	s status = obj.OnTopic(.topic)
+	do $$$AssertTrue(status,"Status of method execution")
+	
+	do $$$AssertNotEquals(topicObj.Answers,oldAnswers-1,"Property ""Answers"" changed")
+	
+	s topic("Name") = "Testing topic's name", topic("ExtId") = 2, topic("Views") = 12345
+		, topic("Updated") = "2002-01-01 04:20:00", topic("PagesAmount") = "a"
+		, topic("Type") = "Testing type", topic("Author") = author("Name")
+		, topic("AuthorId") = author, topic("Answers") = 3 	
+	
+	s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,topic("ExtId"))
+	if rs.%Next() s answersAmount = rs.Amount
+	
+	do $$$AssertNotEquals(topicObj.Answers,oldAnswers-1,"New post loaded")
+
+
+	s oldViews = topic("Views")
+	s topic("Views") = 111
+	
+	s status = obj.OnTopic(.topic)
+	do $$$AssertTrue(status,"Status of method execution")
+
+	s topic("Views") = 111, topic("ExtId") = 2
+	
+	do $$$AssertNotEquals(topicObj.Views,oldViews,"Property ""Views"" changed")
+	do $$$AssertEquals(topicObj.Views,topic("Views"),"Property ""Views"" changed")
+	
+	do $$$AssertNotEquals(obj.PropertyParse,"All","Property ""PropertyParse"" changed")
+	
+	s sql = "Select Count Id From Forum.Post Where Topic->ExtId = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,topic("ExtId"))
+	while rs.%Next() {
+		d ##class(Forum.Post).%DeleteId( rs.Id )
+		}
+		
+	s status = ##class(Forum.Topic).ExtIdDelete(topic("ExtId"))
+	do $$$AssertTrue(status,"Nonexistence of created topic object")
+	
+	s status = ##class(Forum.Forum).%DeleteId(forum)
+	do $$$AssertTrue(status,"Nonexistence of created forum object")
+		
+	#;Delete new authors
+	s sql = "Select Id From Forum.Author Where Id > ? "
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
+	while rs.%Next(){
+		s tmpId = rs.Id
+		s sc = ##class(Forum.Author).%DeleteId(tmpId)
+	}
+	#;Check new authors nonexistence
+	s sql = "Select Count(Id) As Amount From Forum.Author Where Id > ? "
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
+	if rs.%Next() s amount = rs.Amount
+	do $$$AssertEquals(amount,0,"Nonexistence of new authors")
+]]></Implementation>
+</Method>
+</Class>
+</Export>
