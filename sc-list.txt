@@ -60,6 +60,7 @@ test.Forum.PostsUpdater.cls
 test.Forum.Topic.cls
 test.Forum.TopicsLoader.cls
 test.Forum.TopicsPage.cls
+test.Forum.TopicsUpdater.cls
 test.man.cls
 test.view.cls
 tests.Forum.pkg

@@ -6,52 +6,80 @@
 
 <Method name="TestScan">
 <Implementation><![CDATA[
+	//Topic with ExtId = 349188 had 17 pages on 27.11.2015
+	//We will load posts from 37(just random number of post 
+	//from 2 page(just random number of page)) to 75(number of last post on 3 page)
+	
 	s data("topic") = 349188
-	s data("pages") = 17
+	s data("pages") = 3
+	
+ 	//Find Id of last authors that was before load of posts = authorsLastId
+	
+	s sql = "Select Count(Id) As Amount From Forum.Author"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql)
+	if rs.%Next() s authorsAmount = rs.Amount
+	if authorsAmount>0 {		
+		s sql = "Select Top ? Id From Forum.Author Order By Id Desc"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql,1)
+		if rs.%Next() s authorsLastId = rs.Id
+		}
+	else{
+		s authorsLastId = 0
+		}
+	
+	if '##class(Forum.Topic).ExtIdExists(data("topic"),.topic){
+		s topicNotExist = 1
+		
+		#;Creating forum
+			
+		s forum("Name") = "Testing forum's name"
+
+		if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+			&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+			if SQLCODE=0 s forum = %ROWID
+			}
+		
+		#;Creating author
+			
+		s author("ExtId") = 0, author("Name") = "Test name"
+		
+		if '##class(Forum.Author).ExtIdExists(author("ExtId"), .author){
+			&sql( Insert Into Forum.Author ( Name, ExtId ) Values ( :author("Name"), :author("ExtId") ))
+			if SQLCODE=0 s author = %ROWID
+			}
+		
+		#;Creating topic
+		
+		s topic("Name") = "Testing topic's name", topic("Views") = 12345
+			, topic("Updated") = "2001-01-01 04:20:00", topic("Pages") = "a"
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, AuthorExtId, AuthorId, Views, Updated, Pages ) 
+		Values ( :topic("Name") ,:data("topic") ,:forum ,:author("Name") ,:author("ExtId")
+			,:author ,:topic("Views") ,:topic("Updated") ,:topic("Pages") ))
+		if SQLCODE=0 s topic = %ROWID
+		}
 	
 	s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
 	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
-	if rs.%Next() s data("to") = rs.Amount
+	if rs.%Next() s postsWas = rs.Amount
 	
-	if data("to")=0{
-		s postsDeleteFrom = data("to")
-		s data("from") = data("to"), data("to") = data("from") + 30
-		s topicFirstExist = ##class(Forum.Topic).ExtIdExists(data("topic"))
-		if 'topicFirstExist {
-			#;Creating forum
-			
-			s forum("Name") = "Testing forum's name"
-
-			if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
-				&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
-				if SQLCODE=0 s forum = %ROWID
-				}
-			
-			#;Creating topic
-				
-			s topic("Name") = "Testing topic's name"
-			, topic("Author") = "Testing topic's author", topic("Views") = 12345
-			, topic("Updated") = "2001-01-01 04:20:00", topic("Pages") = 17
-			&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
-			Values ( :topic("Name") ,:data("topic") ,:forum 
-				,:topic("Author") ,:topic("Views") 
-				,:topic("Updated") ,:topic("Pages") ))
-			if SQLCODE=0 s topic = %ROWID	
-			} 
-		}
-	elseif data("to")<=30{
-		s postsDeleteFrom = data("to")
-		s data("from") = data("to"), data("to") = data("from") + 30
-		}
-	else{
-		s data("from") = data("to") - 30
-		
-		s sql = "Select Top(30) ID From Forum.post Where Topic->ExtId = ? Order By Id Desc"
+	s data("from") = 37, data("to") = 75 //data("to")=data("from")+38
+	
+	s postsIs = postsWas
+	
+	if postsWas>data("from"){
+		s sql = "Select ID From Forum.Post Where Topic->ExtId = ? Order By ExtId Asc"
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+		s num = 0
 		while rs.%Next(){
+  			s num = num + 1
 			s tmpId = rs.Id
-			d ##class(Forum.Post).%DeleteId(tmpId)
-			}
+ 			if num<=data("from") {Continue}
+ 			elseif num>data("to") {Q}
+ 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+ 			}
+		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+		if rs.%Next() s postsIs = rs.Amount
 		}
 	
 	s status = ##class(Forum.PostsUpdater).Scan(.data)
@@ -61,25 +89,44 @@
 	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
 	if rs.%Next() s postsAmount = rs.Amount
 	
-	if $g(postsDeleteFrom)'=""{
-		do $$$AssertEquals(postsAmount, postsDeleteFrom + 30, "Checking number of added posts")}
-	else {
-		do $$$AssertEquals(postsAmount, data("to"), "Checking number of added posts")}
+	do $$$AssertEquals(postsAmount, postsIs + 38, "Checking number of added posts")
 		
-	if $g(postsDeleteFrom)'=""{
-		s sql = "Select Top(30) ID From Forum.post Where Topic->ExtId = ? Order By Id Desc"
+	if postsWas<data("to"){
+		s sql = "Select ID From Forum.Post Where Topic->ExtId = ? Order By ExtId Asc"
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+		s num = 0
 		while rs.%Next(){
+  			s num = num + 1
 			s tmpId = rs.Id
-			d ##class(Forum.Post).%DeleteId()
-			}		
+ 			if num<=postsWas Continue
+ 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
+ 			}
 		}
-	if ($g(postsDeleteFrom)=0)&($g(topicFirstExist)'=1){
+
+	s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, data("topic"))
+	if rs.%Next() s postsIs = rs.Amount
+	do $$$AssertEquals(postsIs, postsWas, "Checking number of posts after removing added posts")
+	
+	if $g(topicNotExist) = 1{
 		s status = ##class(Forum.Topic).%DeleteId(topic)
-		do $$$AssertTrue(status, "Delete created topic object")
+		do $$$AssertTrue(status,"Nonexistence of created topic object")
+		
 		s status = ##class(Forum.Forum).%DeleteId(forum)
-		do $$$AssertTrue(status, "Delete created forum object")
+		do $$$AssertTrue(status,"Nonexistence of created forum object")
 		}
+	#;Delete new authors
+	s sql = "Select Id From Forum.Author Where Id > ? "
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
+	while rs.%Next(){
+		s tmpId = rs.Id
+		s sc = ##class(Forum.Author).%DeleteId(tmpId)
+	}
+	#;Check new authors nonexistence
+	s sql = "Select Count(Id) As Amount From Forum.Author Where Id > ? "
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
+	if rs.%Next() s amount = rs.Amount
+	do $$$AssertEquals(amount,0,"Nonexistence of new authors")
 ]]></Implementation>
 </Method>
 
