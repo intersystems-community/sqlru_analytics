@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="History.Topic">
+<Super>%Persistent</Super>
+<TimeCreated>63883,38520.35847</TimeCreated>
+
+<Property name="TimeLapse">
+<Type>History.TimeLapse</Type>
+<Cardinality>one</Cardinality>
+<Inverse>Topics</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+<OnDelete>cascade</OnDelete>
+</Property>
+
+<Index name="TimeLapseIndex">
+<Properties>TimeLapse</Properties>
+</Index>
+
+<Property name="TopicReal">
+<Type>Forum.Topic</Type>
+<Cardinality>one</Cardinality>
+<Inverse>TopicTL</Inverse>
+<Relationship>1</Relationship>
+<Required>1</Required>
+<OnDelete>cascade</OnDelete>
+</Property>
+
+<Index name="TopicIndex">
+<Properties>TopicReal</Properties>
+</Index>
+
+<Property name="Name">
+<Type>%String</Type>
+<Required>1</Required>
+<Parameter name="MAXLEN" value="150"/>
+</Property>
+
+<Index name="Name">
+<Properties>Name</Properties>
+</Index>
+
+<Property name="ExtId">
+<Description>
+Id of topic that uses on sql.ru</Description>
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Property name="Author">
+<Type>%String</Type>
+</Property>
+
+<Property name="Views">
+<Description>
+views of topic</Description>
+<Type>%Integer</Type>
+</Property>
+
+<Property name="Answers">
+<Type>%Integer</Type>
+<Required>1</Required>
+</Property>
+
+<Method name="Insert">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&topicId,&tl,&topicHistory]]></FormalSpec>
+<Implementation><![CDATA[
+	s topicObj = ##class(Forum.Topic).%OpenId(topicId)
+	
+	s data("Name") = topicObj.Name, data("ExtId") = topicObj.ExtId, data("Author") = topicObj.Author
+		 ,data("Views") = topicObj.Views, data("Answers") = topicObj.Answers
+		 
+	&sql( Insert Into History.Topic (TimeLapse, TopicReal, Name, ExtId, Author, Views, Answers )
+		Values (:tl, :topicId, :data("Name"), :data("ExtId"), :data("Author"), :data("Views"), :data("Answers") ) )
+	if SQLCODE=0 s topicHistory = %ROWID
+	
+	Q 'SQLCODE
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^History.TopicD</DataLocation>
+<DefaultData>TopicDefaultData</DefaultData>
+<IdLocation>^History.TopicD</IdLocation>
+<IndexLocation>^History.TopicI</IndexLocation>
+<StreamLocation>^History.TopicS</StreamLocation>
+<Data name="TopicDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>TimeLapse</Value>
+</Value>
+<Value name="3">
+<Value>TopicReal</Value>
+</Value>
+<Value name="4">
+<Value>Name</Value>
+</Value>
+<Value name="5">
+<Value>ExtId</Value>
+</Value>
+<Value name="6">
+<Value>Author</Value>
+</Value>
+<Value name="7">
+<Value>Views</Value>
+</Value>
+<Value name="8">
+<Value>Answers</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

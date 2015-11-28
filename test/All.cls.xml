@@ -30,6 +30,9 @@ Parameter - UTRMode - for <global>^UnitTestRoot</global>:
 	d $system.OBJ.Export("test.Forum.TopicsPage.cls", ^UnitTestRoot_"\test\"_"test.Forum.TopicsPage.xml")
 	d $system.OBJ.Export("test.Forum.TopicsUpdater.cls", ^UnitTestRoot_"\test\"_"test.Forum.TopicsUpdater.xml")
 	
+	d $system.OBJ.Export("test.History.TimeLapse.cls", ^UnitTestRoot_"\test\"_"test.History.TimeLapse.xml") 
+	d $system.OBJ.Export("test.History.Topic.cls", ^UnitTestRoot_"\test\"_"test.History.Topic.xml") 
+	
     d ##class(%UnitTest.Manager).RunTest("test","/nodelete/noload")
 ]]></Implementation>
 </Method>

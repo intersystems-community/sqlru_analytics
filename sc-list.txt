@@ -48,6 +48,8 @@ Forum.Topic.cls
 Forum.TopicsLoader.cls
 Forum.TopicsPage.cls
 Forum.TopicsUpdater.cls
+History.TimeLapse.cls
+History.Topic.cls
 Http.Request.cls
 test.All.cls
 test.Forum.Author.cls
@@ -61,6 +63,8 @@ test.Forum.Topic.cls
 test.Forum.TopicsLoader.cls
 test.Forum.TopicsPage.cls
 test.Forum.TopicsUpdater.cls
+test.History.TimeLapse.cls
+test.History.Topic.cls
 test.man.cls
 test.view.cls
 tests.Forum.pkg

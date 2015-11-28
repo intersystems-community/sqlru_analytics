@@ -27,6 +27,10 @@ Initial topic updater</Description>
 	s sc = ..Scan( forum )
 	$$$wSS
 	
+	w !,"Creating TimeLapse... ",!
+	s sc = ##class(History.TimeLapse).CreateTimeLapse(forum, .tl)
+	w sc
+	
 	Q sc
 ]]></Implementation>
 </Method>

@@ -46,6 +46,9 @@ Entry point</Description>
 	s sc = ..UpdateAuthors( forum ) 
 	w sc 
 	
+	w !,"Creating TimeLapse... ",!
+	s sc = ##class(History.TimeLapse).CreateTimeLapse(forum, .tl)
+	w sc
 	Q sc
 ]]></Implementation>
 </Method>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="History.TimeLapse">
+<Super>%Persistent</Super>
+<TimeCreated>63883,38390.732861</TimeCreated>
+
+<Property name="Topics">
+<Type>History.Topic</Type>
+<Cardinality>many</Cardinality>
+<Inverse>TimeLapse</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
+<Property name="Forum">
+<Type>%String</Type>
+</Property>
+
+<Property name="Created">
+<Type>%TimeStamp</Type>
+</Property>
+
+<Property name="AnswersTotal">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="ViewsTotal">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="TopicsTotal">
+<Type>%Integer</Type>
+</Property>
+
+<Method name="CreateTimeLapse">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[forum,&tl]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s status = ..Insert(forum, .tl) Q:'status status
+	
+	s sql = "Select Id From Forum.Topic Where Forum->Name = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,forum)
+	s sc = 1, num = 1
+	while rs.%Next() {
+		s topicId = rs.Id, num = num + 1
+		s status = ##class(Topic).Insert(.topicId,.tl,.topicHistory)
+		w:num#100=0 "."
+		s sc = sc&status
+		}	
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="Insert">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[forum,&tl]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s sql = "Select Sum(Views) As ViewsTotal, Sum(Answers) As AnswersTotal"_
+		", Count(Id) As TopicsTotal From Forum.Topic Where Forum->Name = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,forum)
+	if rs.%Next() {s viewsTotal = rs.ViewsTotal
+		, answersTotal = rs.AnswersTotal
+		, topicsTotal = rs.TopicsTotal}	
+	
+	s created = $zdt($h,3)
+	
+	&sql( Insert Into History.TimeLapse (Forum, Created, ViewsTotal, AnswersTotal, TopicsTotal )
+		Values (:forum, :created, :viewsTotal, :answersTotal, :topicsTotal ) )
+	if SQLCODE=0 s tl = %ROWID
+	
+	Q 'SQLCODE
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Library.CacheStorage</Type>
+<DataLocation>^History.TimeLapseD</DataLocation>
+<DefaultData>TimeLapseDefaultData</DefaultData>
+<IdLocation>^History.TimeLapseD</IdLocation>
+<IndexLocation>^History.TimeLapseI</IndexLocation>
+<StreamLocation>^History.TimeLapseS</StreamLocation>
+<Data name="TimeLapseDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Forum</Value>
+</Value>
+<Value name="3">
+<Value>Created</Value>
+</Value>
+<Value name="4">
+<Value>AnswersTotal</Value>
+</Value>
+<Value name="5">
+<Value>ViewsTotal</Value>
+</Value>
+<Value name="6">
+<Value>TopicsTotal</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+</Export>

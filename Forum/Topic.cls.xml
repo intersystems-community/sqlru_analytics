@@ -23,6 +23,13 @@ One question or theme on the forum</Description>
 <Properties>Forum</Properties>
 </Index>
 
+<Property name="TopicTL">
+<Type>History.Topic</Type>
+<Cardinality>many</Cardinality>
+<Inverse>TopicReal</Inverse>
+<Relationship>1</Relationship>
+</Property>
+
 <Property name="Type">
 <Description>
 type of topic; like messege, cry, question e.t.c.</Description>
