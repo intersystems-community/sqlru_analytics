@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.History.Topic">
+<Super>test.view</Super>
+<TimeCreated>63884,4213.899321</TimeCreated>
+
+<Method name="TestInsert">
+<Implementation><![CDATA[
+	s status = ##class(test.History.TimeLapse).Prepare(.forum,.author,.topic)
+	do $$$AssertTrue(status,"Status of preparing objects")
+	
+	#;Creating TimeLapse
+	
+	s tl("AnswersTotal") = 30, tl("Created") = $zdt($h,3)
+		, tl("TopicsTotal") = 3, tl("ViewsTotal") = 1513
+		
+	&sql( Insert Into History.TimeLapse (Forum, Created, ViewsTotal, AnswersTotal, TopicsTotal )
+		Values (:forum("Name"), :tl("Created"), :tl("ViewsTotal"), :tl("AnswersTotal"), :tl("TopicsTotal") ) )
+	if SQLCODE=0 s tl = %ROWID	
+	
+	#;First topic
+	
+	s topicId = topic(1)
+	
+	s status = ##class(History.Topic).Insert(.topicId,.tl,.topicHistory)
+	do $$$AssertTrue(status,"1.Status of method execution for first topic")
+	
+	s tlObj = ##class(History.TimeLapse).%OpenId(tl)
+	s topicObj = ##class(History.Topic).%OpenId(topicHistory)
+	s topicIdObj = ##class(Forum.Topic).%OpenId(topicId)
+	
+	do $$$AssertEquals(topicObj.TimeLapse,tlObj,"Checking property ""Timelapse""" )
+	do $$$AssertEquals(topicObj.TopicReal,topicIdObj,"Checking property ""TopicReal""" )
+	do $$$AssertEquals(topicObj.Name,"Testing first topic's name","Checking property ""Name""" )
+	do $$$AssertEquals(topicObj.ExtId,1,"Checking property ""ExtId""" )
+	do $$$AssertEquals(topicObj.Author,"Testing author name","Checking property ""Author""" )
+	do $$$AssertEquals(topicObj.Views,145,"Checking property ""Views""" )
+	do $$$AssertEquals(topicObj.Answers,4,"Checking property ""Answers""" )
+	
+	s status = ##class(History.Topic).%DeleteId(topicHistory)
+	do $$$AssertTrue(status,"Nonexistence of first Topic object")
+	
+	#;Second topic
+	
+	s topicId = topic(2)
+	
+	s status = ##class(History.Topic).Insert(.topicId,.tl,.topicHistory)
+	do $$$AssertTrue(status,"2.Status of method execution for second topic")
+	
+	s topicObj = ##class(History.Topic).%OpenId(topicHistory)
+	s topicIdObj = ##class(Forum.Topic).%OpenId(topicId)
+	
+	do $$$AssertEquals(topicObj.TimeLapse,tlObj,"Checking property ""Timelapse""" )
+	do $$$AssertEquals(topicObj.TopicReal,topicIdObj,"Checking property ""TopicReal""" )
+	do $$$AssertEquals(topicObj.Name,"Testing second topic's name","Checking property ""Name""" )
+	do $$$AssertEquals(topicObj.ExtId,2,"Checking property ""ExtId""" )
+	do $$$AssertEquals(topicObj.Author,"Testing author name","Checking property ""Author""" )
+	do $$$AssertEquals(topicObj.Views,123,"Checking property ""Views""" )
+	do $$$AssertEquals(topicObj.Answers,7,"Checking property ""Answers""" )
+	
+	s status = ##class(History.Topic).%DeleteId(topicHistory)
+	do $$$AssertTrue(status,"Nonexistence of second Topic object")
+	
+	#;Third topic
+	
+	s topicId = topic(3)
+	
+	s status = ##class(History.Topic).Insert(.topicId,.tl,.topicHistory)
+	do $$$AssertTrue(status,"3.Status of method execution for third topic")
+	
+	s topicObj = ##class(History.Topic).%OpenId(topicHistory)
+	s topicIdObj = ##class(Forum.Topic).%OpenId(topicId)
+	
+	do $$$AssertEquals(topicObj.TimeLapse,tlObj,"Checking property ""Timelapse""" )
+	do $$$AssertEquals(topicObj.TopicReal,topicIdObj,"Checking property ""TopicReal""" )
+	do $$$AssertEquals(topicObj.Name,"Testing third topic's name","Checking property ""Name""" )
+	do $$$AssertEquals(topicObj.ExtId,3,"Checking property ""ExtId""" )
+	do $$$AssertEquals(topicObj.Author,"Testing author name","Checking property ""Author""" )
+	do $$$AssertEquals(topicObj.Views,1245,"Checking property ""Views""" )
+	do $$$AssertEquals(topicObj.Answers,19,"Checking property ""Answers""" )
+	
+	s status = ##class(History.Topic).%DeleteId(topicHistory)
+	do $$$AssertTrue(status,"Nonexistence of third Topic object")
+	
+	s status = ##class(test.History.TimeLapse).Clean(.forum,.author,.topic)
+	do $$$AssertTrue(status,"Status of cleaning")
+
+	s status = ##class(History.TimeLapse).%DeleteId(tl)
+	do $$$AssertTrue(status,"Nonexistence of TimeLapse object")
+]]></Implementation>
+</Method>
+</Class>
+</Export>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.History.TimeLapse">
+<Super>test.view</Super>
+<TimeCreated>63883,39451.489555</TimeCreated>
+
+<Method name="Prepare">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&forum,&author,&topic]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s status = 0
+	
+	#;Creating forum
+			
+	s forum("Name") = "Testing forum's name"
+	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+		s forum("NotExisted") = 1
+		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
+		if SQLCODE=0 s forum = %ROWID
+		s status = SQLCODE
+		}
+	
+	#;Creating author
+	
+	s author("Name") = "Testing author name"	
+	if '##class(Forum.Author).NameExists(author("Name"), .author){
+		s author("NotExisted") = 1		
+		&sql( Insert Into Forum.Author ( Name ) Values ( :author("Name") ))
+		if SQLCODE=0 s author = %ROWID
+		s status = status!SQLCODE
+		}	
+	
+	#;Creating first topic
+				
+	s topic(1,"Name") = "Testing first topic's name"
+		, topic(1,"ExtId") = 1, topic(1,"Views") = 145, topic(1,"Answers") = 4
+		, topic(1,"Updated") = "2001-01-01 04:20:00", topic(1,"Pages") = "a"
+	if '##class(Forum.Topic).ExtIdExists(topic(1,"ExtId"), .tmpId){
+		s topic(1,"NotExisted") = 1
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, AuthorId, Views, Answers, Updated, Pages ) 
+		Values ( :topic(1,"Name") ,:topic(1,"ExtId") ,:forum ,:author("Name")
+			,:author ,:topic(1,"Views") ,:topic(1,"Answers") 
+			,:topic(1,"Updated") ,:topic(1,"Pages") ))
+		if SQLCODE=0 s topic(1) = %ROWID
+		s status = status!SQLCODE
+		}
+	if $g(topic(1))="" { s topic(1) = tmpId k tmpId }
+		
+	#;Creating second topic
+				
+	s topic(2,"Name") = "Testing second topic's name"
+		, topic(2,"ExtId") = 2, topic(2,"Views") = 123, topic(2,"Answers") = 7
+		, topic(2,"Updated") = "2002-01-01 04:20:00", topic(2,"Pages") = "a"
+	if '##class(Forum.Topic).ExtIdExists(topic(2,"ExtId"), .tmpId){
+		s topic(2,"NotExisted") = 1
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, AuthorId, Views, Answers, Updated, Pages ) 
+		Values ( :topic(2,"Name") ,:topic(2,"ExtId") ,:forum ,:author("Name")
+			,:author ,:topic(2,"Views") ,:topic(2,"Answers") 
+			,:topic(2,"Updated") ,:topic(2,"Pages") ))
+		if SQLCODE=0 s topic(2) = %ROWID
+		s status = status!SQLCODE
+		}
+	if $g(topic(2))="" { s topic(2) = tmpId k tmpId }
+		
+	#;Creating third topic
+				
+	s topic(3,"Name") = "Testing third topic's name"
+		, topic(3,"ExtId") = 3, topic(3,"Views") = 1245, topic(3,"Answers") = 19
+		, topic(3,"Updated") = "2003-01-01 04:20:00", topic(3,"Pages") = "a"
+	if '##class(Forum.Topic).ExtIdExists(topic(3,"ExtId"), .tmpId){
+		s topic(3,"NotExisted") = 1
+		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, AuthorId, Views, Answers, Updated, Pages ) 
+		Values ( :topic(3,"Name") ,:topic(3,"ExtId") ,:forum ,:author("Name")
+			,:author ,:topic(3,"Views") ,:topic(3,"Answers") 
+			,:topic(3,"Updated") ,:topic(3,"Pages") ))
+		if SQLCODE=0 s topic(3) = %ROWID
+		s status = status!SQLCODE
+		}
+	if $g(topic(3))="" { s topic(3) = tmpId k tmpId }
+	
+	Q 'status
+]]></Implementation>
+</Method>
+
+<Method name="Clean">
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&forum,&author,&topic]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	s status = 1
+	s:$g(topic(1,"NotExisted"))=1 status = (status)&(##class(Forum.Topic).%DeleteId(topic(1)))
+	s:$g(topic(2,"NotExisted"))=1 status = (status)&(##class(Forum.Topic).%DeleteId(topic(2)))
+	s:$g(topic(3,"NotExisted"))=1 status = (status)&(##class(Forum.Topic).%DeleteId(topic(3)))
+	s:$g(author("NotExisted"))=1 status = (status)&(##class(Forum.Author).%DeleteId(author))
+	s:$g(forum("NotExisted"))=1 status = (status)&(##class(Forum.Forum).%DeleteId(forum))
+	Q status
+]]></Implementation>
+</Method>
+
+<Method name="TestCreateTimeLapse">
+<Implementation><![CDATA[
+	s status = ##class(test.History.TimeLapse).Prepare(.forum,.author,.topic)
+	do $$$AssertTrue(status,"Status of preparing objects")
+
+	s status = ##class(History.TimeLapse).CreateTimeLapse(forum("Name"),.tl)
+	do $$$AssertTrue(status,"Status of method execution")
+	
+	s answersTotal = topic(1,"Answers")+topic(2,"Answers")+topic(3,"Answers")
+	s viewsTotal = topic(1,"Views")+topic(2,"Views")+topic(3,"Views")
+	
+	s tlObj = ##class(History.TimeLapse).%OpenId(tl)
+	
+	do $$$AssertEquals(tlObj.TopicsTotal,3,"Checking property ""TopicsTotal""" )
+	do $$$AssertEquals(tlObj.AnswersTotal,answersTotal,"Checking property ""AnswersTotal""" )
+	do $$$AssertEquals(tlObj.ViewsTotal,viewsTotal,"Checking property ""ViewsTotal""" )
+	
+	s sql = "Select Count(Id) As Amount From History.Topic Where TimeLapse->Id = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,tl)
+	if rs.%Next() s topicsAmount = rs.Amount
+	
+	do $$$AssertEquals(topicsAmount,tlObj.TopicsTotal,"Checking count of topics" )
+	
+	s sql = "Select Id From History.Topic Where TimeLapse->Id = ?"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,tl)
+	s num = 1
+	while rs.%Next() {
+		s status = ##class(History.Topic).%DeleteId(rs.Id)
+		do $$$AssertTrue(status,"Nonexistence of topic object #"_num)
+		s num = num + 1
+		}	
+	
+	s status = ##class(test.History.TimeLapse).Clean(.forum,.author,.topic)
+	do $$$AssertTrue(status,"Status of cleaning")
+	
+	s status = ##class(History.TimeLapse).%DeleteId(tl)
+	do $$$AssertTrue(status,"Nonexistence of TimeLapse object")
+]]></Implementation>
+</Method>
+
+<Method name="TestInsert">
+<Implementation><![CDATA[
+	s status = ##class(test.History.TimeLapse).Prepare(.forum,.author,.topic)
+	do $$$AssertTrue(status,"Status of preparing objects")
+
+	s status = ##class(History.TimeLapse).Insert(forum("Name"),.tl)
+	do $$$AssertTrue(status,"Status of method execution")
+	
+	s answersTotal = topic(1,"Answers")+topic(2,"Answers")+topic(3,"Answers")
+	s viewsTotal = topic(1,"Views")+topic(2,"Views")+topic(3,"Views")
+	
+	s tlObj = ##class(History.TimeLapse).%OpenId(tl)
+	
+	do $$$AssertEquals(tlObj.TopicsTotal,3,"Checking property ""TopicsTotal""" )
+	do $$$AssertEquals(tlObj.AnswersTotal,answersTotal,"Checking property ""AnswersTotal""" )
+	do $$$AssertEquals(tlObj.ViewsTotal,viewsTotal,"Checking property ""ViewsTotal""" )
+	do $$$AssertNotEquals(tlObj.Created,"","Checking property ""Date""" )
+
+	s status = ##class(test.History.TimeLapse).Clean(.forum,.author,.topic)
+	do $$$AssertTrue(status,"Status of cleaning")
+	
+	s status = ##class(History.TimeLapse).%DeleteId(tl)
+	do $$$AssertTrue(status,"Nonexistence of TimeLapse object")
+]]></Implementation>
+</Method>
+</Class>
+</Export>
