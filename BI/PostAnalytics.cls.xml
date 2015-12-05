@@ -19,11 +19,6 @@ Cube definition from Architect.</Description>
       <level name="Theme" displayName="Технология" disabled="false" sourceExpression="%cube.GetTech(%source.Text)" list="true" listDelimiter="," useDisplayValue="true" useAsFilter="true">
       </level>
     </hierarchy>
-    <hierarchy name="H2" disabled="false">
-      <level name="iknow" displayName="iknow темы" disabled="false" sourceExpression="%cube.GetiKnowTopic(%source.%ID)" list="true" listDelimiter="," nullReplacement="Без категории" useDisplayValue="true" useAsFilter="true">
-        <additionalDescription>undefined</additionalDescription>
-      </level>
-    </hierarchy>
   </dimension>
   <dimension name="Posted" disabled="false" sharesFrom="TopicAnalytics" hasAll="false" allCaption="All Posted" allDisplayName="Posted" type="data" hidden="false" showHierarchies="default">
   </dimension>
@@ -52,16 +47,6 @@ Cube definition from Architect.</Description>
 </cube>
 ]]></Data>
 </XData>
-
-<Method name="GetiKnowTopic">
-<ClassMethod>1</ClassMethod>
-<FormalSpec>postid:%Integer</FormalSpec>
-<ReturnType>%String</ReturnType>
-<Implementation><![CDATA[
-	
-	q ##class(GS2015.SetSources).GetSets(postid)
-]]></Implementation>
-</Method>
 
 <Method name="GetTech">
 <ClassMethod>1</ClassMethod>
@@ -93,8 +78,5 @@ Cube definition from Architect.</Description>
 	q author.Author
 ]]></Implementation>
 </Method>
-
-<Parameter name="DOMAIN">
-</Parameter>
 </Class>
 </Export>

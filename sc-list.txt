@@ -4,6 +4,13 @@ BI-AuthorTopicAnalyticsAVGAnswers.pivot.dfi
 BI-AuthorTopicAnalyticsAVGViews.pivot.dfi
 BI-AuthorTopicAnalyticsCount.pivot.dfi
 BI-AuthorTopicAnalyticsViews.pivot.dfi
+BI-History.dashboard.dfi
+BI-HistoryAnswersAll.pivot.dfi
+BI-HistoryAnswersWeek.pivot.dfi
+BI-HistoryTopicsAll.pivot.dfi
+BI-HistoryTopicsWeek.pivot.dfi
+BI-HistoryViewsAll.pivot.dfi
+BI-HistoryViewsWeek.pivot.dfi
 BI-TechnologyTopicAnalytics.dashboard.dfi
 BI-TechnologyTopicAnalyticsAnswers.pivot.dfi
 BI-TechnologyTopicAnalyticsAV.pivot.dfi

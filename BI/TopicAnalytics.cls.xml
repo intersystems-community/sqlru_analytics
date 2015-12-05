@@ -132,8 +132,5 @@ determine technology areas</Description>
 	q author.Author
 ]]></Implementation>
 </Method>
-
-<Parameter name="DOMAIN">
-</Parameter>
 </Class>
 </Export>

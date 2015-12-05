@@ -47,7 +47,7 @@ Entry point</Description>
 	w sc 
 	
 	w !,"Creating TimeLapse... ",!
-	s sc = ##class(History.TimeLapse).CreateTimeLapse(forum, .tl)
+	s sc = ##class(History.TimeLapse).Insert(forum, .tl)
 	w sc
 	Q sc
 ]]></Implementation>

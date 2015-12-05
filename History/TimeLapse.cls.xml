@@ -23,11 +23,23 @@
 <Type>%Integer</Type>
 </Property>
 
+<Property name="AnswersAdded">
+<Type>%Integer</Type>
+</Property>
+
 <Property name="ViewsTotal">
 <Type>%Integer</Type>
 </Property>
 
+<Property name="ViewsAdded">
+<Type>%Integer</Type>
+</Property>
+
 <Property name="TopicsTotal">
+<Type>%Integer</Type>
+</Property>
+
+<Property name="TopicsAdded">
 <Type>%Integer</Type>
 </Property>
 
@@ -64,9 +76,20 @@
 		, topicsTotal = rs.TopicsTotal}	
 	
 	s created = $zdt($h,3)
+
+	s sql = "Select Top 1 ViewsTotal, AnswersTotal, TopicsTotal "_
+		"From History.TimeLapse Where Forum = ? Order By Created Desc"
+	s rs = ##class(%SQL.Statement).%ExecDirect(,sql,forum)
+	if rs.%Next() {s tmpViews = rs.ViewsTotal, tmpAnswers = rs.AnswersTotal, tmpTopics = rs.TopicsTotal
+		s viewsAdded = viewsTotal - tmpViews,
+			answersAdded = answersTotal - tmpAnswers,
+			topicsAdded = topicsTotal - tmpTopics}
+	else{s viewsAdded = 0, answersAdded = 0, topicsAdded = 0}
 	
-	&sql( Insert Into History.TimeLapse (Forum, Created, ViewsTotal, AnswersTotal, TopicsTotal )
-		Values (:forum, :created, :viewsTotal, :answersTotal, :topicsTotal ) )
+	&sql( Insert Into History.TimeLapse (Forum, Created, ViewsTotal, ViewsAdded
+		, AnswersTotal, AnswersAdded, TopicsTotal, TopicsAdded )
+		Values (:forum, :created, :viewsTotal, :viewsAdded
+			, :answersTotal, :answersAdded, :topicsTotal, :topicsAdded ) )
 	if SQLCODE=0 s tl = %ROWID
 	
 	Q 'SQLCODE
@@ -81,8 +104,6 @@
 <IndexLocation>^History.TimeLapseI</IndexLocation>
 <StreamLocation>^History.TimeLapseS</StreamLocation>
 <Data name="TimeLapseDefaultData">
-<Structure>listnode</Structure>
-<Subscript/>
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
@@ -96,10 +117,19 @@
 <Value>AnswersTotal</Value>
 </Value>
 <Value name="5">
-<Value>ViewsTotal</Value>
+<Value>AnswersAdded</Value>
 </Value>
 <Value name="6">
+<Value>ViewsTotal</Value>
+</Value>
+<Value name="7">
+<Value>ViewsAdded</Value>
+</Value>
+<Value name="8">
 <Value>TopicsTotal</Value>
+</Value>
+<Value name="9">
+<Value>TopicsAdded</Value>
 </Value>
 </Data>
 </Storage>
