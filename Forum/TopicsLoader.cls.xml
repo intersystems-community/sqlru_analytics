@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:10:33">
 <Class name="Forum.TopicsLoader">
 <Description>
 Initial topic loader </Description>
 <Super>Forum.TopicsPage</Super>
+<TimeChanged>63901,3194.576229</TimeChanged>
 <TimeCreated>63776,59960.045951</TimeCreated>
 
 <Method name="Load">
@@ -284,7 +285,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 		Q 1
 	}
 
-	w $g(data), " " ;output topic id (not ExtId)
+	w:..Verbose $g(data), " " ;output topic id (not ExtId)
 	
 	Q sc
 ]]></Implementation>

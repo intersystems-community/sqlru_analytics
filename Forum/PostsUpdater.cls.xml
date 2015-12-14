@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:09:38">
 <Class name="Forum.PostsUpdater">
 <Description>
 Initial post updater
 Called from TopicsUpdater</Description>
 <Super>Forum.PostsPage</Super>
+<TimeChanged>63901,3078.356956</TimeChanged>
 <TimeCreated>63785,86397.663962</TimeCreated>
 
 <Method name="Update">
@@ -26,6 +27,9 @@ NOTE: if then if then if then - something wrong</Description>
 	#define g(%prop) $g(data(%prop))
 	
 	s topic = $$$g("topic") ;ExtId of topic
+	
+	s verbose = $$$g("verbose")
+	
 	s lastPageNum = $$$g("pages") ; it's or "a"(if we can load all pages), or number of last page of topics
 	s oldPostsAmount = $$$g("from")
 	s postsAmount = $$$g("to")
@@ -33,6 +37,7 @@ NOTE: if then if then if then - something wrong</Description>
 	if +lastPageNum = 0 { ;lastPageNum = "a"
 	
 		s page = ..GetPage( topic, lastPageNum, .sc ) Q:'sc
+		s page.Verbose = verbose
 		s sc = page.Parse( oldPostsAmount) Q:'sc sc
 		
 	} else {
@@ -44,16 +49,19 @@ NOTE: if then if then if then - something wrong</Description>
 		if lastPageNum = startPage {
 			
 			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
+			s page.Verbose = verbose
 			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
 			
 		} else {
 			
 			s page = ..GetPage( topic, startPage, .sc ) Q:'sc
+			s page.Verbose = verbose
 			s sc = page.Parse( oldPostsOnStartPage) Q:'sc sc
 			
 			for pageNum = (startPage+1):1:lastPageNum {
 				
 				s sc = page.Get( , pageNum ) Q:'sc
+				s page.Verbose = verbose
 				s sc = page.Parse() Q:'sc
 				
 			}
@@ -82,7 +90,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 	s data("AuthorId") = author
 
 	s sc = ##class(Post).Insert( .data )
-	w "." 
+	w:..Verbose "." 
 	Q sc
 ]]></Implementation>
 </Method>

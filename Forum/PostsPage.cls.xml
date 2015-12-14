@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:09:00">
 <Class name="Forum.PostsPage">
 <Abstract>1</Abstract>
 <Super>%RegisteredObject</Super>
+<TimeChanged>63901,2721.0001</TimeChanged>
 <TimeCreated>63782,48971.973602</TimeCreated>
 
 <Parameter name="SERVER">
@@ -44,6 +45,13 @@ If it is "a", it mean that we can load all posts on one page
 For example, url: http://www.sql.ru/forum/1167798-a/ - show all topic pages
 If it is number it mean than we must only load all pages by page-to-page</Description>
 <Type>%String</Type>
+</Property>
+
+<Property name="Verbose">
+<Description>
+Supress output or not</Description>
+<Type>%Boolean</Type>
+<InitialExpression>1</InitialExpression>
 </Property>
 
 <Method name="%OnNew">

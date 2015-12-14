@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:08:34">
 <Class name="Forum.PostsLoader">
 <Description>
 Initial post loader</Description>
 <Super>Forum.PostsPage</Super>
+<TimeChanged>63901,3730.305461</TimeChanged>
 <TimeCreated>63782,48915.323809</TimeCreated>
 
 <Method name="Load">
@@ -38,9 +39,10 @@ scan across all forum posts pages</Description>
 	
 	s topic = $$$g("topic") ;topicid from sql.ru
 	s pages = $$$g("pages") ;pages - pages count (number) or "a" - all, convention from sql.ru
-	
+	s verbose = $$$g("verbose")
 	s i = 1 s:pages="a" i = "a" ;current page with posts
 	s page = ..GetPage( topic, i, .sc ) Q:'sc sc
+	s page.Verbose = verbose
 	
 	#; first post in topic contain date of topic creation
 	s page.firstPost = 1
@@ -55,6 +57,7 @@ scan across all forum posts pages</Description>
 	for { s i = i + 1  Q:i>pages
 		
 		s sc = page.Get( , i ) Q:'sc ;load page #i in parser  
+		s page.Verbose = verbose
 		s sc = page.Parse() Q:'sc
 	}
 	
@@ -80,7 +83,9 @@ If handler return 0, parsing will be interrupted]]></Description>
 	s data("AuthorId") = author
 
 	s sc = ##class(Post).Insert( .data ) Q:'sc sc
-	w "." 
+	
+	w:..Verbose "." 
+	
 	if ..firstPost { ;first post's date is the date of topic's creation
 		
 		s sc = ##class(Topic).SetPosted(topicId, data("Posted") )

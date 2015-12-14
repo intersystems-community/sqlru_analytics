@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:10:56">
 <Class name="Forum.TopicsUpdater">
 <Description>
 Initial topic updater</Description>
 <Super>Forum.TopicsPage</Super>
+<TimeChanged>63901,3244.145074</TimeChanged>
 <TimeCreated>63785,86397.415399</TimeCreated>
 
 <Method name="Update">
@@ -101,7 +102,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 	s topic.Views = $$$g("Views")
 	if ..PropertyParse '= "All"{
 		s sc = topic.%Save()
-		w sc
+		w:..Verbose sc
 		Q 1
 	}
 	
@@ -111,7 +112,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 	s mark = $$$g("Mark")
 	if updated = $$$g("Updated") {
 		s sc = topic.%Save()
-		w sc
+		w:..Verbose sc
 		;For next case: "marked" topic can haven't new posts but next not "marked" topic can have new post
 		s:mark="" ..PropertyParse = "Vies,ExtId"
 		Q 1 
@@ -146,7 +147,7 @@ If handler return 0, parsing will be interrupted]]></Description>
 	
 	s:newPostsAmount'=0 sc = ##class(PostsUpdater).Update(.data)
 	
-	w """",sc,"-",newPostsAmount,""""
+	w:..Verbose """",sc,"-",newPostsAmount,""""
 	Q sc
 ]]></Implementation>
 </Method>

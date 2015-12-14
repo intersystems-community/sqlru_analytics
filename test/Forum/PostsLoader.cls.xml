@@ -1,94 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25">
+<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:07:47">
 <Class name="test.Forum.PostsLoader">
 <Super>test.view</Super>
+<TimeChanged>63901,3725.596935</TimeChanged>
 <TimeCreated>63875,48003.13317</TimeCreated>
 
-<Method name="PropertiesChange">
+<Method name="SetPrivate">
+<Description><![CDATA[
+Set <var>property</var> in <var>class</class> private ]]></Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>onWhat:%Integer</FormalSpec>
+<FormalSpec>class,property,private:%Boolean=1</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	s pfirstPost = ##class(%Dictionary.PropertyDefinition).%OpenId( "Forum.PostsLoader||firstPost" )
-	s pfirstPost.Private = onWhat
-	s status = pfirstPost.%Save()
-	s status = $system.OBJ.Compile( "Forum.PostsLoader",,.err )
+	s pdid = class _ "||" _ property ; property definition id 
+	s propDef = ##class(%Dictionary.PropertyDefinition).%OpenId( pdid )
+	#; NOTE: if $IsObject( pd ) Q 0
+	s propDef.Private = private
+	s status = propDef.%Save()
+	s status = $system.OBJ.Compile( "Forum.PostsLoader","ck-d",.err ) ; -d -> display off
 	Q status
 ]]></Implementation>
 </Method>
 
 <Method name="OnBeforeAllTests">
+<Description>
+change property visibility for test purpose</Description>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ##class(test.Forum.PostsLoader).PropertiesChange(0)
+<Implementation><![CDATA[
+	
+	Q ##class(test.Forum.PostsLoader).SetPrivate("Forum.PostsLoader", "firstPost", 0)
 ]]></Implementation>
 </Method>
 
 <Method name="OnAfterAllTests">
+<Description>
+restore property visibility</Description>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ##class(test.Forum.PostsLoader).PropertiesChange(1)
+<Implementation><![CDATA[	Q ##class(test.Forum.PostsLoader).SetPrivate("Forum.PostsLoader", "firstPost" )
 ]]></Implementation>
 </Method>
 
 <Method name="TestScan">
+<Description>
+this code is smell - should be one action in the one method</Description>
 <Implementation><![CDATA[
-	//#1
-	//If there was not the topic
-	//Find Id of last authors that was before load of posts = authorsLastId
-	//Create forum and topic with only required test properties and topic("ExtId")
-	//Load all posts
-	//Delete forum, topic, posts
-	//Remove authors Id greater than authorsLastId
-	//#2
-	//If there was the topic with external id = topic("ExtId")
-	//First find all posts of topic with external id = topic("ExtId")
-	//Find how many there were posts = postsAmount and then delete all posts of this topic
-	//Load all posts
-	//After posts load, remove all but the first postsAmount
+	/* *************************************************************************
+	
+	#1 - first action, for example: TestScan1
+	If there was not the topic
+	Find Id of last authors that was before load of posts = authorsLastId
+	Create forum and topic with only required test properties and topic("ExtId")
+	Load all posts
+	Delete forum, topic, posts
+	Remove authors Id greater than authorsLastId
+	
+	#2 - another test - method 
+	If there was the topic with external id = topic("ExtId")
+	First find all posts of topic with external id = topic("ExtId")
+	Find how many there were posts = postsAmount and then delete all posts of this topic
+	Load all posts
+	After posts load, remove all but the first postsAmount
+	
+	******************************************************************************/
 	
 	s topic("ExtId") = 1184176 //Page of this topic "http://www.sql.ru/forum/1184176/"
+		
+	if '##class(Forum.Topic).ExtIdExists( topic("ExtId"), .topic ) {	
 	
-	#;1
-	if '##class(Forum.Topic).ExtIdExists( topic("ExtId"), .topic ){	
-	
-		s sql = "Select Count(Id) As Amount From Forum.Author"
-		s rs = ##class(%SQL.Statement).%ExecDirect(,sql)
+		#; NOTE: should be a classmethod of Forum.Author
+		s sql = "Select Count(Id) As Amount From Forum.Author" 
+		s rs = ##class(%SQL.Statement).%ExecDirect( ,sql )
 		if rs.%Next() s authorsAmount = rs.Amount
-		if authorsAmount>0 {		
-			s sql = "Select Top ? Id From Forum.Author Order By Id Desc"
+		
+		s authorsLastId = 0
+		if ( authorsAmount > 0 ) {		
+			#; NOTE: ClassMethod of Forum.Author
+			s sql = "Select Top ? Id From Forum.Author Order By Id Desc" 
 			s rs = ##class(%SQL.Statement).%ExecDirect(,sql,1)
 			if rs.%Next() s authorsLastId = rs.Id
-			}
-		else{
-			s authorsLastId = 0
-			}
-		
-		#;Creating forum
+		} 
 				
+		#; Creating forum
 		s forum("Name") = "Testing forum's name"
 
 		if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
+			
 			&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
 			if SQLCODE=0 s forum = %ROWID
-			}
+			
+		}
 	
-		#;Creating topic
+		#;Creating topic - should be a classmethod of Forum.Topic
 					
 		s topic("Name") = "Testing topic's name"
 		, topic("Author") = "Testing topic's author", topic("Views") = 12345
 		, topic("Updated") = "2001-01-01 04:20:00", topic("Pages") = "a"
+		
+		#; NOTE: exists short form with local variable  
+		#; http://docs.intersystems.com/cache20152/csp/docbook/DocBook.UI.Page.cls?KEY=RSQL_INSERT#RSQL_C60657
 		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated, Pages ) 
 		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ,:topic("Pages") ))
 		if SQLCODE=0 s topic = %ROWID
-		}
-	#;2
-	else{	
-		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+		
+		
+		
+	} else {	; should be in the separate method 
+	
+	
+		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?" ; should be a classmethod of Forum.Post
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
 		if rs.%Next() s postsAmount = rs.Amount
 		
 		#;Delete all posts of topic
 
-		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? "
+		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? " ; TODO: classmethod of Forum.Post
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
 		while rs.%Next(){
 			s tmpId = rs.Id
@@ -98,6 +123,8 @@
 	
 	s dataForMethod("topic") = topic("ExtId")
 	s dataForMethod("pages") = "a"
+
+	s dataForMethod("verbose") = 0 ;suppress output for json 
 	
 	s sc = ##class(Forum.PostsLoader).Scan(.dataForMethod)
 	
@@ -114,14 +141,15 @@
 	do $$$AssertTrue(status,"Existence of post with ExtId = 18390235")
 	
 	if $g(authorsLastId)'=""{
-		#;Delete posts
+		
+		#;Delete posts - class method of ....
 		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? "
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
 		while rs.%Next(){
 			s tmpId = rs.Id
 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
 		}
-		#;Check posts nonexistence
+		#;Check posts nonexistence - class method of ....
 		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ? "
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
 		if rs.%Next() s amount = rs.Amount
@@ -140,14 +168,16 @@
 			s tmpId = rs.Id
 			s sc = ##class(Forum.Author).%DeleteId(tmpId)
 		}
+		
 		#;Check new authors nonexistence
 		s sql = "Select Count(Id) As Amount From Forum.Author Where Id > ? "
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, authorsLastId)
 		if rs.%Next() s amount = rs.Amount
 		do $$$AssertEquals(amount,0,"Nonexistence of new authors")
-		}
-	else{
-		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? "
+		
+		} else { ; another method
+		
+		s sql = "Select Id From Forum.Post Where Topic->ExtId = ? " ; class-method
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
 		s num = 0
 		while rs.%Next(){
@@ -157,8 +187,9 @@
 				Continue
 				}  
 			s sc = ##class(Forum.Post).%DeleteId(tmpId)
-			}
-		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?"
+		}
+		
+		s sql = "Select Count(Id) As Amount From Forum.Post Where Topic->ExtId = ?" ;classmethod
 		s rs = ##class(%SQL.Statement).%ExecDirect(,sql, topic("ExtId"))
 		if rs.%Next() s amount = rs.Amount
 		do $$$AssertEquals(amount,postsAmount,"Nonexistence of new posts")				
@@ -176,7 +207,7 @@
 	if status = 1 {
 		d ##class(Forum.Forum).%DeleteId( tmpId )
 		k status, tmpId
-		}
+	}
 		
 	&sql( Insert Into Forum.Forum ( Name ) 
 	Values ( :forum("Name") ))
@@ -213,11 +244,15 @@
 		d ##class(Forum.Post).%DeleteId( tmpId )
 		k status, tmpId
 		} 
+	
+	#; variable should be named as postLoader
 	s postObj = ##class(Forum.PostsLoader).%New()
 	s postObj.Topic = topic("ExtId")
 	s postObj.firstPost = 1
-	
+	s postObj.Verbose = 0 
 	s status = postObj.OnPost(.post)
+		
+	
 	do $$$AssertTrue(status,"Status of method exucution")
 	
 	s topicObj = ##class(Forum.Topic).%OpenId(topic)
