@@ -1,34 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:07:47">
+<Export generator="Cache" version="25">
 <Class name="test.Forum.PostsLoader">
 <Super>test.view</Super>
-<TimeChanged>63901,3725.596935</TimeChanged>
 <TimeCreated>63875,48003.13317</TimeCreated>
-
-<Method name="SetPrivate">
-<Description><![CDATA[
-Set <var>property</var> in <var>class</class> private ]]></Description>
-<ClassMethod>1</ClassMethod>
-<FormalSpec>class,property,private:%Boolean=1</FormalSpec>
-<ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[
-	s pdid = class _ "||" _ property ; property definition id 
-	s propDef = ##class(%Dictionary.PropertyDefinition).%OpenId( pdid )
-	#; NOTE: if $IsObject( pd ) Q 0
-	s propDef.Private = private
-	s status = propDef.%Save()
-	s status = $system.OBJ.Compile( "Forum.PostsLoader","ck-d",.err ) ; -d -> display off
-	Q status
-]]></Implementation>
-</Method>
 
 <Method name="OnBeforeAllTests">
 <Description>
 change property visibility for test purpose</Description>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	
-	Q ##class(test.Forum.PostsLoader).SetPrivate("Forum.PostsLoader", "firstPost", 0)
+	s def = "Forum.PostsLoader", def("property","firstPost","Private") = 0
+	Q ##class(test.util).ClassDefChange( .def )
 ]]></Implementation>
 </Method>
 
@@ -36,7 +18,9 @@ change property visibility for test purpose</Description>
 <Description>
 restore property visibility</Description>
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ##class(test.Forum.PostsLoader).SetPrivate("Forum.PostsLoader", "firstPost" )
+<Implementation><![CDATA[
+	s def = "Forum.PostsLoader", def("property","firstPost","Private") = 1
+	Q ##class(test.util).ClassDefChange( .def )
 ]]></Implementation>
 </Method>
 

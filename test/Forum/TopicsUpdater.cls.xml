@@ -56,19 +56,20 @@
 		, topic("AuthorId") = author, topic("Answers") = 3 
 	
 	s obj = ##class(Forum.TopicsUpdater).%New()
+	s obj.Verbose = 0 
 	s obj.Forum = forum("Name")
 	
 	
-	s status = ##class(Forum.Topic).ExtIdExists(topic("ExtId"))
+	s status = ##class(Forum.Topic).ExtIdExists( topic( "ExtId" ) )
 	do $$$AssertNotTrue(status,"Nonexistence of created topic")
-
-	s status = obj.OnTopic(.topic)
+	
+	s status = obj.OnTopic( .topic )
 	do $$$AssertTrue(status,"Status of method execution")
 
 	s topic("Name") = "Testing topic's name", topic("ExtId") = 2, topic("Views") = 12345
-		, topic("Updated") = "2002-01-01 04:20:00", topic("PagesAmount") = "a"
-		, topic("Type") = "Testing type", topic("Author") = author("Name")
-		, topic("AuthorId") = author, topic("Answers") = 3 
+	, topic("Updated") = "2002-01-01 04:20:00", topic("PagesAmount") = "a"
+	, topic("Type") = "Testing type", topic("Author") = author("Name")
+	, topic("AuthorId") = author, topic("Answers") = 3 
 	
 	s status = ##class(Forum.Topic).ExtIdExists(topic("ExtId"))
 	do $$$AssertTrue(status,"Existence of created topic")

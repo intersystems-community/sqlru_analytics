@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:10:33">
+<Export generator="Cache" version="25">
 <Class name="Forum.TopicsLoader">
 <Description>
 Initial topic loader </Description>
 <Super>Forum.TopicsPage</Super>
-<TimeChanged>63901,3194.576229</TimeChanged>
 <TimeCreated>63776,59960.045951</TimeCreated>
 
 <Method name="Load">
@@ -80,11 +79,11 @@ Scan across all forum topic pages</Description>
 
 <Method name="DeleteTopics">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>forum</FormalSpec>
+<FormalSpec>forum,verbose=1</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 
-	w !, "Delete old topics..." 
+	w:verbose !, "Delete old topics..." 
 	s sql = "Select ID From Forum.Topic Where Forum = ?"
 	s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forum )
 	s sc = 1
@@ -92,18 +91,18 @@ Scan across all forum topic pages</Description>
 		s sc = sc && ##class(Forum.Topic).%DeleteId( rs.ID )
 		Q:'sc	
 	}
-	w " Deleted! ", sc,!
+	w:verbose " Deleted! ", sc,!
 	Q sc
 ]]></Implementation>
 </Method>
 
 <Method name="DeletePosts">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>forum</FormalSpec>
+<FormalSpec>forum,verbose=1</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	
-	w !, "Delete old posts..." 
+	w:verbose !, "Delete old posts..." 
 	s sql = "Select ID From Forum.Post Where Topic->Forum = ?"
 	s rs = ##class(%SQL.Statement).%ExecDirect( , sql, forum)
 	s sc = 1
@@ -111,14 +110,14 @@ Scan across all forum topic pages</Description>
 		s sc = sc && ##class(Forum.Post).%DeleteId( rs.ID )
 		Q:'sc	
 	}
-	w " Deleted! ", sc
+	w:verbose " Deleted! ", sc
 	Q sc
 ]]></Implementation>
 </Method>
 
 <Method name="LoadPosts">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>forum</FormalSpec>
+<FormalSpec>forum,verbose=1</FormalSpec>
 <Implementation><![CDATA[
 	s sql = "Select ExtId,Pages From Forum.Topic Where Forum->Name = ? "
 	s rs = ##class(%SQL.Statement).%ExecDirect(,sql, forum)
@@ -126,7 +125,7 @@ Scan across all forum topic pages</Description>
 	while rs.%Next(){
 		k data s data("topic") = rs.ExtId, data("pages")=rs.Pages
 		#; ExtId = 349188 - long long topic
-		w !,"Topic ", data("topic")
+		w:verbose !,"Topic ", data("topic")
 		s sc = ##class(Forum.PostsLoader).Load(.data)
 		s ok = ok && sc
 	}
@@ -136,7 +135,7 @@ Scan across all forum topic pages</Description>
 
 <Method name="UpdateAuthors">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>forum</FormalSpec>
+<FormalSpec>forum,verbose=1</FormalSpec>
 <Implementation><![CDATA[
 	s sql = "Select Distinct AuthorId From Forum.Post "
 		_" Where Topic->Forum->Name = ? "
@@ -147,7 +146,7 @@ Scan across all forum topic pages</Description>
 	
 	while rs.%Next(){
 		
-		s sc = ..UpdateAuthorLocation( rs.AuthorId, geocoder)
+		s sc = ..UpdateAuthorLocation( rs.AuthorId, geocoder, verbose)
 	
 		
 	}
@@ -158,7 +157,7 @@ Scan across all forum topic pages</Description>
 
 <Method name="UpdateAuthorLocation">
 <ClassMethod>1</ClassMethod>
-<FormalSpec>author,geocoder=""</FormalSpec>
+<FormalSpec>author,geocoder="",verbose=1</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
 	s sc = ##class(Forum.AuthorPage).Parse( .author ) ;parse location
@@ -170,7 +169,8 @@ Scan across all forum topic pages</Description>
 	}
 	
 	s name = ##class(Forum.Author).NameGetStored( author )
-	w !, name, ": ", location, " -> ", point w:cache " ( cache )"
+	w:verbose !, name, ": ", location, " -> ", point 
+	w:verbose&&cache " ( cache )"
 	
 	s latitude = $p( point, " " ), longitude = $p(point, " ", 2)
 	s sc = ##class(Forum.Author).SetLocation( author, location, latitude, longitude )

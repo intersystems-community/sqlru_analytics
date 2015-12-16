@@ -4,127 +4,113 @@
 <Super>test.view</Super>
 <TimeCreated>63874,78325.291091</TimeCreated>
 
-<Method name="PropertiesChange">
+<Method name="ClassDefChange">
+<Description>
+Change class definition for testing purpose</Description>
 <ClassMethod>1</ClassMethod>
-<FormalSpec>onWhat:%Integer</FormalSpec>
+<FormalSpec>val:%Integer</FormalSpec>
 <ReturnType>%Status</ReturnType>
 <Implementation><![CDATA[
-	s cPostsPage = ##class(%Dictionary.ClassDefinition).%OpenId( "Forum.PostsPage" )
-	s cPostsPage.Abstract = onWhat
-	s status = cPostsPage.%Save()
-	
-	s pFRequest = ##class(%Dictionary.PropertyDefinition).%OpenId( "Forum.PostsPage||request" )
-	s pFRequest.Private = onWhat
-	s status = pFRequest.%Save()
-
-	s pPos = ##class(%Dictionary.PropertyDefinition).%OpenId( "Forum.PostsPage||pos" )
-	s pPos.Private = onWhat
-	s status = pPos.%Save()
-	
-	s mParse = ##class(%Dictionary.MethodDefinition).%OpenId( "Forum.PostsPage||Parse" )
-	s mParse.Private = onWhat
-	s status = mParse.%Save()
-	
-	s mPostBegin = ##class(%Dictionary.MethodDefinition).%OpenId( "Forum.PostsPage||postBegin" )
-	s mPostBegin.Private = onWhat
-	s status = mPostBegin.%Save()
-	s status = $system.OBJ.Compile( "Forum.PostsPage",,.err )
-
-	s pHRequest = ##class(%Dictionary.PropertyDefinition).%OpenId( "Http.Request||request" )
-	s pHRequest.Private = onWhat
-	s status = pHRequest.%Save()
-	s status = $system.OBJ.Compile( "Http.Request",,.err )
-	Q status
+	set def = "Forum.PostsPage", def("Abstract") = val
+	set def("property", "request", "Private") = val
+	set def("property", "pos", "Private") = val
+	set def("method", "Parse", "Private") = val
+	set def("method", "postBegin", "Private") = val
+	set sc = ##class(test.util).ClassDefChange( .def )
+			
+	kill def set def = "Http.Request",  def("property","request","Private") = val
+	set sc = sc && ##class(test.util).ClassDefChange( .def )
+	QUIT sc
 ]]></Implementation>
 </Method>
 
 <Method name="OnBeforeAllTests">
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ##class(test.Forum.PostsPage).PropertiesChange(0)
+<Implementation><![CDATA[	QUIT ..ClassDefChange(0)
 ]]></Implementation>
 </Method>
 
 <Method name="OnAfterAllTests">
 <ReturnType>%Status</ReturnType>
-<Implementation><![CDATA[	Q ##class(test.Forum.PostsPage).PropertiesChange(1)
+<Implementation><![CDATA[	QUIT ..ClassDefChange(1)
 ]]></Implementation>
 </Method>
 
 <Method name="TestUrl">
 <Implementation><![CDATA[
-	s postsPageObj = ##class(Forum.PostsPage).%New()
-	s postsPageObj.Topic = "TestTopic"
-	s postsPageObj.Amount = "TestAmount"
+	set postsPageObj = ##class(Forum.PostsPage).%New()
+	set postsPageObj.Topic = "TestTopic"
+	set postsPageObj.Amount = "TestAmount"
 	
-	s url = postsPageObj.Url()
+	set url = postsPageObj.Url()
 	
 	do $$$AssertEquals(url,"/forum/TestTopic-TestAmount","Creating url")	
 	
-	k postsPageObj,url
+	kill postsPageObj,url
 ]]></Implementation>
 </Method>
 
 <Method name="TestGet">
 <Implementation><![CDATA[
-	s page = ##class(Forum.PostsPage).%New()
-	s page.Topic = 54321
-	s page.Amount = "Old Amount"
+	set page = ##class(Forum.PostsPage).%New()
+	set page.Topic = 54321
+	set page.Amount = "Old Amount"
 	
-	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	set page.request = ##class(Http.Request).%New( "www.sql.ru" )
 	
-	s sc = page.Get(12345,"New Amount")
+	set sc = page.Get(12345,"New Amount")
 	
 	do $$$AssertEquals(page.Topic,12345,"Property ""Topic""")
 	do $$$AssertEquals(page.Amount,"New Amount","Property ""Amount""")
 	
 
-	s sc = page.Get(1171352,"a")
+	set sc = page.Get(1171352,"a")
 	
-	s strByMethod = page.request.Data.Read(5000)
+	set strByMethod = page.request.Data.Read(5000)
 	#;
-	k page
+	kill page
 
-	s page = ##class(Forum.PostsPage).%New()
+	set page = ##class(Forum.PostsPage).%New()
 	
-	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
-	s page.request.Data = ##class(%Stream.FileCharacter).%New()
-	s sc = page.request.request.Get( "/forum/1171352-a", 0, 1 )
-	s sc = page.request.Data.CopyFrom( page.request.request.HttpResponse.Data )
+	set page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	set page.request.Data = ##class(%Stream.FileCharacter).%New()
+	set sc = page.request.request.Get( "/forum/1171352-a", 0, 1 )
+	set sc = page.request.Data.CopyFrom( page.request.request.HttpResponse.Data )
 	#;	
-	s strByManually = page.request.Data.Read(5000)
+	set strByManually = page.request.Data.Read(5000)
 	
-	s rfghdfhgdf = (strByManually=strByMethod)
+	set rfghdfhgdf = (strByManually=strByMethod)
 	do $$$AssertEquals(strByMethod,strByManually,"Compare srtings of html")	
 	
-	k page,strByManually,strByMethod
+	kill page,strByManually,strByMethod
 ]]></Implementation>
 </Method>
 
 <Method name="TestGetPage">
 <Implementation><![CDATA[
-	s page = ##class(Forum.PostsPage).GetPage( 12345,"Test Amount", .sc )
+	set page = ##class(Forum.PostsPage).GetPage( 12345,"Test Amount", .sc )
 
 	do $$$AssertEquals(page.Topic,12345,"Property ""Topic""")
 	do $$$AssertEquals(page.Amount,"Test Amount","Property ""Amount""")
 	
-	k page
+	kill page
 	
-	s pageByMethod = ##class(Forum.PostsPage).GetPage( 1171352, "a", .sc )
+	set pageByMethod = ##class(Forum.PostsPage).GetPage( 1171352, "a", .sc )
 	
 	#;
-	s pageByManually = ##class(Forum.PostsPage).%New(1171352,"a")
-	s pageByManually.request = ##class(Http.Request).%New( "www.sql.ru" )
-	s pageByManually.request.Data = ##class(%Stream.FileCharacter).%New()
-	s sc = pageByManually.request.request.Get( "/forum/1171352-a", 0, 1 )
-	s sc = pageByManually.request.Data.CopyFrom( pageByManually.request.request.HttpResponse.Data )
+	set pageByManually = ##class(Forum.PostsPage).%New(1171352,"a")
+	set pageByManually.request = ##class(Http.Request).%New( "www.sql.ru" )
+	set pageByManually.request.Data = ##class(%Stream.FileCharacter).%New()
+	set sc = pageByManually.request.request.Get( "/forum/1171352-a", 0, 1 )
+	set sc = pageByManually.request.Data.CopyFrom( pageByManually.request.request.HttpResponse.Data )
 	#;
 	
-	s strByMethod = pageByMethod.request.Data.Read(5000)
-	s strByManually = pageByManually.request.Data.Read(5000)
+	set strByMethod = pageByMethod.request.Data.Read(5000)
+	set strByManually = pageByManually.request.Data.Read(5000)
 	
 	do $$$AssertEquals(strByMethod,strByManually,"Compare srtings of html")	
 	
-	k pageByManually,pageByMethod,strByManually,strByMethod
+	kill pageByManually,pageByMethod,strByManually,strByMethod
 ]]></Implementation>
 </Method>
 
@@ -132,180 +118,180 @@
 <Implementation><![CDATA[
 	#define TP ##class(Forum.PostsPage)
 	
-	s xdataID = "test.Forum.PostsPage||PostWithAuthorLink"
-    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
-    s post = compiledXdata.Data
-    s postW = post.Read()
+	set xdataID = "test.Forum.PostsPage||PostWithAuthorLink"
+    set compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    set post = compiledXdata.Data
+    set postW = post.Read()
 	
-	s xdataID = "test.Forum.PostsPage||PostWithoutAuthorLink"
-    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
-    s post = compiledXdata.Data
-	s postWO = post.Read()
+	set xdataID = "test.Forum.PostsPage||PostWithoutAuthorLink"
+    set compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    set post = compiledXdata.Data
+	set postWO = post.Read()
 	
 	//#		ID	Author			AuthorExtId	AuthorId	ExtId		Link																	Posted				Text																										Topic	Type
     //9		9	Ptn	 						5			18270569	http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=18270569	2015-10-13 08:16:00	eduard93,<br /><br />&gt;Для этого можно использовать методы ##class(%File).SetAttributes(), ##class...	 	1		message
 	//150	150	Шваров Евгений	164999		1			16078161	http://www.sql.ru/forum/actualutils.aspx?action=gotomsg&msg=16078161	2014-05-27 11:52:00	<a href="http://intersystems.ru/inews/" target="_blank">Ежемесячный журнал InterSystems News: архив ...	 	3		message
 	
-	s postW( "ExtId" ) = $$$TP.ParseExtId( postW ) ;16078161
-	s postWO( "ExtId" ) = $$$TP.ParseExtId( postWO ) ;18270569
-	s postW( "Type" ) = $$$TP.ParseType( postW ) ;"message"
-	s postW( "Text" ) = $$$TP.ParseText( postW ) ;<a href="http://intersystems.ru/inews/" target="_blank">Ежемесячный журнал InterSystems News: архив ...
-	s postW( "Posted" ) = $$$TP.ParsePosted( postW ) ;2014-05-27 11:52:00
+	set postW( "ExtId" ) = $$$TP.ParseExtId( postW ) ;16078161
+	set postWO( "ExtId" ) = $$$TP.ParseExtId( postWO ) ;18270569
+	set postW( "Type" ) = $$$TP.ParseType( postW ) ;"message"
+	set postW( "Text" ) = $$$TP.ParseText( postW ) ;<a href="http://intersystems.ru/inews/" target="_blank">Ежемесячный журнал InterSystems News: архив ...
+	set postW( "Posted" ) = $$$TP.ParsePosted( postW ) ;2014-05-27 11:52:00
 	
-	s sc = $$$TP.ParseAuthor( postW, .author ) 
-	m postW( "Author") = author ; postW( "Author" ) = "Шваров Евгений", postW( "Author", "ExtId" ) = 164999 
-	k author
-	s sc = $$$TP.ParseAuthor( postWO, .author ) 
-	m postWO( "Author") = author ; postWO( "Author" ) = "Ptn"
-	k author	
+	set sc = $$$TP.ParseAuthor( postW, .author ) 
+	merge postW( "Author") = author ; postW( "Author" ) = "Шваров Евгений", postW( "Author", "ExtId" ) = 164999 
+	kill author
+	set sc = $$$TP.ParseAuthor( postWO, .author ) 
+	merge postWO( "Author") = author ; postWO( "Author" ) = "Ptn"
+	kill author	
 		
 	do $$$AssertEquals(postW( "ExtId" ),16078161,"Should extract ExtId of post")
 	do $$$AssertEquals(postWO( "ExtId" ),18270569,"Should extract ExtId of post")
 	do $$$AssertEquals(postW( "Type" ),"message","Should extract type of post")
 	do $$$AssertEquals(postW( "Text" ),"<a href=""http://intersystems.ru/inews/"" target=""_blank"">Ежемесячный журнал InterSystems News: архив и подписка.</a>","Should extract name of post")
-	do $$$AssertEquals(postW( "Posted" ),$zdt("63334,42720",3),"Should extract date when post was posted") ;$zdt("63334,42720",3)=2014-05-27 11:52:00
+	do $$$AssertEquals(postW( "Posted" ),$zdatetime("63334,42720",3),"Should extract date when post was posted") ;$zdt("63334,42720",3)=2014-05-27 11:52:00
 	do $$$AssertEquals(postW( "Author" ), "Шваров Евгений","Should extract author of post")
 	do $$$AssertEquals(postW( "Author", "ExtId" ), 164999,"Should extract ExtId of author of post")
 	do $$$AssertEquals(postWO( "Author" ), "Ptn","Should extract author of post")
-	do $$$AssertNotTrue($d(postWO( "Author", "ExtId" )),"Shouldn't extract ExtId of author of post")
+	do $$$AssertNotTrue($data(postWO( "Author", "ExtId" )),"Shouldn't extract ExtId of author of post")
 ]]></Implementation>
 </Method>
 
 <Method name="TestParse">
 <Implementation><![CDATA[
-	s status = ##class(Forum.Post).ExtIdExists( 1, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 1, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 2, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 2, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 3, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 3, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 4, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 4, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 5, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 5, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
 	
 	#;Creating forum
 	
-	s forum("Name") = "Testing forum's name"
+	set forum("Name") = "Testing forum's name"
 
 	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
 		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
-		if SQLCODE=0 s forum = %ROWID
-		s forumNotExist = 1
+		if SQLCODE=0 set forum = %ROWID
+		set forumNotExist = 1
 		}
 		
 	#;Creating topic
 	
-	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+	set topic("Name") = "Testing topic's name", topic("ExtId") = 0
 		, topic("Author") = "Testing topic's author", topic("Views") = 12345
 		, topic("Updated") = "2001-01-01 04:20:00"
 	
 	if '##class(Forum.Topic).NameExists( topic("Name"), .topic ){	
 		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
 		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
-		if SQLCODE=0 s topic = %ROWID
-		s topicNotExist = 1
+		if SQLCODE=0 set topic = %ROWID
+		set topicNotExist = 1
 		}
 	
-	s xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
-    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
-    s tStream = compiledXdata.Data
+	set xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
+    set compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    set tStream = compiledXdata.Data
     
 	//Created object is object of class Forum.PostsLoader to able to save object and then check it
-	s page = ##class(Forum.PostsLoader).%New()
+	set page = ##class(Forum.PostsLoader).%New()
 	
-	s page.Topic = topic("ExtId")
+	set page.Topic = topic("ExtId")
 	
-	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
-	s page.request.Data = ##class(%Stream.FileCharacter).%New()
-	s sc = page.request.Data.CopyFrom( tStream )
-	
-	s sc = page.Parse(2)
+	set page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	set page.request.Data = ##class(%Stream.FileCharacter).%New()
+	set sc = page.request.Data.CopyFrom( tStream )
+	set page.Verbose = 0
+	set sc = page.Parse(2)
 	
 	#;Cleaning topics and forum
 	#; 1
-	s statusFirst = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
+	set statusFirst = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
 	do $$$AssertNotTrue(statusFirst,"Nonexistence of the first post object")
 	if statusFirst{
-		s st = ##class(Forum.Post).%DeleteId( .postObjIdFirst )
+		set st = ##class(Forum.Post).%DeleteId( .postObjIdFirst )
 		do $$$AssertTrue(st,"Delete created object")
 		}
 	#; 2
-	s statusSecond = ##class(Forum.Post).ExtIdExists(2, .postObjIdSecond)
+	set statusSecond = ##class(Forum.Post).ExtIdExists(2, .postObjIdSecond)
 	do $$$AssertNotTrue(statusSecond,"Nonexistence of the second post object")
 	if statusSecond{
-		s st = ##class(Forum.Post).%DeleteId( .postObjIdSecond )
+		set st = ##class(Forum.Post).%DeleteId( .postObjIdSecond )
 		do $$$AssertTrue(st,"Delete created object")
 		}
 	#; 3
-	s status = ##class(Forum.Post).ExtIdExists(3, .postObjIdThird)
+	set status = ##class(Forum.Post).ExtIdExists(3, .postObjIdThird)
 	do $$$AssertTrue(status,"Existence of the third post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdThird )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 4
-	s status = ##class(Forum.Post).ExtIdExists(4, .postObjIdFourth)
+	set status = ##class(Forum.Post).ExtIdExists(4, .postObjIdFourth)
 	do $$$AssertTrue(status,"Existence of the fourth post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdFourth )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdFourth )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 5
-	s status = ##class(Forum.Post).ExtIdExists(5, .postObjIdFifth)
+	set status = ##class(Forum.Post).ExtIdExists(5, .postObjIdFifth)
 	do $$$AssertTrue(status,"Existence of the fifth post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
 	do $$$AssertTrue(st,"Delete created object")
 	
-	if $g(topicNotExist)'="" {
-		s st = ##class(Forum.Topic).%DeleteId( .topic )
+	if $get(topicNotExist)'="" {
+		set st = ##class(Forum.Topic).%DeleteId( .topic )
 		do $$$AssertTrue(st,"Delete created topic object")
 		}
-	if $g(forumNotExist)'="" {
-		s st = ##class(Forum.Forum).%DeleteId( .forum )
+	if $get(forumNotExist)'="" {
+		set st = ##class(Forum.Forum).%DeleteId( .forum )
 		do $$$AssertTrue(st,"Delete created forum object")
 		}
 	
 	#;Cleaning authors
 	#; 1
-	s statusFirstAuthor = ##class(Forum.Author).ExtIdExists("FirstExtId", .authorObjIdFirst)
+	set statusFirstAuthor = ##class(Forum.Author).ExtIdExists("FirstExtId", .authorObjIdFirst)
 	do $$$AssertNotTrue(statusFirstAuthor,"Nonexistence of the first author object")
 	if statusFirstAuthor{
-		s st = ##class(Forum.Author).%DeleteId( .authorObjIdFirst )
+		set st = ##class(Forum.Author).%DeleteId( .authorObjIdFirst )
 		do $$$AssertTrue(st,"Delete created object")
 		}
 	#; 2
-	s statusSecondAuthor = ##class(Forum.Author).ExtIdExists("SecondExtId", .authorObjIdSecond)
+	set statusSecondAuthor = ##class(Forum.Author).ExtIdExists("SecondExtId", .authorObjIdSecond)
 	do $$$AssertNotTrue(statusSecondAuthor,"Nonexistence of the second author object")
 	if statusSecondAuthor{
-		s st = ##class(Forum.Author).%DeleteId( .authorObjIdSecond )
+		set st = ##class(Forum.Author).%DeleteId( .authorObjIdSecond )
 		do $$$AssertTrue(st,"Delete created object")
 		}
 	#; 3
-	s status = ##class(Forum.Author).ExtIdExists("ThirdExtId", .authorObjIdThird)
+	set status = ##class(Forum.Author).ExtIdExists("ThirdExtId", .authorObjIdThird)
 	do $$$AssertTrue(status,"Existence of the third author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdThird )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 4
-	s status = ##class(Forum.Author).ExtIdExists("FourthExtId", .authorObjIdFourth)
+	set status = ##class(Forum.Author).ExtIdExists("FourthExtId", .authorObjIdFourth)
 	do $$$AssertTrue(status,"Existence of the fourth author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFourth )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdFourth )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 5
-	s status = ##class(Forum.Author).ExtIdExists("FifthExtId", .authorObjIdFifth)
+	set status = ##class(Forum.Author).ExtIdExists("FifthExtId", .authorObjIdFifth)
 	do $$$AssertTrue(status,"Existence of the fifth author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFifth )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdFifth )
 	do $$$AssertTrue(st,"Delete created object")
 ]]></Implementation>
 </Method>
@@ -316,118 +302,118 @@
 	#define PostTableEnd "<!--end threadtable-->"
 	#define PostBegin "<table class=""msgTable"">"
 	
-	s status = ##class(Forum.Post).ExtIdExists( 1, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 1, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 2, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 2, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 3, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 3, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 4, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 4, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
-	s status = ##class(Forum.Post).ExtIdExists( 5, .tmpId )
+	set status = ##class(Forum.Post).ExtIdExists( 5, .tmpId )
 	if status = 1 {
-		d ##class(Forum.Post).%DeleteId( tmpId )
-		k status, tmpId
+		do ##class(Forum.Post).%DeleteId( tmpId )
+		kill status, tmpId
 		}
 	
 	#;Creating forum
 	
-	s forum("Name") = "Testing forum's name"
+	set forum("Name") = "Testing forum's name"
 
 	if '##class(Forum.Forum).NameExists( forum("Name"), .forum ){
 		&sql( Insert Into Forum.Forum ( Name ) Values ( :forum("Name") ))
-		if SQLCODE=0 s forum = %ROWID
-		s forumNotExist = 1
+		if SQLCODE=0 set forum = %ROWID
+		set forumNotExist = 1
 		}
 		
 	#;Creating topic
 	
-	s topic("Name") = "Testing topic's name", topic("ExtId") = 0
+	set topic("Name") = "Testing topic's name", topic("ExtId") = 0
 		, topic("Author") = "Testing topic's author", topic("Views") = 12345
 		, topic("Updated") = "2001-01-01 04:20:00"
 	
 	if '##class(Forum.Topic).NameExists( topic("Name"), .topic ){	
 		&sql( Insert Into Forum.Topic ( Name, ExtId, Forum, Author, Views, Updated ) 
 		Values ( :topic("Name") ,:topic("ExtId") ,:forum ,:topic("Author") ,:topic("Views") ,:topic("Updated") ))
-		if SQLCODE=0 s topic = %ROWID
-		s topicNotExist = 1
+		if SQLCODE=0 set topic = %ROWID
+		set topicNotExist = 1
 		}
 	
-	s xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
-    s compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
-    s tStream = compiledXdata.Data
+	set xdataID = "test.Forum.PostsPage||PostsPageWith5Posts"
+    set compiledXdata = ##class(%Dictionary.CompiledXData).%OpenId(xdataID)
+    set tStream = compiledXdata.Data
     
 	//Created object is object of class Forum.PostsLoader to able to save object and then check it
-	s page = ##class(Forum.PostsLoader).%New()
+	set page = ##class(Forum.PostsLoader).%New()
+	set page.Verbose = 0 
+	set page.Topic = topic("ExtId")
 	
-	s page.Topic = topic("ExtId")
+	set page.request = ##class(Http.Request).%New( "www.sql.ru" )
+	set page.request.Data = ##class(%Stream.FileCharacter).%New()
+	set sc = page.request.Data.CopyFrom( tStream )
 	
-	s page.request = ##class(Http.Request).%New( "www.sql.ru" )
-	s page.request.Data = ##class(%Stream.FileCharacter).%New()
-	s sc = page.request.Data.CopyFrom( tStream )
+	set page.pos = 0, posForMethod = 0, posOldProp = page.pos
 	
-	s page.pos = 0, posForMethod = 0, posOldProp = page.pos
-	
-	s pos = tStream.FindAt( 1, $$$PostTableBegin ) 
-    s pos = pos + $l($$$PostTableBegin)
-    s end = tStream.FindAt( pos, $$$PostTableEnd ) 
-	s pos = tStream.FindAt( pos, $$$PostBegin )
+	set pos = tStream.FindAt( 1, $$$PostTableBegin ) 
+    set pos = pos + $length($$$PostTableBegin)
+    set end = tStream.FindAt( pos, $$$PostTableEnd ) 
+	set pos = tStream.FindAt( pos, $$$PostBegin )
 	
 	#; 1 pos < end Table header(Pre-posts area)
 	
-	s sc = page.postBegin( pos )
+	set sc = page.postBegin( pos )
 	do $$$AssertNotEquals(page.pos,posOldProp,"1.Property ""pos"" have to change")
-	s pos = pos + $l($$$PostBegin)
-	s pos = tStream.FindAt( pos, $$$PostBegin )
-	s posOldProp = page.pos
+	set pos = pos + $length($$$PostBegin)
+	set pos = tStream.FindAt( pos, $$$PostBegin )
+	set posOldProp = page.pos
 	
 	#; 2 pos < end The first post
 	
-	s sc = page.postBegin( pos )
+	set sc = page.postBegin( pos )
 	do $$$AssertNotEquals(page.pos,posOldProp,"2.First post.Property ""pos"" have to change")
-	s pos = pos + $l($$$PostBegin)
-	s pos = tStream.FindAt( pos, $$$PostBegin )
-	s posOldProp = page.pos
+	set pos = pos + $length($$$PostBegin)
+	set pos = tStream.FindAt( pos, $$$PostBegin )
+	set posOldProp = page.pos
 	
 	#; 3 pos < end The second post
 	
-	s sc = page.postBegin( pos )
+	set sc = page.postBegin( pos )
 	do $$$AssertNotEquals(page.pos,posOldProp,"3.Second post.Property ""pos"" have to change")
-	s pos = pos + $l($$$PostBegin)
-	s pos = tStream.FindAt( pos, $$$PostBegin )
-	s posOldProp = page.pos
+	set pos = pos + $length($$$PostBegin)
+	set pos = tStream.FindAt( pos, $$$PostBegin )
+	set posOldProp = page.pos
 	
 	#; 4 pos < end The third post
 	
-	s sc = page.postBegin( pos )
+	set sc = page.postBegin( pos )
 	do $$$AssertNotEquals(page.pos,posOldProp,"4.Third post.Property ""pos"" have to change")
-	s pos = pos + $l($$$PostBegin)
-	s pos = tStream.FindAt( pos, $$$PostBegin )
-	s posOldProp = page.pos
+	set pos = pos + $length($$$PostBegin)
+	set pos = tStream.FindAt( pos, $$$PostBegin )
+	set posOldProp = page.pos
 	
 	#; 5 pos < end The fourth post
 	
-	s sc = page.postBegin( pos )
+	set sc = page.postBegin( pos )
 	do $$$AssertNotEquals(page.pos,posOldProp,"5.Fourth post.Property ""pos"" have to change")
-	s pos = pos + $l($$$PostBegin)
-	s pos = tStream.FindAt( pos, $$$PostBegin )
-	s posOldProp = page.pos
+	set pos = pos + $length($$$PostBegin)
+	set pos = tStream.FindAt( pos, $$$PostBegin )
+	set posOldProp = page.pos
 	
 	#; 6 pos > end, page.pos < end The fifth post
 	
-	s sc = page.postBegin( end )
+	set sc = page.postBegin( end )
 	do $$$AssertNotEquals(page.pos,posOldProp,"6.Fifth post.Property ""pos"" have to change")
 		
 	#; 7 pos > end, page.pos >end
@@ -435,65 +421,65 @@
 	
 	#;Clining topics and forum
 	#; 1
-	s status = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
+	set status = ##class(Forum.Post).ExtIdExists(1, .postObjIdFirst)
 	do $$$AssertTrue(status,"Existence of the first post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdFirst )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdFirst )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 2
-	s status = ##class(Forum.Post).ExtIdExists(2, .postObjIdSecond)
+	set status = ##class(Forum.Post).ExtIdExists(2, .postObjIdSecond)
 	do $$$AssertTrue(status,"Existence of the second post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdSecond )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdSecond )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 3
-	s status = ##class(Forum.Post).ExtIdExists(3, .postObjIdThird)
+	set status = ##class(Forum.Post).ExtIdExists(3, .postObjIdThird)
 	do $$$AssertTrue(status,"Existence of the third post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdThird )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 4
-	s status = ##class(Forum.Post).ExtIdExists(4, .postObjIdFourth)
+	set status = ##class(Forum.Post).ExtIdExists(4, .postObjIdFourth)
 	do $$$AssertTrue(status,"Existence of the fourth post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdFourth )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdFourth )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 5
-	s status = ##class(Forum.Post).ExtIdExists(5, .postObjIdFifth)
+	set status = ##class(Forum.Post).ExtIdExists(5, .postObjIdFifth)
 	do $$$AssertTrue(status,"Existence of the fifth post object")
-	s st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
+	set st = ##class(Forum.Post).%DeleteId( .postObjIdFifth )
 	do $$$AssertTrue(st,"Delete created object")
 	
-	if $g(topicNotExist)'="" {
-		s st = ##class(Forum.Topic).%DeleteId( .topic )
+	if $get(topicNotExist)'="" {
+		set st = ##class(Forum.Topic).%DeleteId( .topic )
 		do $$$AssertTrue(st,"Delete created topic object")
 		}
-	if $g(forumNotExist)'="" {
-		s st = ##class(Forum.Forum).%DeleteId( .forum )
+	if $get(forumNotExist)'="" {
+		set st = ##class(Forum.Forum).%DeleteId( .forum )
 		do $$$AssertTrue(st,"Delete created forum object")
 		}
 	
 	#;Cleaning authors
 	#; 1
-	s status = ##class(Forum.Author).ExtIdExists("FirstExtId", .authorObjIdFirst)
+	set status = ##class(Forum.Author).ExtIdExists("FirstExtId", .authorObjIdFirst)
 	do $$$AssertTrue(status,"Existence of the first author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFirst )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdFirst )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 2
-	s status = ##class(Forum.Author).ExtIdExists("SecondExtId", .authorObjIdSecond)
+	set status = ##class(Forum.Author).ExtIdExists("SecondExtId", .authorObjIdSecond)
 	do $$$AssertTrue(status,"Existence of the second author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdSecond )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdSecond )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 3
-	s status = ##class(Forum.Author).ExtIdExists("ThirdExtId", .authorObjIdThird)
+	set status = ##class(Forum.Author).ExtIdExists("ThirdExtId", .authorObjIdThird)
 	do $$$AssertTrue(status,"Existence of the third author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdThird )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdThird )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 4
-	s status = ##class(Forum.Author).ExtIdExists("FourthExtId", .authorObjIdFourth)
+	set status = ##class(Forum.Author).ExtIdExists("FourthExtId", .authorObjIdFourth)
 	do $$$AssertTrue(status,"Existence of the fourth author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFourth )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdFourth )
 	do $$$AssertTrue(st,"Delete created object")
 	#; 5
-	s status = ##class(Forum.Author).ExtIdExists("FifthExtId", .authorObjIdFifth)
+	set status = ##class(Forum.Author).ExtIdExists("FifthExtId", .authorObjIdFifth)
 	do $$$AssertTrue(status,"Existence of the fifth author object")
-	s st = ##class(Forum.Author).%DeleteId( .authorObjIdFifth )
+	set st = ##class(Forum.Author).%DeleteId( .authorObjIdFifth )
 	do $$$AssertTrue(st,"Delete created object")
 ]]></Implementation>
 </Method>
