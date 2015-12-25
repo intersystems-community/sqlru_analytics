@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="BI.History">
+<Description>
+</Description>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>%DeepSee.CubeDefinition</Super>
+<TimeCreated>63891,64948.107944</TimeCreated>
+<DependsOn>History.TimeLapse</DependsOn>
+
+<XData name="Cube">
+<Description>
+Cube definition from Architect.</Description>
+<XMLNamespace>http://www.intersystems.com/deepsee</XMLNamespace>
+<Data><![CDATA[
+<cube xmlns="http://www.intersystems.com/deepsee" name="History" displayName="History" disabled="false" abstract="false" sourceClass="History.TimeLapse" countMeasureName="%COUNT" bucketSize="8" bitmapChunkInMemory="false" precompute="0" disableListingGroups="false">
+  <dimension name="CreatedDate" disabled="false" hasAll="false" allCaption="All Created" allDisplayName="Created" sourceProperty="Created" type="time" calendar="gregorian" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Date" disabled="false" timeFunction="DayMonthYear" list="false" useDisplayValue="true" dependsOn="[CreatedDate].[H1].[Date].Members" useAsFilter="true">
+      </level>
+      <level name="Time" disabled="false" timeFunction="MinuteNumber" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="Forum" disabled="false" hasAll="false" allCaption="All Forum" allDisplayName="Forum" type="data" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Forum" disabled="false" sourceProperty="Forum" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="CreatedDayName" disabled="false" hasAll="false" allCaption="All Created1" allDisplayName="Created1" sourceProperty="Created" type="data" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="DayName" disabled="false" sourceExpression="$s($zd($zdh(%source.Created,3),10)=0:7,1:$zd($zdh(%source.Created,3),10))_&quot;.&quot;_$zd($zdh(%source.Created,3),12)" list="false" useDisplayValue="true" useAsFilter="true">
+      </level>
+    </hierarchy>
+  </dimension>
+  <dimension name="CreatedWeek" disabled="false" hasAll="false" allCaption="All Created2" allDisplayName="Created2" sourceProperty="Created" type="time" calendar="gregorian" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Week" disabled="false" timeFunction="WeekYear" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+    </hierarchy>
+    <additionalDescription>undefined</additionalDescription>
+  </dimension>
+  <dimension name="CreatedMonth" disabled="false" hasAll="false" allCaption="All Created3" allDisplayName="Created3" sourceProperty="Created" type="time" calendar="gregorian" iKnowType="entity" hidden="false" showHierarchies="default">
+    <hierarchy name="H1" disabled="false">
+      <level name="Month" disabled="false" timeFunction="MonthNumber" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+      <level name="DayNumber" disabled="false" timeFunction="DayNumber" list="false" useDisplayValue="true" useAsFilter="true">
+        <additionalDescription>undefined</additionalDescription>
+      </level>
+    </hierarchy>
+    <additionalDescription>undefined</additionalDescription>
+  </dimension>
+  <measure name="ViewsAdded" disabled="false" sourceProperty="ViewsAdded" aggregate="SUM" type="number" hidden="false" searchable="false">
+  </measure>
+  <measure name="TopicsAdded" disabled="false" sourceProperty="TopicsAdded" aggregate="SUM" type="number" hidden="false" searchable="false">
+  </measure>
+  <measure name="AnswersAdded" disabled="false" sourceProperty="AnswersAdded" aggregate="SUM" type="number" hidden="false" searchable="false">
+  </measure>
+  <measure name="ViewsPerDay" disabled="false" sourceExpression="24*(%source.ViewsAdded)" aggregate="AVG" type="number" hidden="false" searchable="false">
+  </measure>
+</cube>
+]]></Data>
+</XData>
+
+<Parameter name="DOMAIN"/>
+</Class>
+</Export>
