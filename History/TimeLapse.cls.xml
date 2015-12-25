@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:11:36">
+<Export generator="Cache" version="25">
 <Class name="History.TimeLapse">
 <Super>%Persistent</Super>
-<TimeChanged>63901,4296.454594</TimeChanged>
 <TimeCreated>63883,38390.732861</TimeCreated>
 
 <Property name="Topics">

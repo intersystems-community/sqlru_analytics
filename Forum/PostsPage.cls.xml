@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:09:00">
+<Export generator="Cache" version="25">
 <Class name="Forum.PostsPage">
 <Abstract>1</Abstract>
 <Super>%RegisteredObject</Super>
-<TimeChanged>63901,2721.0001</TimeChanged>
 <TimeCreated>63782,48971.973602</TimeCreated>
 
 <Parameter name="SERVER">

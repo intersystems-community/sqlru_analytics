@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:10:09">
+<Export generator="Cache" version="25">
 <Class name="Forum.TopicsPage">
 <Description>
 Page sql.ru/forum/ with topics table
 Example of page structure see in  test/page.html</Description>
 <Abstract>1</Abstract>
 <Super>%RegisteredObject</Super>
-<TimeChanged>63901,3171.468571</TimeChanged>
 <TimeCreated>63776,58912.816024</TimeCreated>
 
 <Property name="PropertyParse">

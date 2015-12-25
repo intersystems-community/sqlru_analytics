@@ -177,6 +177,7 @@
 		k status, tmpId
 		} 
 	s postObj = ##class(Forum.PostsLoader).%New()
+	s postObj.Verbose = 0 
 	s postObj.Topic = topic("ExtId")
 	
 	s status = postObj.OnPost(.post)

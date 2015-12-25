@@ -55,7 +55,7 @@
 	if SQLCODE=0 s post = %ROWID
 	
 	
-	s status = ##class(Forum.TopicsLoader).UpdateAuthors( forum("Name") ) 
+	s status = ##class(Forum.TopicsLoader).UpdateAuthors( forum("Name"), 0 ) 
 	do $$$AssertTrue(status,"Status of method execution")
 	
 	s authorObj = ##class(Forum.Author).%OpenId(author)
@@ -92,12 +92,14 @@
 	s author("ExtId") = 227003
 	
 	if '##class(Forum.Author).ExtIdExists(author("ExtId"), .author){
+		
 		s authorNotExisted = 1
 		s author("Name") = "Test name"		
 		&sql( Insert Into Forum.Author ( Name, ExtId ) Values ( :author("Name"), :author("ExtId") ))
 		if SQLCODE=0 s author = %ROWID
-		}
-	else{
+		
+	} else {
+ 		
  		s sql = "Select Location, Longitude, Latitude From Forum.Author Where ExtId = ?"
  		s rs = ##class(%SQL.Statement).%ExecDirect(, sql, author("ExtId"))
  		if rs.%Next() s location = rs.Location,longitude = rs.Longitude, latitude = rs.Latitude
@@ -107,8 +109,9 @@
  		&sql( Update Forum.Author Set Location = :empty, Longitude = :empty
  			, Latitude = :empty Where ExtId =:topic("ExtId"))
 		}
-		
-	s status = ##class(Forum.TopicsLoader).UpdateAuthorLocation( author )
+	
+	s verbose = 0 	
+	s status = ##class(Forum.TopicsLoader).UpdateAuthorLocation( author,,verbose )
 	do $$$AssertTrue(status,"Status of method execution")
 
 	s authorObj = ##class(Forum.Author).%OpenId(author)
@@ -121,13 +124,16 @@
 	do $$$AssertEquals(authorObj.Location, "Vladivostok", "Checking location")	
 
 	if authorNotExisted{
+		
 		s status = ##class(Forum.Author).%DeleteId( author )
 		do $$$AssertTrue(status,"Delete created author")
-		}
-	else{
+		
+	} else {
+		
  		&sql( Update Forum.Author Set Location = :location, Longitude = :longitude
  			, Latitude = :latitude Where ExtId =:topic("ExtId"))		
-		}
+ 			
+	}
 ]]></Implementation>
 </Method>
 
@@ -277,8 +283,8 @@
  			s sc = ##class(Forum.Post).%DeleteId(tmpId)
  		}
  	}
- 	
- 	s sc = ##class(Forum.TopicsLoader).LoadPosts(forum("Name"))
+ 	s verbose = 0
+ 	s sc = ##class(Forum.TopicsLoader).LoadPosts( forum("Name"), verbose )
  	
  	
  	s status = ##class(Forum.Post).ExtIdExists(18390235, .postId)
@@ -365,6 +371,7 @@
  		, topic("Updated") = "2001-01-01 04:20:00"
  	
  	s topicObj = ##class(Forum.TopicsLoader).%New()
+ 	s topicObj.Verbose = 0
  	s topicObj.Forum = forum("Name")
  	
  	s status = topicObj.OnTopic(.topic)
@@ -497,7 +504,8 @@
  	s status = ##class(Forum.Topic).NameExists(topicFifth("Name"))
  	do $$$AssertTrue(status,"Existence of fifth topic object")
  	
- 	s status = ##class(Forum.TopicsLoader).DeleteTopics(forum)
+ 	s verbose = 0
+ 	s status = ##class(Forum.TopicsLoader).DeleteTopics( forum, verbose )
  	do $$$AssertTrue(status,"Status of method executing")
  	
  	s status = ##class(Forum.Topic).NameExists(topicFirst("Name"))
@@ -670,8 +678,9 @@
  	s status = ##class(Forum.Post).ExtIdExists(postFifth("ExtId"))
  	do $$$AssertTrue(status,"Existence of fifth post object")
  	
- 	s status = ##class(Forum.TopicsLoader).DeletePosts(forum)
- 	do $$$AssertTrue(status,"Status of method executing")
+ 	s verbose = 0 
+ 	s status = ##class(Forum.TopicsLoader).DeletePosts( forum, verbose )
+ 	do $$$AssertTrue( status, "Status of method executing" )
  	
  	s status = ##class(Forum.Topic).ExtIdExists(postFirst("ExtId"))
  	do $$$AssertNotTrue(status,"Nonexistence of first post object")

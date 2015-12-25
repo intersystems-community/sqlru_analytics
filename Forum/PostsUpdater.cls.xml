@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Export generator="Cache" version="25" zv="Cache for Windows (x86-64) 2016.1 (Build 596U)" ts="2015-12-15 01:09:38">
+<Export generator="Cache" version="25">
 <Class name="Forum.PostsUpdater">
 <Description>
 Initial post updater
 Called from TopicsUpdater</Description>
 <Super>Forum.PostsPage</Super>
-<TimeChanged>63901,3078.356956</TimeChanged>
 <TimeCreated>63785,86397.663962</TimeCreated>
 
 <Method name="Update">

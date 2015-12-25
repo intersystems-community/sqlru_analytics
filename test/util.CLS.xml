@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Class name="test.util">
+<Abstract>1</Abstract>
+<TimeCreated>63901,43759.020887</TimeCreated>
+
+<Method name="ClassDefChange">
+<Description><![CDATA[
+Update class definition by <var>definition</var > for testing purpose
+<example>
+s def = "Forum.PostsPage"
+s def("Abstract") = 0
+s def("property", "request", "Private") = 0
+s def("property", "pos", "Private") = 0
+s def("method", "Parse", "Private") = 0
+s def("method", "postBegin", "Private") = 0
+s sc = ..ClassDefChange( .def )
+</example>]]></Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec><![CDATA[&definition]]></FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	s class = $g(definition) Q:class="" 0
+	s cd = ##class(%Dictionary.ClassDefinition).%OpenId( class , , .sc ) 
+	Q:'$IsObject( cd ) sc
+	
+	#; update properties 
+	#define props(%key) definition( "property", %key) 
+	#define pdata(%key)  definition( "property", prop, %key) 
+	
+	s prop = "" for { s prop = $o( $$$props( prop )) Q:prop=""
+		
+		s key = cd.Properties.FindObjectId( class_"||"_prop )
+		s pd = cd.Properties.GetAt( key ) 
+		
+		s attr = "" for { s attr = $o( $$$pdata( attr )) Q:attr=""
+			s value = $g( $$$pdata(attr) ) 
+			s $property(pd, attr) = value
+		}
+		
+	} k definition("property")
+	
+	#; update methods	
+	#define meths(%key) definition("method", %key)
+	#define mdata(%key) definition("method", meth, %key )
+	
+	s meth = "" for { s meth = $o( $$$meths(meth) ) Q:meth=""
+		
+		s key  = cd.Methods.FindObjectId( class_"||"_meth )
+		s md = cd.Methods.GetAt( key )
+		
+		s attr = "" for { s attr = $o( $$$mdata(attr) ) Q:attr=""
+			s value = $g( $$$mdata(attr))
+			s $property(md, attr) = value
+		}
+		
+	}
+	k definition("method")
+	
+	#;update class
+	s attr = "" for { s attr = $o(definition(attr)) Q:attr=""
+		s value = $g(definition(attr))
+		s $property(cd, attr) = value
+		
+	}
+	s sc = cd.%Save()
+	Q:'sc sc
+	
+	s sc = $system.OBJ.Compile(class,"ck-d")
+	Q sc
+]]></Implementation>
+</Method>
+
+<Method name="TestClassDefChange">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	s def = "Forum.PostsLoader", def("property", "firstPost", "Private") = 0
+	s sc = ##class(test.util).ClassDefChange( .def )
+	
+	s def("property", "firstPost", "Private") = 1
+	s sc = ##class(test.util).ClassDefChange( .def )
+	
+	k def s def = "Forum.PostsPage", def("Abstract") = 0
+	s sc = ##class(test.util).ClassDefChange( .def )
+	
+	k def s def = "Forum.PostsPage", def("Abstract") = 1
+	s sc = ##class(test.util).ClassDefChange( .def )
+]]></Implementation>
+</Method>
+</Class>
+</Export>
